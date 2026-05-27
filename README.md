@@ -61,7 +61,7 @@ git checkout team-XX-your-team-name
 |----------|-------------|
 | [SUBMISSION.md](./SUBMISSION.md) | Delivery rules, README requirements and demo format |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | How to work in this repo, branch rules and commit conventions |
-| [LICENSE.md](./LICENSE.md) | How projects will remain open source and usable by Civio |
+| [AUTHORSHIP.md](./AUTHORSHIP.md) | How projects will remain open source and usable by Civio |
 
 ---
 
