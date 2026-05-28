@@ -1,8 +1,10 @@
 # Ship for Good · 1st Edition
 
-> think · build · help
+think · build · help
 
 **May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/)**
+
+**Official website:** [shipforgood.org/es](https://www.shipforgood.org/es)
 
 A hackathon with purpose: helping social organizations and benefiting society
 through technology. No smoke. No prizes. Just impact.
@@ -19,19 +21,46 @@ The challenges we work on are theirs. The impact belongs to all of us.
 
 ---
 
+## Challenge Discovery
+
+*More info will be shared on Friday, May 29.*
+
+## Lovable Tokens
+
+*More info will be shared on Friday, May 29.*
+
+## Cursor Tokens
+
+*More info will be shared on Friday, May 29.*
+
 ## Schedule
 
 ### Friday, May 29th
 
 | Time | Activity |
 |------|----------|
-| 18:00 | 
+| 17:45 | Check-in |
+| 18:00 | Opening and discovery |
+| 21:00 | Closing |
 
 ### Saturday, May 30th
 
 | Time | Activity |
 |------|----------|
-| 09:00 | 
+| 09:30 | Check-in starts |
+| 10:00 | Opening |
+| 10:30 | Optional talk - AI augmented development |
+| 15:00 | Optional talk - Debate "The ethics of Artificial Intelligence" with Civio |
+| 21:00 | Closing |
+
+---
+
+## Wi-Fi
+
+Use the 42 Barcelona network:
+
+- UID: `42barcelona`
+- PASS: `bienvenido42BCN`
 
 ---
 
@@ -41,21 +70,29 @@ Each team works on their own dedicated branch:
 
 | Team | Branch |
 |------|--------|
-| TBD | `team-01-...` |
-| TBD | `team-02-...` |
-| TBD | `team-03-...` |
+| Delfos | `team-delfos` |
+| IT_Power | `team-it-power` |
+| Team Aina | `team-aina` |
+| Team Azul | `team-azul` |
+| Team Verde | `team-verde` |
+| Team Rojo | `team-rojo` |
+| Team Amarillo | `team-amarillo` |
+| Team Naranja | `team-naranja` |
+| Team Morado | `team-morado` |
+| Team Rosa | `team-rosa` |
+| Team Turquesa | `team-turquesa` |
 
 To get started:
 
 ```bash
 git clone https://github.com/shipforgood/hackathon-2025
 cd hackathon-2025
-git checkout team-XX-your-team-name
+git checkout team-your-team-name
 ```
 
 ---
 
-## Important Documents
+## Repository Docs
 
 | Document | Description |
 |----------|-------------|
@@ -93,5 +130,6 @@ We count on everyone's cooperation to ensure a safe environment.
 
 ---
 
-## Questions?
+## FAQ
 
+[Ship for Good FAQ](https://www.shipforgood.org/es#faq)
