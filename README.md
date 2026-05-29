@@ -105,8 +105,8 @@ git checkout team-your-team-name
 
 | Document | Description |
 |----------|-------------|
-| [SUBMISSION.md](./SUBMISSION.md) | Delivery rules, README requirements and demo format |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to work in this repo, branch rules and commit conventions |
+| [how-to-submit-project.md](./how-to-submit-project.md) | Delivery rules, README requirements and demo format |
+| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | How to work in this repo, branch rules and commit conventions |
 | [AUTHORSHIP.md](./AUTHORSHIP.md) | How projects will remain open source and usable by Civio |
 
 ---
