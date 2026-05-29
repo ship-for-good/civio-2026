@@ -27,11 +27,11 @@ The challenges we work on are theirs. The impact belongs to all of us.
 
 ## Lovable Tokens
 
-*More info will be shared on Friday, May 29.*
+More info: [lovable-tokens.md](./lovable-tokens.md)
 
 ## Cursor Tokens
 
-*More info will be shared on Friday, May 29.*
+More info: [cursor-tokens.md](./cursor-tokens.md)
 
 ## Schedule
 
