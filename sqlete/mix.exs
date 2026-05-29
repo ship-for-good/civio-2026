@@ -40,6 +40,9 @@ defmodule SQLete.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:decimal, "~> 2.0", override: true},
+      {:arcana, "~> 2.0"},
       {:phoenix, "~> 1.8.7"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
