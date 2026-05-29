@@ -23,7 +23,7 @@ The challenges we work on are theirs. The impact belongs to all of us.
 
 ## Challenge Discovery
 
-*More info will be shared on Friday, May 29.*
+More info: [lovable-tokens.md](./challenge-discovery.pdf)
 
 ## Lovable Tokens
 
@@ -52,6 +52,15 @@ More info: [cursor-tokens.md](./cursor-tokens.md)
 | 10:30 | Optional talk - AI augmented development |
 | 15:00 | Optional talk - Debate "The ethics of Artificial Intelligence" with Civio |
 | 21:00 | Closing |
+
+---
+
+## Slack Channels
+
+- announcements: https://ship-for-good.slack.com/archives/C0B1GNT77QB
+- q&a (questions for the hackathon organizers): https://ship-for-good.slack.com/archives/C0B1M3UCQS2
+- ask-civio (ask the people at Civil about the problem): https://ship-for-good.slack.com/archives/C0B6YE9GYSG
+- tech-support (questions and help on technical topics): https://ship-for-good.slack.com/archives/C0B6RERAELV
 
 ---
 
