@@ -23,7 +23,7 @@ The challenges we work on are theirs. The impact belongs to all of us.
 
 ## Challenge Discovery
 
-More info: [challenge-discovery.pdf](./challenge-discovery.pdf)
+More info: [challenge-discovery.md](./challenge-discovery.md)
 
 ## Lovable Tokens
 
