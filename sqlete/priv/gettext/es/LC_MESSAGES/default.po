@@ -1,0 +1,299 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:93
+#, elixir-autogen, elixir-format
+msgid "01. Interpretar notificaciones"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:105
+#, elixir-autogen, elixir-format
+msgid "02. Calcular plazos"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:117
+#, elixir-autogen, elixir-format
+msgid "03. Detectar redistribución"
+msgstr ""
+
+#: lib/sqlete_web/components/core_components.ex:375
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr "Acciones"
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:214
+#, elixir-autogen, elixir-format
+msgid "Alcance seguro de la IA"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:107
+#, elixir-autogen, elixir-format
+msgid "Aplica el reloj legal automáticamente"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:72
+#, elixir-autogen, elixir-format
+msgid "Arrastrar y soltar PDF"
+msgstr ""
+
+#: lib/sqlete_web/components/layouts.ex:99
+#: lib/sqlete_web/components/layouts.ex:111
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr "Intentando reconectar"
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:16
+#: lib/sqlete_web/controllers/page_html/home.html.heex:131
+#, elixir-autogen, elixir-format
+msgid "Cómo funciona"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:48
+#, elixir-autogen, elixir-format
+msgid "Descubre lo que automatizamos"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:177
+#, elixir-autogen, elixir-format
+msgid "Destaca los casos urgentes"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:98
+#, elixir-autogen, elixir-format
+msgid "Detectamos si el PDF es un inicio de tramitación, una ampliación, una respuesta parcial o una denegación, y extraemos las fechas que realmente impulsan el caso."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:159
+#, elixir-autogen, elixir-format
+msgid "El LLM devuelve campos tipificados para que el sistema pueda crear o actualizar la solicitud correspondiente de forma segura."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:196
+#, elixir-autogen, elixir-format
+msgid "El objetivo no es una IA documental genérica. Es una herramienta operativa para la redacción, pensada para un problema concreto: mantener vivas las solicitudes de acceso a la información el tiempo suficiente para obtener una respuesta que merezca la pena publicar."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:179
+#, elixir-autogen, elixir-format
+msgid "El panel y el resumen muestran qué está a punto de vencer, qué está bloqueado y qué se ha dispersado en múltiples archivos."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:136
+#, elixir-autogen, elixir-format
+msgid "El producto está diseñado en torno al proceso real de Civio: un periodista recibe una notificación, abre un PDF, averigua qué ha ocurrido, actualiza el seguimiento manualmente y recalcula cada plazo. SQLete comprime todo eso en un solo paso."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:71
+#, elixir-autogen, elixir-format
+msgid "Entrada"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:226
+#, elixir-autogen, elixir-format
+msgid "Esta página es el punto de partida para las vistas de panel, detalle de caso y redistribución agrupada."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:17
+#, elixir-autogen, elixir-format
+msgid "Impacto"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:63
+#, elixir-autogen, elixir-format
+msgid "La aplicación clasifica el PDF, extrae las fechas, actualiza la solicitud y señala si el equipo debe reclamar el silencio administrativo, revisar una respuesta incompleta o hacer seguimiento de un archivo redistribuido."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:35
+#, elixir-autogen, elixir-format
+msgid "La bandeja de entrada para solicitudes de transparencia que no deberían gestionarse en hojas de cálculo."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:207
+#, elixir-autogen, elixir-format
+msgid "La primera versión replica los campos existentes de Airtable para que el equipo pueda migrar sin replantearse todo su flujo de trabajo."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:147
+#, elixir-autogen, elixir-format
+msgid "La redacción introduce el documento oficial en la aplicación en lugar de analizarlo manualmente."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:33
+#, elixir-autogen, elixir-format
+msgid "Landing page del hackathon"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:122
+#, elixir-autogen, elixir-format
+msgid "Las referencias relacionadas en las notas y las futuras reglas de agrupación permiten que la redacción vea cuándo una sola solicitud se ha dividido en múltiples expedientes paralelos."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:169
+#, elixir-autogen, elixir-format
+msgid "Las reglas de plazos se ejecutan inmediatamente e identifican si se requiere actuar hoy, esta semana o el próximo mes."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:95
+#, elixir-autogen, elixir-format
+msgid "Lee el documento, no solo el nombre del archivo"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:191
+#, elixir-autogen, elixir-format
+msgid "Menos trabajo de detective, menos plazos incumplidos, un seguimiento editorial más claro."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:204
+#, elixir-autogen, elixir-format
+msgid "Modelo de datos real"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Motor de plazos legales"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:28
+#, elixir-autogen, elixir-format
+msgid "Parseo de documentos con LLM"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:27
+#, elixir-autogen, elixir-format
+msgid "Phoenix + LiveView"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:82
+#, elixir-autogen, elixir-format
+msgid "Plazos en zona roja, archivos agrupados y un resumen fiable para el equipo."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:231
+#, elixir-autogen, elixir-format
+msgid "Por ahora, la página de aterrizaje explica el producto con claridad. Las siguientes fases pueden añadir las rutas reales del panel sin rehacer el sistema visual."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:189
+#, elixir-autogen, elixir-format
+msgid "Por qué es importante"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "Propuesta principal"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:224
+#, elixir-autogen, elixir-format
+msgid "Próximos pasos"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:15
+#, elixir-autogen, elixir-format
+msgid "Qué hacemos"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:80
+#, elixir-autogen, elixir-format
+msgid "Radar legal diario"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:167
+#, elixir-autogen, elixir-format
+msgid "Recalcula el estado legal"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:51
+#, elixir-autogen, elixir-format
+msgid "Revisa el flujo de trabajo"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:110
+#, elixir-autogen, elixir-format
+msgid "SQLete calcula los plazos ordinarios, las ampliaciones del artículo 20.1, las ventanas de silencio administrativo negativo y los plazos de reclamación ante la CTBG sin almacenar fórmulas duplicadas de hojas de cálculo."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:40
+#, elixir-autogen, elixir-format
+msgid "SQLete convierte notificaciones opacas en PDF en un seguimiento estructurado de casos. Suelta un documento, identifica la respuesta, calcula los plazos legales y saca a la luz los archivos que requieren acción antes de que venzan."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:79
+#, elixir-autogen, elixir-format
+msgid "Salida"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:205
+#, elixir-autogen, elixir-format
+msgid "Sembrado desde el CSV de Civio"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:119
+#, elixir-autogen, elixir-format
+msgid "Sigue una solicitud a través de múltiples archivos"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:217
+#, elixir-autogen, elixir-format
+msgid "Sin redacción legal automatizada, sin scraping de portales y sin comunicación saliente. La IA se limita a tareas operativas internas."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:215
+#, elixir-autogen, elixir-format
+msgid "Solo clasificación y extracción"
+msgstr ""
+
+#: lib/sqlete_web/components/layouts.ex:106
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr "Algo salió mal"
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:145
+#, elixir-autogen, elixir-format
+msgid "Sube el PDF"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:74
+#, elixir-autogen, elixir-format
+msgid "Subida manual, sin scraping ni certificado digital."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:133
+#, elixir-autogen, elixir-format
+msgid "Un flujo de trabajo sencillo para un proceso de alta fricción"
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:60
+#, elixir-autogen, elixir-format
+msgid "Una notificación de entrada, plazos y estado del caso de salida."
+msgstr ""
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:156
+#, elixir-autogen, elixir-format
+msgid "Valida los datos estructurados"
+msgstr ""
+
+#: lib/sqlete_web/components/layouts.ex:94
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr "No encontramos internet"
+
+#: lib/sqlete_web/components/core_components.ex:81
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr "cerrar"
+
+#: lib/sqlete_web/controllers/page_html/home.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "CIVIO ACCESS TRACKING"
+msgstr "Seguimiento de accesos de Civio"

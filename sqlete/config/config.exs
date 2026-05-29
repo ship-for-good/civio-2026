@@ -53,6 +53,9 @@ config :tailwind,
     cd: Path.expand("..", __DIR__)
   ]
 
+# Configure Gettext locales
+config :sqlete, SQLeteWeb.Gettext, locales: ["en", "es"], default_locale: "es"
+
 # Configure Elixir's Logger
 config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",

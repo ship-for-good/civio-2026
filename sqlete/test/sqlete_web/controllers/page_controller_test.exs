@@ -3,6 +3,7 @@ defmodule SQLeteWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Peace of mind from prototype to production"
+    html = html_response(conn, 200)
+    assert html =~ "Seguimiento de accesos de Civio"
   end
 end

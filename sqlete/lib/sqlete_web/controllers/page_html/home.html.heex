@@ -1,194 +1,240 @@
 <Layouts.flash_group flash={@flash} />
 
 <div class="sq-page min-h-screen">
-    <div class="sq-shell mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <header
-            class="sq-nav flex flex-col gap-4 rounded-[2rem] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div>
-                <p class="sq-eyebrow">Civio access tracking</p>
-                <a href="#top" class="sq-brand mt-1 inline-flex items-center gap-3 text-2xl font-semibold">
-                    <span class="sq-logo-mark">S</span>
-                    SQLete
-                </a>
-            </div>
+  <div class="sq-shell mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <header class="sq-nav flex flex-col gap-4 rounded-[2rem] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div class="flex items-center gap-4">
+        <a href="#top" class="shrink-0">
+          <img src={~p"/images/logo.png"} alt="SQLete" class="h-12 w-auto" />
+        </a>
+        <p class="sq-eyebrow">{gettext("CIVIO ACCESS TRACKING")}</p>
+      </div>
 
-            <div class="flex flex-wrap items-center gap-3 sm:justify-end">
-                <nav class="flex flex-wrap gap-2 text-sm text-base-content/70">
-                    <a href="#que-hace" class="sq-nav-link">Que hacemos</a>
-                    <a href="#como-funciona" class="sq-nav-link">Como funciona</a>
-                    <a href="#impacto" class="sq-nav-link">Impacto</a>
-                </nav>
-                <Layouts.theme_toggle />
-            </div>
-        </header>
+      <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+        <nav class="flex flex-wrap gap-2 text-sm text-base-content/70">
+          <a href="#que-hace" class="sq-nav-link">{gettext("Qué hacemos")}</a>
+          <a href="#como-funciona" class="sq-nav-link">{gettext("Cómo funciona")}</a>
+          <a href="#impacto" class="sq-nav-link">{gettext("Impacto")}</a>
+        </nav>
+        <Layouts.theme_toggle />
+      </div>
+    </header>
 
-        <main id="top" class="space-y-8 py-8 sm:space-y-10 sm:py-10">
-            <section class="sq-hero grid gap-8 rounded-[2rem] px-6 py-10 lg:grid-cols-[1.2fr_0.8fr] lg:px-10 lg:py-12">
-                <div class="space-y-6">
-                    <div class="flex flex-wrap gap-3 text-sm font-medium">
-                        <span class="sq-pill">Phoenix + LiveView</span>
-                        <span class="sq-pill">LLM document parsing</span>
-                        <span class="sq-pill">Deadline engine</span>
-                    </div>
+    <main id="top" class="space-y-8 py-8 sm:space-y-10 sm:py-10">
+      <section class="sq-hero grid gap-8 rounded-[2rem] px-6 py-10 lg:grid-cols-[1.2fr_0.8fr] lg:px-10 lg:py-12">
+        <div class="space-y-6">
+          <div class="flex flex-wrap gap-3 text-sm font-medium">
+            <span class="sq-pill">{gettext("Phoenix + LiveView")}</span>
+            <span class="sq-pill">{gettext("Parseo de documentos con LLM")}</span>
+            <span class="sq-pill">{gettext("Motor de plazos legales")}</span>
+          </div>
 
-                    <div class="space-y-4">
-                        <p class="sq-eyebrow">Hackathon landing page</p>
-                        <h1 class="sq-display max-w-3xl text-4xl leading-none sm:text-5xl lg:text-6xl">
-                            The inbox for transparency requests that should not be managed in spreadsheets.
-                        </h1>
-                        <p class="max-w-2xl text-base leading-7 text-base-content/75 sm:text-lg">
-                            SQLete turns opaque PDF notifications into structured case tracking. Drop a document,
-                            identify the response, calculate legal deadlines, and surface the files that need action
-                            before they expire.
-                        </p>
-                    </div>
+          <div class="space-y-4">
+            <p class="sq-eyebrow">{gettext("Landing page del hackathon")}</p>
+            <h1 class="sq-display max-w-3xl text-4xl leading-none sm:text-5xl lg:text-6xl">
+              {gettext(
+                "La bandeja de entrada para solicitudes de transparencia que no deberían gestionarse en hojas de cálculo."
+              )}
+            </h1>
+            <p class="max-w-2xl text-base leading-7 text-base-content/75 sm:text-lg">
+              {gettext(
+                "SQLete convierte notificaciones opacas en PDF en un seguimiento estructurado de casos. Suelta un documento, identifica la respuesta, calcula los plazos legales y saca a la luz los archivos que requieren acción antes de que venzan."
+              )}
+            </p>
+          </div>
 
-                    <div class="flex flex-wrap gap-3">
-                        <a href="#que-hace" class="btn sq-button-primary">See what we automate</a>
-                        <a href="#como-funciona" class="btn btn-ghost sq-button-secondary">Review the workflow</a>
-                    </div>
-                </div>
+          <div class="flex flex-wrap gap-3">
+            <a href="#que-hace" class="btn sq-button-primary">
+              {gettext("Descubre lo que automatizamos")}
+            </a>
+            <a href="#como-funciona" class="btn btn-ghost sq-button-secondary">
+              {gettext("Revisa el flujo de trabajo")}
+            </a>
+          </div>
+        </div>
 
-                <div class="grid gap-4 self-start">
-                    <article class="sq-highlight-card rounded-[1.75rem] p-5">
-                        <p class="sq-card-label">Main promise</p>
-                        <p class="mt-3 text-2xl font-semibold leading-tight">
-                            One notification in, deadlines and case status out.
-                        </p>
-                        <p class="mt-3 text-sm leading-6 text-base-content/70">
-                            The app classifies the PDF, extracts dates, updates the request, and marks whether the team
-                            needs to claim silence, review an incomplete answer, or follow a redistributed file.
-                        </p>
-                    </article>
+        <div class="grid gap-4 self-start">
+          <article class="sq-highlight-card rounded-[1.75rem] p-5">
+            <p class="sq-card-label">{gettext("Propuesta principal")}</p>
+            <p class="mt-3 text-2xl font-semibold leading-tight">
+              {gettext("Una notificación de entrada, plazos y estado del caso de salida.")}
+            </p>
+            <p class="mt-3 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "La aplicación clasifica el PDF, extrae las fechas, actualiza la solicitud y señala si el equipo debe reclamar el silencio administrativo, revisar una respuesta incompleta o hacer seguimiento de un archivo redistribuido."
+              )}
+            </p>
+          </article>
 
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <article class="sq-stat-card rounded-[1.5rem] p-5">
-                            <p class="sq-card-label">Input</p>
-                            <p class="mt-2 text-3xl font-semibold">PDF drag and drop</p>
-                            <p class="mt-2 text-sm text-base-content/70">Manual upload, no scraping, no digital
-                                certificate in scope.</p>
-                        </article>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <article class="sq-stat-card rounded-[1.5rem] p-5">
+              <p class="sq-card-label">{gettext("Entrada")}</p>
+              <p class="mt-2 text-3xl font-semibold">{gettext("Arrastrar y soltar PDF")}</p>
+              <p class="mt-2 text-sm text-base-content/70">
+                {gettext("Subida manual, sin scraping ni certificado digital.")}
+              </p>
+            </article>
 
-                        <article class="sq-stat-card rounded-[1.5rem] p-5">
-                            <p class="sq-card-label">Output</p>
-                            <p class="mt-2 text-3xl font-semibold">Daily legal radar</p>
-                            <p class="mt-2 text-sm text-base-content/70">Red-zone deadlines, grouped files, and a digest
-                                the team can trust.</p>
-                        </article>
-                    </div>
-                </div>
-            </section>
+            <article class="sq-stat-card rounded-[1.5rem] p-5">
+              <p class="sq-card-label">{gettext("Salida")}</p>
+              <p class="mt-2 text-3xl font-semibold">{gettext("Radar legal diario")}</p>
+              <p class="mt-2 text-sm text-base-content/70">
+                {gettext(
+                  "Plazos en zona roja, archivos agrupados y un resumen fiable para el equipo."
+                )}
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
 
-            <section id="que-hace" class="grid gap-4 lg:grid-cols-3">
-                <article class="sq-panel rounded-[1.75rem] p-6">
-                    <p class="sq-card-label">01. Interpret notifications</p>
-                    <h2 class="mt-3 text-2xl font-semibold">Read the document, not just the filename</h2>
-                    <p class="mt-3 text-sm leading-6 text-base-content/75">
-                        We detect whether the PDF is a start of processing, an extension, a partial response, or a
-                        denial, and we extract the dates that actually drive the case.
-                    </p>
-                </article>
+      <section id="que-hace" class="grid gap-4 lg:grid-cols-3">
+        <article class="sq-panel rounded-[1.75rem] p-6">
+          <p class="sq-card-label">{gettext("01. Interpretar notificaciones")}</p>
+          <h2 class="mt-3 text-2xl font-semibold">
+            {gettext("Lee el documento, no solo el nombre del archivo")}
+          </h2>
+          <p class="mt-3 text-sm leading-6 text-base-content/75">
+            {gettext(
+              "Detectamos si el PDF es un inicio de tramitación, una ampliación, una respuesta parcial o una denegación, y extraemos las fechas que realmente impulsan el caso."
+            )}
+          </p>
+        </article>
 
-                <article class="sq-panel rounded-[1.75rem] p-6">
-                    <p class="sq-card-label">02. Compute deadlines</p>
-                    <h2 class="mt-3 text-2xl font-semibold">Apply the legal clock automatically</h2>
-                    <p class="mt-3 text-sm leading-6 text-base-content/75">
-                        SQLete calculates normal deadlines, article 20.1 extensions, negative silence windows, and CTBG
-                        claim deadlines without storing duplicated spreadsheet formulas.
-                    </p>
-                </article>
+        <article class="sq-panel rounded-[1.75rem] p-6">
+          <p class="sq-card-label">{gettext("02. Calcular plazos")}</p>
+          <h2 class="mt-3 text-2xl font-semibold">
+            {gettext("Aplica el reloj legal automáticamente")}
+          </h2>
+          <p class="mt-3 text-sm leading-6 text-base-content/75">
+            {gettext(
+              "SQLete calcula los plazos ordinarios, las ampliaciones del artículo 20.1, las ventanas de silencio administrativo negativo y los plazos de reclamación ante la CTBG sin almacenar fórmulas duplicadas de hojas de cálculo."
+            )}
+          </p>
+        </article>
 
-                <article class="sq-panel rounded-[1.75rem] p-6">
-                    <p class="sq-card-label">03. Spot redistribution</p>
-                    <h2 class="mt-3 text-2xl font-semibold">Follow one request across many files</h2>
-                    <p class="mt-3 text-sm leading-6 text-base-content/75">
-                        Related references in notes and future grouping rules let the newsroom see when a single request
-                        has been split into many parallel case files.
-                    </p>
-                </article>
-            </section>
+        <article class="sq-panel rounded-[1.75rem] p-6">
+          <p class="sq-card-label">{gettext("03. Detectar redistribución")}</p>
+          <h2 class="mt-3 text-2xl font-semibold">
+            {gettext("Sigue una solicitud a través de múltiples archivos")}
+          </h2>
+          <p class="mt-3 text-sm leading-6 text-base-content/75">
+            {gettext(
+              "Las referencias relacionadas en las notas y las futuras reglas de agrupación permiten que la redacción vea cuándo una sola solicitud se ha dividido en múltiples expedientes paralelos."
+            )}
+          </p>
+        </article>
+      </section>
 
-            <section id="como-funciona" class="sq-panel rounded-[2rem] px-6 py-8 sm:px-8 lg:px-10">
-                <div class="max-w-3xl">
-                    <p class="sq-eyebrow">How it works</p>
-                    <h2 class="sq-section-title mt-3 text-3xl sm:text-4xl">A simple workflow for a high-friction process
-                    </h2>
-                    <p class="mt-4 max-w-2xl text-base leading-7 text-base-content/75">
-                        The product is designed around the real Civio process: a journalist receives a notification,
-                        opens a PDF, figures out what happened, updates the tracker by hand, and recalculates every
-                        deadline. SQLete compresses that into one pass.
-                    </p>
-                </div>
+      <section id="como-funciona" class="sq-panel rounded-[2rem] px-6 py-8 sm:px-8 lg:px-10">
+        <div class="max-w-3xl">
+          <p class="sq-eyebrow">{gettext("Cómo funciona")}</p>
+          <h2 class="sq-section-title mt-3 text-3xl sm:text-4xl">
+            {gettext("Un flujo de trabajo sencillo para un proceso de alta fricción")}
+          </h2>
+          <p class="mt-4 max-w-2xl text-base leading-7 text-base-content/75">
+            {gettext(
+              "El producto está diseñado en torno al proceso real de Civio: un periodista recibe una notificación, abre un PDF, averigua qué ha ocurrido, actualiza el seguimiento manualmente y recalcula cada plazo. SQLete comprime todo eso en un solo paso."
+            )}
+          </p>
+        </div>
 
-                <div class="mt-8 grid gap-4 lg:grid-cols-4">
-                    <article class="sq-step-card rounded-[1.5rem] p-5">
-                        <p class="sq-step-number">1</p>
-                        <h3 class="mt-4 text-lg font-semibold">Upload the PDF</h3>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">The newsroom drops the official document
-                            into the app instead of parsing it by hand.</p>
-                    </article>
+        <div class="mt-8 grid gap-4 lg:grid-cols-4">
+          <article class="sq-step-card rounded-[1.5rem] p-5">
+            <p class="sq-step-number">1</p>
+            <h3 class="mt-4 text-lg font-semibold">{gettext("Sube el PDF")}</h3>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "La redacción introduce el documento oficial en la aplicación en lugar de analizarlo manualmente."
+              )}
+            </p>
+          </article>
 
-                    <article class="sq-step-card rounded-[1.5rem] p-5">
-                        <p class="sq-step-number">2</p>
-                        <h3 class="mt-4 text-lg font-semibold">Validate structured data</h3>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">The LLM returns typed fields so the
-                            system can create or update the matching request safely.</p>
-                    </article>
+          <article class="sq-step-card rounded-[1.5rem] p-5">
+            <p class="sq-step-number">2</p>
+            <h3 class="mt-4 text-lg font-semibold">
+              {gettext("Valida los datos estructurados")}
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "El LLM devuelve campos tipificados para que el sistema pueda crear o actualizar la solicitud correspondiente de forma segura."
+              )}
+            </p>
+          </article>
 
-                    <article class="sq-step-card rounded-[1.5rem] p-5">
-                        <p class="sq-step-number">3</p>
-                        <h3 class="mt-4 text-lg font-semibold">Recalculate legal status</h3>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">Deadline rules run immediately and
-                            identify whether action is required today, this week, or next month.</p>
-                    </article>
+          <article class="sq-step-card rounded-[1.5rem] p-5">
+            <p class="sq-step-number">3</p>
+            <h3 class="mt-4 text-lg font-semibold">{gettext("Recalcula el estado legal")}</h3>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "Las reglas de plazos se ejecutan inmediatamente e identifican si se requiere actuar hoy, esta semana o el próximo mes."
+              )}
+            </p>
+          </article>
 
-                    <article class="sq-step-card rounded-[1.5rem] p-5">
-                        <p class="sq-step-number">4</p>
-                        <h3 class="mt-4 text-lg font-semibold">Surface the urgent cases</h3>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">The dashboard and digest show what is
-                            expiring, what is blocked, and what has spread into multiple files.</p>
-                    </article>
-                </div>
-            </section>
+          <article class="sq-step-card rounded-[1.5rem] p-5">
+            <p class="sq-step-number">4</p>
+            <h3 class="mt-4 text-lg font-semibold">{gettext("Destaca los casos urgentes")}</h3>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "El panel y el resumen muestran qué está a punto de vencer, qué está bloqueado y qué se ha dispersado en múltiples archivos."
+              )}
+            </p>
+          </article>
+        </div>
+      </section>
 
-            <section id="impacto" class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-                <article class="sq-panel rounded-[2rem] p-6 sm:p-8">
-                    <p class="sq-eyebrow">Why it matters</p>
-                    <h2 class="mt-3 text-3xl font-semibold leading-tight">Less detective work, fewer missed deadlines,
-                        clearer editorial follow-up.</h2>
-                    <p class="mt-4 text-base leading-7 text-base-content/75">
-                        The goal is not generic document AI. It is a newsroom operations tool for one specific problem:
-                        keeping public-information requests alive long enough to get an answer worth publishing.
-                    </p>
-                </article>
+      <section id="impacto" class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+        <article class="sq-panel rounded-[2rem] p-6 sm:p-8">
+          <p class="sq-eyebrow">{gettext("Por qué es importante")}</p>
+          <h2 class="mt-3 text-3xl font-semibold leading-tight">
+            {gettext(
+              "Menos trabajo de detective, menos plazos incumplidos, un seguimiento editorial más claro."
+            )}
+          </h2>
+          <p class="mt-4 text-base leading-7 text-base-content/75">
+            {gettext(
+              "El objetivo no es una IA documental genérica. Es una herramienta operativa para la redacción, pensada para un problema concreto: mantener vivas las solicitudes de acceso a la información el tiempo suficiente para obtener una respuesta que merezca la pena publicar."
+            )}
+          </p>
+        </article>
 
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <article class="sq-stat-card rounded-[1.5rem] p-6">
-                        <p class="sq-card-label">Real data model</p>
-                        <p class="mt-3 text-xl font-semibold">Seeded from Civio CSV</p>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">The first version mirrors the existing
-                            Airtable fields so the team can migrate without rethinking its whole workflow.</p>
-                    </article>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <article class="sq-stat-card rounded-[1.5rem] p-6">
+            <p class="sq-card-label">{gettext("Modelo de datos real")}</p>
+            <p class="mt-3 text-xl font-semibold">{gettext("Sembrado desde el CSV de Civio")}</p>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "La primera versión replica los campos existentes de Airtable para que el equipo pueda migrar sin replantearse todo su flujo de trabajo."
+              )}
+            </p>
+          </article>
 
-                    <article class="sq-stat-card rounded-[1.5rem] p-6">
-                        <p class="sq-card-label">Safe AI scope</p>
-                        <p class="mt-3 text-xl font-semibold">Classification and extraction only</p>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">No generated legal writing, no portal
-                            scraping, and no outbound communication. The AI is constrained to internal operational
-                            tasks.</p>
-                    </article>
+          <article class="sq-stat-card rounded-[1.5rem] p-6">
+            <p class="sq-card-label">{gettext("Alcance seguro de la IA")}</p>
+            <p class="mt-3 text-xl font-semibold">{gettext("Solo clasificación y extracción")}</p>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "Sin redacción legal automatizada, sin scraping de portales y sin comunicación saliente. La IA se limita a tareas operativas internas."
+              )}
+            </p>
+          </article>
 
-                    <article class="sq-stat-card rounded-[1.5rem] p-6 sm:col-span-2">
-                        <p class="sq-card-label">What comes next</p>
-                        <p class="mt-3 text-xl font-semibold">This page is the starting point for the dashboard, case
-                            detail, and grouped redistribution views.</p>
-                        <p class="mt-2 text-sm leading-6 text-base-content/70">
-                            For now the landing page explains the product clearly. The next slices can add the actual
-                            dashboard routes without redoing the visual system.
-                        </p>
-                    </article>
-                </div>
-            </section>
-        </main>
-    </div>
+          <article class="sq-stat-card rounded-[1.5rem] p-6 sm:col-span-2">
+            <p class="sq-card-label">{gettext("Próximos pasos")}</p>
+            <p class="mt-3 text-xl font-semibold">
+              {gettext(
+                "Esta página es el punto de partida para las vistas de panel, detalle de caso y redistribución agrupada."
+              )}
+            </p>
+            <p class="mt-2 text-sm leading-6 text-base-content/70">
+              {gettext(
+                "Por ahora, la página de aterrizaje explica el producto con claridad. Las siguientes fases pueden añadir las rutas reales del panel sin rehacer el sistema visual."
+              )}
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
 </div>
