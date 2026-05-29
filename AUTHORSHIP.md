@@ -1,4 +1,4 @@
-# License · Ship for Good 2026
+# Authorship · Ship for Good 2026
 
 ## Code in this repository
 
