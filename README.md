@@ -94,8 +94,8 @@ Each team works on their own dedicated branch:
 To get started:
 
 ```bash
-git clone https://github.com/shipforgood/hackathon-2025
-cd hackathon-2025
+git clone https://github.com/ship-for-good/civio-2026 
+cd civio-2026
 git checkout team-your-team-name
 ```
 
