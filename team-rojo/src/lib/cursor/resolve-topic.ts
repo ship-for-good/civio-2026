@@ -32,6 +32,7 @@ Reglas:
 - Responde ÚNICAMENTE JSON válido, sin markdown: {"topicId":"<id>"}
 - <id> debe ser exactamente uno de los id del grafo, o "unknown" si ninguno encaja
 - Si varios nodos podrían encajar, elige el más específico
+- Si la consulta menciona el Ministerio de Hacienda (p. ej. "hacienda", "reclamo a hacienda"), devuelve "hacienda" y no "derecho_acceso"
 - No inventes ids que no estén en el grafo
 
 Consulta del ciudadano:

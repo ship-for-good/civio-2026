@@ -54,11 +54,34 @@ export function normalizeAgentTopicId(raw: string): TopicId {
   return "unknown";
 }
 
+/**
+ * v1: si la consulta nombra Hacienda, enrutar al topic `hacienda` con portada
+ * concreta aunque el agente devuelva otro id (p. ej. derecho_acceso genérico).
+ */
+function maybeRouteToHaciendaTopic(
+  query: string,
+  topicId: TopicId,
+  options?: ClassifyOptions
+): Classification | null {
+  if (topicId === "hacienda") return null;
+
+  const entity = detectEntity(query, { fuzzyThreshold: options?.fuzzyThreshold ?? 0 });
+  if (entity?.idAmb !== HACIENDA_ID_AMB) return null;
+
+  const haciendaNode = findNodeByTopicId("hacienda");
+  if (!haciendaNode) return null;
+
+  return buildClassification("hacienda", query, options, haciendaNode);
+}
+
 export function buildClassificationFromTopicId(
   query: string,
   topicId: TopicId,
   options?: ClassifyOptions
 ): Classification {
+  const haciendaRoute = maybeRouteToHaciendaTopic(query, topicId, options);
+  if (haciendaRoute) return haciendaRoute;
+
   if (topicId === "unknown") {
     return buildClassification("unknown", query, options);
   }

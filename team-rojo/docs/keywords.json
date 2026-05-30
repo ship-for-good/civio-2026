@@ -13,6 +13,8 @@
         "acceso información",
         "derecho de acceso",
         "reclamación",
+        "reclamo",
+        "reclamar",
         "silencio administrativo",
         "queja",
         "pedir documentos",
@@ -128,7 +130,10 @@
     {
       "id": "hacienda",
       "keywords": [
-        "hacienda"
+        "hacienda",
+        "ministerio de hacienda",
+        "reclamo a hacienda",
+        "reclamar a hacienda"
       ],
       "source_url": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514",
       "type": "externo",
