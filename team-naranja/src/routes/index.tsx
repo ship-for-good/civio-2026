@@ -34,7 +34,6 @@ const SUGGESTIONS: { label: string; query: string }[] = [
   { label: "Sueldo del Presidente", query: "sueldo del presidente" },
   { label: "Presupuesto Educación 2026", query: "presupuesto educación 2026" },
   { label: "Contratos de obras de un colegio", query: "contratos de obras de un colegio" },
-  { label: "Agendas de Ministros", query: "agendas de ministros" },
 ];
 
 
@@ -120,39 +119,15 @@ function Index() {
   return (
     <div className="min-h-screen text-white font-sans">
       {/* Header */}
-      <header className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-10 md:px-12 md:pt-14">
+      <header className="mx-auto flex max-w-7xl items-center justify-center px-6 pt-10 md:px-12 md:pt-14">
         <div className="flex items-center gap-3">
           <PrismaLogo />
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-bold tracking-tightest">PRISMA</span>
-            <span className="hidden h-5 w-px bg-white/20 md:block" />
-            <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/60 md:block">
-              Transparencia Activa
-            </span>
-          </div>
+          <span className="text-xl font-bold tracking-tightest">PRISMA</span>
+          <span className="h-6 w-px bg-white/30" />
+          <span className="text-sm font-medium uppercase tracking-[0.15em] text-white/80">
+            Transparencia Activa
+          </span>
         </div>
-        <nav className="hidden items-center gap-8 md:flex">
-          <button
-            onClick={() => scrollTo(heroRef)}
-            className="text-[11px] font-semibold uppercase tracking-widest text-white/50 transition hover:text-white"
-          >
-            Portal
-          </button>
-          <button
-            onClick={() => scrollTo(resultsRef)}
-            className="text-[11px] font-semibold uppercase tracking-widest text-white/50 transition hover:text-white"
-          >
-            Consultas IA
-          </button>
-          <a
-            href="https://transparencia.gob.es/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] font-semibold uppercase tracking-widest text-white/50 transition hover:text-white"
-          >
-            transparencia.gob.es
-          </a>
-        </nav>
       </header>
 
       <main className="mx-auto max-w-7xl px-6 pt-16 pb-24 md:px-12 md:pt-24">
@@ -162,12 +137,10 @@ function Index() {
             Buscador de Información Pública
           </span>
           <h1 className="mt-6 text-4xl font-light leading-none tracking-tightest md:text-6xl">
-            Exige tu derecho a: saber, entender y participar.
+            Exige tu derecho a: <strong className="font-semibold">saber, entender y participar</strong>.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-sm font-light text-white/70 md:text-base">
-            Explora de manera sencilla presupuestos, sueldos públicos, contratos
-            estatales y agendas de altos cargos de España a través de nuestre
-            asistente inteligente.
+            Explora de manera sencilla lo que ocurre en tu país.
           </p>
 
           {/* Search bar */}
@@ -189,7 +162,7 @@ function Index() {
               disabled={loading || !input.trim()}
               className="rounded-xl bg-white px-4 py-2.5 text-xs font-semibold text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Buscando..." : "Buscar con IA"}
+              {loading ? "Buscando..." : "Buscar"}
             </button>
           </form>
 
@@ -288,10 +261,6 @@ function Index() {
             >
               Ayuda Ciudadana
             </button>
-            <span className="text-white/40">
-              Catálogo: {catalog.portal.name} · actualizado{" "}
-              {catalog.portal.last_crawled}
-            </span>
           </div>
         </div>
       </footer>
