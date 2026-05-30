@@ -6,7 +6,8 @@ type GoToPortalButtonProps = {
 };
 
 export function GoToPortalButton({ data, gradient }: GoToPortalButtonProps) {
-  const href = data.deepLink ?? data.portalUrl;
+  const href =
+    data.deepLink ?? data.entityMatch?.portadaUrl ?? data.portalUrl;
   const hasDeepLink = Boolean(data.deepLink);
 
   return (
