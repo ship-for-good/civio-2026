@@ -1,0 +1,10 @@
+<ul class="space-y-2">
+  <% organisms.each do |organism| %>
+    <li>
+      <%= link_to organism_path(organism[:code]), class: "text-blue-700 hover:underline" do %>
+        <%= organism[:label] %>
+        <span class="text-gray-500">(<%= organism[:count] %>)</span>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

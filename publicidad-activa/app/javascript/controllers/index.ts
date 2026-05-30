@@ -9,3 +9,6 @@ application.register("hello", HelloController)
 
 import SearchFocusController from "./search_focus_controller"
 application.register("search-focus", SearchFocusController)
+
+import ChatbotController from "./chatbot_controller"
+application.register("chatbot", ChatbotController)
