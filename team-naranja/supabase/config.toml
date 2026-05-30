@@ -1,9 +1,0 @@
-# Supabase local config (Lovable gestiona el proyecto en producción)
-project_id = "your-project-ref"
-
-[api]
-enabled = true
-port = 54321
-
-[functions.ask]
-verify_jwt = false
