@@ -1,9 +1,9 @@
-<ul class="space-y-2">
+<ul class="space-y-3 sm:space-y-4">
   <% organisms.each do |organism| %>
     <li>
-      <%= link_to organism_path(organism[:code]), class: "text-blue-700 hover:underline" do %>
-        <%= organism[:label] %>
-        <span class="text-gray-500">(<%= organism[:count] %>)</span>
+      <%= link_to organism_path(organism[:code]), class: "group flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-5 py-4 sm:px-6 sm:py-5 hover:border-sky-200 hover:bg-stone-50/80 transition-colors shadow-sm shadow-stone-200/30" do %>
+        <span class="font-semibold text-stone-900 group-hover:text-sky-800 transition-colors min-w-0 truncate"><%= organism[:label] %></span>
+        <span class="text-sm text-stone-500 shrink-0 tabular-nums"><%= organism_resource_count(organism[:count]) %></span>
       <% end %>
     </li>
   <% end %>

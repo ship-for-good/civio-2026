@@ -1,14 +1,38 @@
+<% content_for :main_class, OrganismsHelper::ORGANISM_INDEX_MAIN_CLASS %>
 <% content_for :title, "Organismos — Publicidad Activa" %>
 
-<h1 class="text-2xl font-semibold mb-4">Organismos</h1>
+<header class="mb-10 sm:mb-14 max-w-3xl">
+  <span class="inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-600 mb-5">
+    Directorio
+  </span>
+  <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-stone-900 leading-tight">
+    Organismos
+  </h1>
+  <p class="mt-4 sm:mt-5 text-base sm:text-lg text-stone-600 leading-relaxed">
+    Toda la publicidad activa indexada, agrupada por ministerio u organismo. Elige uno para ver sus materias y recursos.
+  </p>
+</header>
 
-<ul class="space-y-2">
+<%= render "section_heading",
+  title: "Todos los organismos",
+  count: organism_resource_count(@organisms.sum { |o| o[:count] }),
+  description: "#{@organisms.size} instituciones con datos indexados." %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
   <% @organisms.each do |organism| %>
-    <li>
-      <%= link_to organism_path(organism[:code]), class: "text-blue-700 hover:underline" do %>
-        <%= organism[:label] %>
-        <span class="text-gray-500">(<%= organism[:count] %>)</span>
-      <% end %>
-    </li>
+    <%= link_to organism_path(organism[:code]), class: organism_card_link_classes do %>
+      <div class="flex-1 min-w-0">
+        <h2 class="text-base sm:text-lg font-semibold text-stone-900 group-hover:text-sky-800 transition-colors leading-snug">
+          <%= organism[:label] %>
+        </h2>
+        <p class="mt-2 text-sm text-stone-500">
+          <%= organism_resource_count(organism[:count]) %>
+        </p>
+      </div>
+      <span class="mt-5 sm:mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-sky-700">
+        Explorar
+        <%= organism_breadcrumb_chevron %>
+      </span>
+    <% end %>
   <% end %>
-</ul>
+</div>

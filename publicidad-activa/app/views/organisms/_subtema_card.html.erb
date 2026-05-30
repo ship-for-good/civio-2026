@@ -1,0 +1,64 @@
+<%# locals: (subtema:) %>
+<% nav_path = subtema.has_historico ? organism_subtema_path(@code, @materia, subtema.slug, **organism_nav_scope_params) : (subtema.vigente_url.presence || organism_subtema_path(@code, @materia, subtema.slug, **organism_nav_scope_params)) %>
+<% external_nav = nav_path.start_with?("http") %>
+
+<article class="flex flex-col h-full rounded-xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-stone-300 transition-all duration-200">
+  <div class="flex-1 min-w-0">
+    <div class="flex items-start justify-between gap-3">
+      <%= link_to nav_path, class: "group/title min-w-0 flex-1", target: (external_nav ? "_blank" : nil), rel: (external_nav ? "noopener" : nil) do %>
+        <h3 class="font-semibold text-stone-900 leading-snug group-hover/title:text-sky-800 transition-colors">
+          <%= subtema.label %>
+        </h3>
+      <% end %>
+
+      <%= link_to nav_path,
+        class: "flex size-8 shrink-0 items-center justify-center rounded-full text-stone-400 hover:bg-stone-50 hover:text-stone-600 transition-colors",
+        target: (external_nav ? "_blank" : nil),
+        rel: (external_nav ? "noopener" : nil),
+        "aria-label": "Abrir #{subtema.label}" do %>
+        <%= organism_breadcrumb_chevron %>
+      <% end %>
+    </div>
+
+    <p class="mt-2 text-sm text-stone-500 leading-relaxed">
+      <% if subtema.has_historico %>
+        Recursos vigentes e históricos indexados en transparencia.gob.es.
+      <% else %>
+        Recurso publicado en el portal de transparencia.
+      <% end %>
+    </p>
+  </div>
+
+  <div class="mt-5 pt-5 border-t border-stone-100">
+    <p class="text-sm text-stone-500">
+      <span class="text-xl font-bold tabular-nums text-stone-900"><%= number_with_delimiter(subtema.count) %></span>
+      <%= subtema.count == 1 ? "recurso" : "recursos" %>
+    </p>
+
+    <% if subtema.vigente_url.present? || subtema.has_historico %>
+      <div class="mt-3 flex flex-wrap items-center gap-y-2 text-sm">
+        <% if subtema.vigente_url.present? %>
+          <%= link_to subtema.vigente_url,
+            target: "_blank",
+            rel: "noopener",
+            class: "inline-flex items-center gap-1.5 font-medium text-sky-700 hover:text-sky-900 transition-colors" do %>
+            <span>Versión vigente</span>
+            <%= organism_external_icon %>
+          <% end %>
+        <% end %>
+
+        <% if subtema.vigente_url.present? && subtema.has_historico %>
+          <span class="mx-4 h-4 w-px shrink-0 bg-stone-200" aria-hidden="true"></span>
+        <% end %>
+
+        <% if subtema.has_historico %>
+          <%= link_to organism_subtema_path(@code, @materia, subtema.slug, **organism_nav_scope_params),
+            class: "inline-flex items-center gap-1.5 text-stone-600 hover:text-stone-900 transition-colors" do %>
+            <span>Ver histórico</span>
+            <%= organism_breadcrumb_chevron %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</article>

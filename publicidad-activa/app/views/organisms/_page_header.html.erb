@@ -1,0 +1,28 @@
+<%# locals: (title:, subtitle: nil, badge: nil, icon: nil) %>
+<header class="mb-10 sm:mb-12 pb-8 sm:pb-10 border-b border-stone-200/80">
+  <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6 lg:gap-8">
+    <% if local_assigns[:icon] %>
+      <div class="flex size-14 sm:size-16 shrink-0 items-center justify-center rounded-2xl border border-stone-200 bg-white text-stone-600 shadow-sm shadow-stone-200/50">
+        <%= organism_icon(icon) %>
+      </div>
+    <% end %>
+
+    <div class="min-w-0 flex-1 space-y-3 sm:space-y-4">
+      <% if local_assigns[:badge] %>
+        <span class="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-600">
+          <%= badge %>
+        </span>
+      <% end %>
+
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 leading-tight">
+        <%= title %>
+      </h1>
+
+      <% if local_assigns[:subtitle] %>
+        <p class="text-base sm:text-lg text-stone-600 leading-relaxed max-w-3xl">
+          <%= subtitle %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+</header>

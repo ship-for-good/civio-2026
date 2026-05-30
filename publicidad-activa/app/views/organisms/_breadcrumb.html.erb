@@ -1,23 +1,36 @@
-<nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-  <%= link_to "Organismos", organisms_path, class: "hover:text-blue-700" %>
-  <% if @code %>
-    <span class="mx-1">›</span>
+<nav aria-label="Breadcrumb" class="mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
+  <ol class="flex items-center gap-2 text-sm text-stone-500 whitespace-nowrap min-w-0">
+    <li class="shrink-0">
+      <%= link_to organisms_index_label, organisms_index_path, class: "hover:text-sky-700 transition-colors" %>
+    </li>
+
+    <% if @code %>
+      <li class="shrink-0 text-stone-300" aria-hidden="true"><%= organism_breadcrumb_chevron %></li>
+      <li class="min-w-0 max-w-[10rem] sm:max-w-xs truncate">
+        <% if @materia %>
+          <%= link_to @label, organism_path(@code, **organism_nav_scope_params), class: "hover:text-sky-700 transition-colors block truncate" %>
+        <% else %>
+          <span class="font-medium text-stone-900 truncate block"><%= @label %></span>
+        <% end %>
+      </li>
+    <% end %>
+
     <% if @materia %>
-      <%= link_to @label, organism_path(@code), class: "hover:text-blue-700" %>
-    <% else %>
-      <span class="text-gray-700"><%= @label %></span>
+      <li class="shrink-0 text-stone-300" aria-hidden="true"><%= organism_breadcrumb_chevron %></li>
+      <li class="min-w-0 max-w-[10rem] sm:max-w-xs truncate">
+        <% if @subtema %>
+          <%= link_to @materia_label, organism_materia_path(@code, @materia, **organism_nav_scope_params), class: "hover:text-sky-700 transition-colors block truncate" %>
+        <% else %>
+          <span class="font-medium text-stone-900 truncate block"><%= @materia_label %></span>
+        <% end %>
+      </li>
     <% end %>
-  <% end %>
-  <% if @materia %>
-    <span class="mx-1">›</span>
+
     <% if @subtema %>
-      <%= link_to @materia_label, organism_materia_path(@code, @materia), class: "hover:text-blue-700" %>
-    <% else %>
-      <span class="text-gray-700"><%= @materia_label %></span>
+      <li class="shrink-0 text-stone-300" aria-hidden="true"><%= organism_breadcrumb_chevron %></li>
+      <li class="min-w-0 max-w-[10rem] sm:max-w-md truncate">
+        <span class="font-medium text-stone-900 truncate block"><%= @subtema_label %></span>
+      </li>
     <% end %>
-  <% end %>
-  <% if @subtema %>
-    <span class="mx-1">›</span>
-    <span class="text-gray-700"><%= @subtema_label %></span>
-  <% end %>
+  </ol>
 </nav>

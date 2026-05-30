@@ -1,11 +1,17 @@
-<ul class="space-y-3">
+<ul class="space-y-4 sm:space-y-5">
   <% resources.each do |resource| %>
-    <li class="bg-white border border-gray-200 rounded-lg p-4">
-      <p class="font-medium"><%= resource_title(resource) %><%= " · #{resource.tipo&.upcase}" if resource.tipo %></p>
-      <% if resource.periodo.present? %>
-        <p class="text-xs text-gray-500"><%= resource.periodo %></p>
-      <% end %>
-      <%= link_to "Abrir en transparencia.gob.es", resource.url, target: "_blank", rel: "noopener", class: "text-sm text-blue-700 hover:underline mt-2 inline-block" %>
+    <li class="rounded-2xl border border-stone-200 bg-white shadow-sm shadow-stone-200/40 overflow-hidden">
+      <div class="p-6 sm:p-7">
+        <p class="text-base font-semibold text-stone-900 leading-snug">
+          <%= resource_title(resource) %><%= " · #{resource.tipo&.upcase}" if resource.tipo %>
+        </p>
+        <% if resource.periodo.present? %>
+          <p class="mt-2 text-sm text-stone-500"><%= resource.periodo %></p>
+        <% end %>
+      </div>
+      <div class="px-6 sm:px-7 pb-6 sm:pb-7 pt-0 border-t border-stone-100">
+        <%= organism_external_link resource.url, class: organism_btn_secondary("mt-4 sm:mt-5") %>
+      </div>
     </li>
   <% end %>
 </ul>

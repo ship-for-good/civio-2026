@@ -114,6 +114,15 @@ class Organisms::Services::BuildOrganismNavigationTest < ActiveSupport::TestCase
     assert_equal %w[rpt-enero-2026 rpt-junio-2020], result.historicos.map(&:periodo).sort
   end
 
+  test "navigation_for groups subtemas under each materia" do
+    navigation = Organisms::Services::BuildOrganismNavigation.navigation_for("mdef")
+
+    assert_equal 1, navigation.size
+    assert_equal "organizacion-empleo", navigation.first.materia.slug
+    assert_equal 2, navigation.first.subtemas.size
+    refute navigation.first.subtemas.any? { |entry| entry.slug == "portada" }
+  end
+
   test "returns empty collections for unknown organism" do
     assert_empty Organisms::Services::BuildOrganismNavigation.materias_for("unknown")
     assert_empty Organisms::Services::BuildOrganismNavigation.subtemas_for("mdef", "unknown-materia")

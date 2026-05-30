@@ -1,0 +1,12 @@
+<% if @materias.size > 1 %>
+  <nav class="-mx-1 mb-8 overflow-x-auto px-1" aria-label="Materias">
+    <div class="inline-flex min-w-max gap-2 rounded-2xl border border-stone-200 bg-white p-2 shadow-sm">
+      <% @materias.each do |materia| %>
+        <%= link_to materia.label,
+          organism_materia_path(@code, materia.slug, **organism_nav_scope_params),
+          class: organism_materia_tab_classes(materia.slug == @materia),
+          "aria-current": (materia.slug == @materia ? "page" : nil) %>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

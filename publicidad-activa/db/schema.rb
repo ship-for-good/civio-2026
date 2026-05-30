@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_30_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_30_140000) do
   create_table "resources", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "depth", null: false
     t.string "materia", null: false
     t.string "materia_label", null: false
     t.string "organismo_code"
+    t.string "page_label"
+    t.string "page_slug"
     t.json "path_segments", default: [], null: false
     t.string "periodo"
     t.string "subtema", null: false

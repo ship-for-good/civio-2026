@@ -26,6 +26,7 @@ class OrganismsController < ApplicationController
     @materia = params[:materia]
     @label = catalog.label(@code)
     @materia_label = Resources::ValueObjects::Taxonomy.materia_label(@materia)
+    @materias = Organisms::Services::BuildOrganismNavigation.materias_for(@code)
     @subtemas = Organisms::Services::BuildOrganismNavigation.subtemas_for(@code, @materia)
 
     head :not_found and return if @subtemas.empty?

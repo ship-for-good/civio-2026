@@ -7,6 +7,7 @@ module Organisms
       META_SUBTEMAS = %w[portada].freeze
 
       MateriaEntry = Struct.new(:slug, :label, :count, keyword_init: true)
+      NavigationEntry = Struct.new(:materia, :subtemas, keyword_init: true)
       SubtemaEntry = Struct.new(
         :slug, :label, :count, :vigente_url, :historico_count, :has_historico,
         keyword_init: true
@@ -15,6 +16,10 @@ module Organisms
 
       def self.materias_for(organismo_code)
         new(organismo_code).materias
+      end
+
+      def self.navigation_for(organismo_code)
+        new(organismo_code).navigation
       end
 
       def self.subtemas_for(organismo_code, materia)
@@ -39,6 +44,15 @@ module Organisms
             MateriaEntry.new(slug: slug, label: label, count: count)
           end
           .sort_by(&:label)
+      end
+
+      def navigation
+        materias.map do |materia|
+          NavigationEntry.new(
+            materia: materia,
+            subtemas: self.class.subtemas_for(@organismo_code, materia.slug)
+          )
+        end
       end
 
       def subtemas
