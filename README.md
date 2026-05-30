@@ -131,6 +131,94 @@ Documentación técnica detallada: **[TRANSPARENCIA-CRAWLER.md](./TRANSPARENCIA-
 
 ---
 
+## Chatbot — Query Layer
+
+El módulo de chatbot añade una capa de consulta en lenguaje natural sobre el grafo exportado (`graph.json`): recibe una pregunta ciudadana, busca nodos relevantes en memoria y devuelve una respuesta estructurada con:
+
+- una coincidencia directa (`found: true`) con `url` y ruta navegable (`path`), o
+- una respuesta de no encontrado (`found: false`) con explicación, hint de navegación y alternativa de derecho de acceso.
+
+Además, aplica una verificación LLM sobre los mejores candidatos para reducir falsos positivos antes de confirmar la respuesta.
+
+### Stack del módulo
+
+- **Go** (`net/http`) para API y lógica del handler.
+- **Anthropic Claude API** para extracción/validación/hints en lenguaje natural.
+- **BFS sobre `graph.json` en memoria** para ranking de nodos sin base de datos en tiempo de consulta.
+
+### Cómo arrancarlo
+
+Desde la raíz del proyecto, con `.env` configurado:
+
+```bash
+cd back
+go run ./chatbot/main.go
+```
+
+Servidor por defecto: `http://localhost:8080`.
+
+### Variables de entorno necesarias
+
+| Variable | Descripción |
+|----------|-------------|
+| `ANTHROPIC_API_KEY` | API key para llamadas a Claude |
+| `GRAPH_PATH` | Ruta al `graph.json` que cargará el chatbot |
+| `PORT` | Puerto HTTP del servicio (por defecto `8080`) |
+
+### Contrato del endpoint
+
+`POST /chat`
+
+**Request**
+
+```json
+{
+  "question": "¿Dónde puedo ver las retribuciones de los altos cargos?"
+}
+```
+
+**Response — `found:true`**
+
+```json
+{
+  "found": true,
+  "message": "✅ Sí, esa información está disponible en el **Portal de Transparencia**.",
+  "hint": "",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones",
+  "path": [
+    { "title": "Publicidad Activa", "url": "https://transparencia.gob.es/publicidad-activa" },
+    { "title": "Altos Cargos", "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos" },
+    { "title": "Retribuciones de Altos Cargos", "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones" }
+  ],
+  "matched_node": {
+    "title": "Retribuciones de Altos Cargos",
+    "description": "...",
+    "page_type": "navigation"
+  }
+}
+```
+
+**Response — `found:false`**
+
+```json
+{
+  "found": false,
+  "message": "🔎 Esa información no está publicada directamente. Puedes solicitarla mediante el **derecho de acceso** en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica",
+  "hint": "👉 – En la página actual, busca el bloque de **retribuciones** o el enlace de **altos cargos**.",
+  "url": "https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica",
+  "path": [],
+  "matched_node": null
+}
+```
+
+### Tests del módulo
+
+```bash
+go test ./back/chatbot/...
+```
+
+---
+
 ## Decisiones técnicas clave
 
 | Decisión | Motivo |
