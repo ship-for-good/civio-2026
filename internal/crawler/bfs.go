@@ -148,6 +148,9 @@ func RunBFS(ctx context.Context, store *graph.Store, cfg Config) error {
 	}
 
 	log.Printf("crawl finished: %d pages, %d unique URLs, %d skipped (unchanged), %d errors", pagesProcessed, len(visited), skipped, errors)
+	if err := graph.RefreshChildContents(store); err != nil {
+		return fmt.Errorf("refresh child contents: %w", err)
+	}
 	return store.FinishCrawlRun(runID, len(visited), errors)
 }
 

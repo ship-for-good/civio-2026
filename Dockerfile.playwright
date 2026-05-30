@@ -1,0 +1,23 @@
+# Playwright image for dynamic page scraping (Chromium included).
+FROM mcr.microsoft.com/playwright:v1.52.0-noble AS playwright-base
+
+FROM golang:1.23-bookworm AS builder
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /transparencia ./cmd/transparencia
+
+# Install playwright-go Node driver (must match go module version)
+RUN go run github.com/playwright-community/playwright-go/cmd/playwright@v0.5200.0 install
+
+FROM playwright-base
+WORKDIR /data
+
+COPY --from=builder /transparencia /usr/local/bin/transparencia
+COPY --from=builder /root/.cache/ms-playwright-go /root/.cache/ms-playwright-go
+
+USER root
+
+ENTRYPOINT ["transparencia"]
+CMD ["--help"]

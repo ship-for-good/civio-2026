@@ -69,6 +69,46 @@ Cada nodo incluye un campo `description` para indexación y contexto en la UI:
 2. **Nodo descubierto en nav (aún no visitado):** descripción contextual generada (`"{título} — sección dentro de {padre}..."`).
 3. Al crawlear la página real, la descripción extraída **reemplaza** la provisional si es más completa.
 
+## Contenidos hijos en nodos padre
+
+Cada nodo padre incluye `child_contents`: lista de los **temas y tipos de contenido** de sus hijos directos. Útil para indexación y para que la UI muestre qué hay dentro sin navegar.
+
+```json
+{
+  "title": "Publicidad activa por Materias",
+  "child_contents": [
+    {
+      "title": "Organización y Empleo Público",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo",
+      "page_type": "navigation",
+      "content_kind": "índice de secciones",
+      "description": "..."
+    },
+    {
+      "title": "Contratos, Convenios y Subvenciones",
+      "page_type": "buscador_entry",
+      "content_kind": "buscador de registros"
+    }
+  ]
+}
+```
+
+Se recalcula automáticamente al finalizar `crawl` y antes de `export`. También manualmente:
+
+```bash
+docker compose run --rm crawler enrich --db /data/graph.db
+```
+
+Tipos de contenido (`content_kind`):
+
+| `page_type` | `content_kind` |
+|-------------|----------------|
+| `navigation` | índice de secciones |
+| `leaf_static` | contenido estático |
+| `leaf_dynamic` | datos interactivos |
+| `buscador_entry` | buscador de registros |
+| `external` | enlace externo |
+
 ## Timestamps y re-scrape inteligente
 
 El portal expone **varias señales de cambio**, con distinta cobertura:
@@ -102,6 +142,30 @@ docker compose run --rm crawler crawl --db /data/graph.db
 docker compose run --rm crawler crawl --db /data/graph.db --force
 ```
 
+## Páginas dinámicas (Playwright)
+
+El crawl HTTP clasifica nodos `leaf_dynamic` pero no obtiene el contenido renderizado por JS. Para eso hay un **segundo servicio Docker** con Chromium:
+
+```bash
+docker compose build crawler-playwright
+
+# Por defecto: solo page_type = leaf_dynamic
+docker compose run --rm crawler-playwright scrape-dynamic --db /data/graph.db
+
+# Incluir buscadores con iframe (muchas páginas)
+docker compose run --rm crawler-playwright scrape-dynamic \
+  --db /data/graph.db --types leaf_dynamic,buscador_entry --limit 10
+
+docker compose run --rm crawler export --db /data/graph.db --out /data/graph.json
+```
+
+Resultado en cada nodo: `dynamic_content` con `text`, `tables`, `iframe_srcs`.
+
+| Servicio | Imagen | Comandos |
+|----------|--------|----------|
+| `crawler` | Alpine ~15MB | `crawl`, `export`, `stats` |
+| `crawler-playwright` | Playwright + Chromium | `scrape-dynamic` |
+
 ## Formato JSON de export
 
 ```json
@@ -115,5 +179,5 @@ docker compose run --rm crawler crawl --db /data/graph.db --force
 ## Roadmap
 
 - Fase 2: scrape del buscador paginado (`servicios-buscador/buscar.htm`)
-- Fase 2b: hojas dinámicas con Playwright (Agenda AACC, retribuciones)
+- Fase 2b: ampliar detección `leaf_dynamic` (retribuciones, agenda AACC)
 - Fase 3: detección de cambios (OPP-1b)

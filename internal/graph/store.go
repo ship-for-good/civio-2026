@@ -57,6 +57,10 @@ CREATE TABLE IF NOT EXISTS nodes (
   content_updated_at TEXT,
   http_last_modified TEXT,
   http_etag TEXT,
+  child_contents TEXT,
+  dynamic_content TEXT,
+  dynamic_hash TEXT,
+  dynamic_scraped_at TEXT,
   scraped_at TEXT
 );
 
@@ -90,13 +94,14 @@ CREATE TABLE IF NOT EXISTS crawl_runs (
 		`ALTER TABLE nodes ADD COLUMN content_updated_at TEXT`,
 		`ALTER TABLE nodes ADD COLUMN http_last_modified TEXT`,
 		`ALTER TABLE nodes ADD COLUMN http_etag TEXT`,
+		`ALTER TABLE nodes ADD COLUMN child_contents TEXT`,
 	} {
 		if _, err := s.db.Exec(col); err != nil && !strings.Contains(err.Error(), "duplicate column") {
 			return err
 		}
 	}
 
-	return nil
+	return s.migrateDynamicColumns()
 }
 
 type UpsertNodeInput struct {
@@ -162,7 +167,8 @@ ON CONFLICT(from_id, to_id) DO UPDATE SET label = excluded.label
 func (s *Store) GetNodeByID(id int64) (*models.Node, error) {
 	return s.scanNode(s.db.QueryRow(`
 SELECT id, url, path, title, description, depth, page_type, parent_id,
-       html_hash, content_updated_at, http_last_modified, http_etag, scraped_at
+       html_hash, content_updated_at, http_last_modified, http_etag, child_contents,
+       dynamic_content, dynamic_hash, dynamic_scraped_at, scraped_at
 FROM nodes WHERE id = ?
 `, id))
 }
@@ -170,7 +176,8 @@ FROM nodes WHERE id = ?
 func (s *Store) GetNodeByURL(url string) (*models.Node, error) {
 	return s.scanNode(s.db.QueryRow(`
 SELECT id, url, path, title, description, depth, page_type, parent_id,
-       html_hash, content_updated_at, http_last_modified, http_etag, scraped_at
+       html_hash, content_updated_at, http_last_modified, http_etag, child_contents,
+       dynamic_content, dynamic_hash, dynamic_scraped_at, scraped_at
 FROM nodes WHERE url = ?
 `, url))
 }
@@ -182,11 +189,16 @@ func (s *Store) scanNode(row *sql.Row) (*models.Node, error) {
 	var contentUpdatedAt sql.NullString
 	var httpLastModified sql.NullString
 	var httpEtag sql.NullString
+	var childContents sql.NullString
+	var dynamicContent sql.NullString
+	var dynamicHash sql.NullString
+	var dynamicScrapedAt sql.NullString
 	var scrapedAt sql.NullString
 
 	err := row.Scan(
 		&n.ID, &n.URL, &n.Path, &n.Title, &n.Description, &n.Depth, &pageType, &parentID,
-		&n.HTMLHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &scrapedAt,
+		&n.HTMLHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &childContents,
+		&dynamicContent, &dynamicHash, &dynamicScrapedAt, &scrapedAt,
 	)
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -204,6 +216,14 @@ func (s *Store) scanNode(row *sql.Row) (*models.Node, error) {
 	if httpEtag.Valid {
 		n.HTTPEtag = httpEtag.String
 	}
+	if childContents.Valid {
+		n.ChildContents = parseChildContents(childContents.String)
+	}
+	n.DynamicContent = parseDynamicContent(dynamicContent)
+	if dynamicHash.Valid {
+		n.DynamicHash = dynamicHash.String
+	}
+	n.DynamicScrapedAt = parseTime(dynamicScrapedAt)
 	n.ScrapedAt = parseTime(scrapedAt)
 	return &n, nil
 }
@@ -294,7 +314,8 @@ func (s *Store) Stats() (*Stats, error) {
 func (s *Store) AllNodes() ([]models.Node, error) {
 	rows, err := s.db.Query(`
 SELECT id, url, path, title, description, depth, page_type, parent_id,
-       html_hash, content_updated_at, http_last_modified, http_etag, scraped_at
+       html_hash, content_updated_at, http_last_modified, http_etag, child_contents,
+       dynamic_content, dynamic_hash, dynamic_scraped_at, scraped_at
 FROM nodes ORDER BY depth, path
 `)
 	if err != nil {
@@ -310,10 +331,15 @@ FROM nodes ORDER BY depth, path
 		var contentUpdatedAt sql.NullString
 		var httpLastModified sql.NullString
 		var httpEtag sql.NullString
+		var childContents sql.NullString
+		var dynamicContent sql.NullString
+		var dynamicHash sql.NullString
+		var dynamicScrapedAt sql.NullString
 		var scrapedAt sql.NullString
 		if err := rows.Scan(
 			&n.ID, &n.URL, &n.Path, &n.Title, &n.Description, &n.Depth, &pageType, &parentID,
-			&n.HTMLHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &scrapedAt,
+			&n.HTMLHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &childContents,
+			&dynamicContent, &dynamicHash, &dynamicScrapedAt, &scrapedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -326,6 +352,14 @@ FROM nodes ORDER BY depth, path
 		if httpEtag.Valid {
 			n.HTTPEtag = httpEtag.String
 		}
+		if childContents.Valid {
+			n.ChildContents = parseChildContents(childContents.String)
+		}
+		n.DynamicContent = parseDynamicContent(dynamicContent)
+		if dynamicHash.Valid {
+			n.DynamicHash = dynamicHash.String
+		}
+		n.DynamicScrapedAt = parseTime(dynamicScrapedAt)
 		n.ScrapedAt = parseTime(scrapedAt)
 		nodes = append(nodes, n)
 	}
@@ -348,6 +382,15 @@ func (s *Store) AllEdges() ([]models.Edge, error) {
 		edges = append(edges, e)
 	}
 	return edges, rows.Err()
+}
+
+func (s *Store) CountParentsWithChildren() (int, error) {
+	var count int
+	err := s.db.QueryRow(`
+SELECT COUNT(*) FROM nodes
+WHERE child_contents IS NOT NULL AND child_contents != '[]'
+`).Scan(&count)
+	return count, err
 }
 
 func (s *Store) DB() *sql.DB {
