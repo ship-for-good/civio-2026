@@ -415,11 +415,11 @@ tbody tr.urgency-ok:hover,
 tbody tr.urgency-neutral:hover { background: var(--civio-blue-muted); }
 tbody tr:last-child { border-bottom: none; }
 
-/* Urgency left-border stripes + row backgrounds */
-tbody tr.urgency-critical { border-left: 4px solid var(--civio-red);    background: #ffd6d8; }
-tbody tr.urgency-warning  { border-left: 4px solid var(--civio-orange); background: #fdedc8; }
-tbody tr.urgency-ok       { border-left: 4px solid var(--status-green); background: #c8eece; }
-tbody tr.urgency-neutral  { border-left: 4px solid var(--neutral-border); background: #f4f4f4; }
+/* Urgency left-border stripes */
+tbody tr.urgency-critical { border-left: 4px solid var(--civio-red); }
+tbody tr.urgency-warning  { border-left: 4px solid var(--civio-orange); }
+tbody tr.urgency-ok       { border-left: 4px solid var(--status-green); }
+tbody tr.urgency-neutral  { border-left: 4px solid var(--neutral-border); }
 
 td {
   padding: 10px 12px;
