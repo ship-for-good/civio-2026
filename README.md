@@ -10,17 +10,39 @@ El [Portal de Transparencia](https://transparencia.gob.es/publicidad-activa) es 
 
 Crawler en Go que descubre automáticamente el **grafo de Publicidad Activa**, enriquece cada nodo con descripción, timestamps, contenidos hijos y (opcionalmente) datos extraídos con Playwright, y exporta **JSON** listo para una UI de exploración.
 
+## Experiencia Ciudadana (MVP)
+
+El Portal de Transparencia está organizado según la estructura de la Administración Pública. Para muchas personas, el desafío no es solo acceder a la información, sino saber dónde buscarla.
+
+Sobre el grafo generado por el crawler, proponemos una capa de exploración basada en lenguaje natural que permite formular preguntas como:
+
+- ¿Cuánto costó una obra pública en mi municipio?
+- ¿Qué subvenciones recibió una organización?
+- ¿Cuánto cobra un alto cargo?
+- ¿Dónde se gasta el dinero público?
+
+La herramienta interpreta la consulta y devuelve:
+
+1. Fuentes oficiales donde consultar la información.
+2. Descripciones de los recursos encontrados.
+3. Consultas relacionadas obtenidas mediante proximidad entre nodos del grafo.
+4. Acceso al procedimiento de solicitud de información cuando los datos no estén publicados.
+
+### Objetivo
+
+Reducir la barrera de acceso a la información pública y acercar la transparencia a personas sin conocimientos previos sobre la estructura de la Administración.
+
 ---
 
 ## Prerrequisitos
 
-| Requisito | Versión |
-|-----------|---------|
+| Requisito                       | Versión                                   |
+| ------------------------------- | ----------------------------------------- |
 | **Docker** + **Docker Compose** | Recomendado (forma principal de ejecutar) |
-| **Go** | 1.23+ (solo desarrollo local) |
-| **Git** | Para clonar el repo |
+| **Go**                          | 1.23+ (solo desarrollo local)             |
+| **Git**                         | Para clonar el repo                       |
 
-No se requieren API keys ni credenciales: todo el contenido es público.
+El crawler no requiere API keys ni credenciales: todo el contenido scrapeado es público. Para la demo conversacional del chatbot sí hace falta una clave LLM en el backend.
 
 ---
 
@@ -47,11 +69,15 @@ go build -o bin/transparencia ./cmd/transparencia
 
 ## Variables de entorno
 
-| Variable | Descripción | Obligatoria |
-|----------|-------------|-------------|
-| `DB_PATH` | Ruta SQLite en contenedor (referencia; la CLI usa `--db`) | No |
+| Variable            | Descripción                                                           | Obligatoria       |
+| ------------------- | --------------------------------------------------------------------- | ----------------- |
+| `DB_PATH`           | Ruta SQLite en contenedor (referencia; la CLI usa `--db`)             | No                |
+| `GRAPH_PATH`        | Ruta al `graph.json` que carga el chatbot                             | Sí para chatbot   |
+| `PORT`              | Puerto HTTP del chatbot (`8080` por defecto)                          | No                |
+| `ANTHROPIC_API_KEY` | Clave LLM usada por el asistente para interpretar/verificar consultas | Sí para demo real |
+| `VITE_CHAT_API_URL` | URL pública del chatbot consumida por el front                        | Sí para front     |
 
-No hay variables sensibles. La ruta de la base de datos se pasa por flag `--db` (default: `data/graph.db`).
+El crawler no requiere credenciales. La demo conversacional sí necesita una clave LLM en el backend; nunca debe exponerse al cliente. El front solo recibe `VITE_CHAT_API_URL`.
 
 ---
 
@@ -79,22 +105,52 @@ docker compose run --rm crawler stats --db /data/graph.db
 Servir el JSON en local para el equipo de front:
 
 ```bash
-cd data && python3 -m http.server 8080
-# → http://localhost:8080/graph.json
+cd data && python3 -m http.server 8082
+# → http://localhost:8082/graph.json
 ```
+
+## Demo local end-to-end (front + chatbot)
+
+Para enseñar el MVP ciudadano no hace falta regenerar el grafo si `data/graph.json` ya existe. Levanta el chatbot y el front en dos terminales:
+
+```bash
+# Terminal 1: API del asistente
+cd back
+GRAPH_PATH=../data/graph.json \
+PORT=8080 \
+ANTHROPIC_API_KEY=your_anthropic_api_key_here \
+go run ./chatbot
+```
+
+Comprueba que responde:
+
+```bash
+curl -s -X POST http://localhost:8080/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question":"¿Cuánto cobra un alto cargo?"}'
+```
+
+```bash
+# Terminal 2: frontend
+cd front
+bun install
+VITE_CHAT_API_URL=http://localhost:8080 bun run dev
+```
+
+Abre la URL que imprima Vite (normalmente `http://localhost:5173`) y prueba una consulta. La pantalla llamará a `POST /chat` y mostrará la fuente oficial, el contexto de navegación y el enlace al derecho de acceso cuando proceda.
 
 ---
 
 ## Tecnologías principales
 
-| Capa | Stack |
-|------|-------|
-| Lenguaje | **Go 1.23** |
-| CLI | Cobra |
-| HTTP / parsing | net/http, goquery |
-| Base de datos | SQLite (`modernc.org/sqlite`, sin CGO) |
-| Scraping dinámico | Playwright (`playwright-go`) + Chromium |
-| Contenedores | Docker multi-stage (Alpine + Playwright Noble) |
+| Capa              | Stack                                          |
+| ----------------- | ---------------------------------------------- |
+| Lenguaje          | **Go 1.23**                                    |
+| CLI               | Cobra                                          |
+| HTTP / parsing    | net/http, goquery                              |
+| Base de datos     | SQLite (`modernc.org/sqlite`, sin CGO)         |
+| Scraping dinámico | Playwright (`playwright-go`) + Chromium        |
+| Contenedores      | Docker multi-stage (Alpine + Playwright Noble) |
 
 ---
 
@@ -118,7 +174,7 @@ transparencia.gob.es
                      │ export
                      ▼
               ┌─────────────┐
-              │ graph.json  │  → UI / front (pendiente)
+              │ graph.json  │  → chatbot / UI MVP
               └─────────────┘
 ```
 
@@ -221,14 +277,14 @@ go test ./back/chatbot/...
 
 ## Decisiones técnicas clave
 
-| Decisión | Motivo |
-|----------|--------|
-| **Go + SQLite** | Binario único, sin CGO, persistencia local embebida, fácil de contenerizar |
-| **Sidebar AEM como fuente del grafo** | Cada página incluye el árbol completo de navegación en HTML estático |
-| **Dos imágenes Docker** | Crawl HTTP ligero (~15 MB) vs Playwright pesado (~1,5 GB) solo cuando hace falta |
-| **Goroutines en scrape-dynamic** | ~4,5× más rápido (39 páginas: 17 min → 3,5 min con 5 workers) |
-| **JSON como contrato con front** | UI desacoplada; consume `graph.json` sin depender del crawler |
-| **Skip incremental** | Re-crawls baratos comparando `ETag`, `Last-Modified` y `html_hash` |
+| Decisión                              | Motivo                                                                           |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| **Go + SQLite**                       | Binario único, sin CGO, persistencia local embebida, fácil de contenerizar       |
+| **Sidebar AEM como fuente del grafo** | Cada página incluye el árbol completo de navegación en HTML estático             |
+| **Dos imágenes Docker**               | Crawl HTTP ligero (~15 MB) vs Playwright pesado (~1,5 GB) solo cuando hace falta |
+| **Goroutines en scrape-dynamic**      | ~4,5× más rápido (39 páginas: 17 min → 3,5 min con 5 workers)                    |
+| **JSON como contrato con front**      | UI desacoplada; consume `graph.json` sin depender del crawler                    |
+| **Skip incremental**                  | Re-crawls baratos comparando `ETag`, `Last-Modified` y `html_hash`               |
 
 ---
 
@@ -244,13 +300,13 @@ Ver esquema completo y ejemplos JSON en [TRANSPARENCIA-CRAWLER.md](./TRANSPARENC
 
 ## Comandos CLI
 
-| Comando | Servicio Docker | Descripción |
-|---------|-----------------|-------------|
-| `crawl` | `crawler` | BFS del árbol de Publicidad Activa |
-| `stats` | `crawler` | Estadísticas del grafo |
-| `export` | `crawler` | Exporta `graph.json` |
-| `enrich` | `crawler` | Recalcula `child_contents` en nodos padre |
-| `scrape-dynamic` | `crawler-playwright` | Playwright para páginas dinámicas |
+| Comando          | Servicio Docker      | Descripción                               |
+| ---------------- | -------------------- | ----------------------------------------- |
+| `crawl`          | `crawler`            | BFS del árbol de Publicidad Activa        |
+| `stats`          | `crawler`            | Estadísticas del grafo                    |
+| `export`         | `crawler`            | Exporta `graph.json`                      |
+| `enrich`         | `crawler`            | Recalcula `child_contents` en nodos padre |
+| `scrape-dynamic` | `crawler-playwright` | Playwright para páginas dinámicas         |
 
 Flags relevantes: `--db`, `--rate`, `--force`, `--skip-unchanged`, `--workers` (scrape-dynamic), `--types`.
 
@@ -258,14 +314,14 @@ Flags relevantes: `--db`, `--rate`, `--force`, `--skip-unchanged`, `--workers` (
 
 ## Roadmap
 
-| Fase | Estado | Descripción |
-|------|--------|-------------|
-| Grafo de navegación + JSON | **Hecho** | ~510 nodos, descripciones, child_contents |
-| Scrape dinámico Playwright | **Hecho** | 39 nodos, tablas/texto, workers paralelos |
-| UI de exploración | Pendiente | Consumir `graph.json` |
-| Scrape buscador SSR | Pendiente | `servicios-buscador/buscar.htm?pag=N` (~900k registros) |
-| Scrape iframes del buscador | Pendiente | Contenido real de `buscador_entry` |
-| Detección de cambios (OPP-1b) | Pendiente | Diff por `html_hash` / timestamps |
+| Fase                              | Estado          | Descripción                                                                 |
+| --------------------------------- | --------------- | --------------------------------------------------------------------------- |
+| Grafo de navegación + JSON        | **Hecho**       | ~510 nodos, descripciones, child_contents                                   |
+| Scrape dinámico Playwright        | **Hecho**       | 39 nodos, tablas/texto, workers paralelos                                   |
+| UI de exploración (MVP ciudadano) | **Hecho (MVP)** | Capa de exploración en lenguaje natural conectada al chatbot (`POST /chat`) |
+| Scrape buscador SSR               | Pendiente       | `servicios-buscador/buscar.htm?pag=N` (~900k registros)                     |
+| Scrape iframes del buscador       | Pendiente       | Contenido real de `buscador_entry`                                          |
+| Detección de cambios (OPP-1b)     | Pendiente       | Diff por `html_hash` / timestamps                                           |
 
 ---
 
@@ -273,7 +329,8 @@ Flags relevantes: `--db`, `--rate`, `--force`, `--skip-unchanged`, `--workers` (
 
 1. `docker compose run --rm crawler stats --db /data/graph.db` — mostrar 510 nodos.
 2. Abrir `data/graph.json` — nodo con `description`, `child_contents`, `dynamic_content`.
-3. (Opcional) Re-ejecutar `scrape-dynamic --limit 3` en una página concreta.
+3. Levantar el front MVP y ejecutar una consulta en lenguaje natural para validar la fuente oficial, el contexto de navegación y el acceso al procedimiento de solicitud.
+4. (Opcional) Re-ejecutar `scrape-dynamic --limit 3` en una página concreta.
 
 El proyecto **ejecuta y produce datos reales** del portal de transparencia; no es mockup.
 
@@ -301,12 +358,12 @@ TRANSPARENCIA-CRAWLER.md    # Documentación técnica extendida
 
 **May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/) · [shipforgood.org/es](https://www.shipforgood.org/es)**
 
-| Documento | Descripción |
-|-----------|-------------|
-| [challenge-discovery.md](./challenge-discovery.md) | Contexto Civio y oportunidades OPP-1a/1b, OPP-2 |
-| [how-to-submit-project.md](./how-to-submit-project.md) | Reglas de entrega del hackathon |
-| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | Trabajo en rama `team-verde` |
-| [AUTHORSHIP.md](./AUTHORSHIP.md) | Licencia MIT, reuso por Civio |
+| Documento                                                  | Descripción                                     |
+| ---------------------------------------------------------- | ----------------------------------------------- |
+| [challenge-discovery.md](./challenge-discovery.md)         | Contexto Civio y oportunidades OPP-1a/1b, OPP-2 |
+| [how-to-submit-project.md](./how-to-submit-project.md)     | Reglas de entrega del hackathon                 |
+| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | Trabajo en rama `team-verde`                    |
+| [AUTHORSHIP.md](./AUTHORSHIP.md)                           | Licencia MIT, reuso por Civio                   |
 
 **Rama del equipo:** `team-verde`
 

@@ -78,7 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Transparencia Navigator — Civio" },
-      { name: "description", content: "De la pregunta a la información pública. Encuentra información del Portal de Transparencia con lenguaje natural." },
+      {
+        name: "description",
+        content:
+          "De la pregunta a la información pública. Encuentra información del Portal de Transparencia con lenguaje natural.",
+      },
       { name: "author", content: "Civio" },
       { property: "og:title", content: "Transparencia Navigator — Civio" },
       { property: "og:description", content: "De la pregunta a la información pública." },
@@ -93,7 +97,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

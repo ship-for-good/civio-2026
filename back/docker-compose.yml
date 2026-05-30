@@ -15,4 +15,4 @@ services:
     environment:
       DB_PATH: /data/graph.db
     # Playwright needs more shared memory for Chromium
-    shm_size: "1gb"
+    shm_size: "2gb"

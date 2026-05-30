@@ -19,6 +19,7 @@ import process from "node:process";
 export function getServerConfig() {
   return {
     nodeEnv: process.env.NODE_ENV,
+    chatApiUrl: process.env.CHAT_API_URL ?? process.env.VITE_CHAT_API_URL,
     // Add server-only values here, e.g.:
     //   databaseUrl: process.env.DATABASE_URL,
     //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,

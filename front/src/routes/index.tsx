@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   Search,
   Send,
   Info,
   HelpCircle,
   FileText,
-  User,
   Building2,
   Users,
   UserCircle2,
@@ -23,11 +22,18 @@ import {
   Lock,
 } from "lucide-react";
 
+import { askChat } from "@/lib/api/chat";
+import type { ChatResponse } from "@/lib/types/chat";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Transparencia Navigator — De la pregunta a la información pública" },
-      { name: "description", content: "Asistente de Civio para encontrar información del Portal de Transparencia de España en lenguaje natural." },
+      {
+        name: "description",
+        content:
+          "Asistente de Civio para encontrar información del Portal de Transparencia de España en lenguaje natural.",
+      },
       { property: "og:title", content: "Transparencia Navigator — Civio" },
       { property: "og:description", content: "De la pregunta a la información pública." },
     ],
@@ -56,38 +62,15 @@ const loadingSteps = [
   "Consultando fuentes oficiales...",
 ];
 
-const sources = [
-  {
-    title: "Portal de Contratación del Sector Público",
-    description:
-      "Plataforma de contratación del sector público donde pueden consultarse los contratos, convocatorias de licitación y adjudicaciones realizadas por las Administraciones Públicas.",
-  },
-  {
-    title: "Información económico-presupuestaria",
-    description:
-      "Información sobre los presupuestos, su ejecución y los gastos públicos de la Administración General del Estado.",
-  },
-  {
-    title: "Contratos, convenios y subvenciones",
-    description:
-      "Información sobre los contratos, convenios y subvenciones suscritos por la Administración General del Estado.",
-  },
-];
+const derechoAccesoURL = "https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica";
 
-const relatedSearches = [
-  {
-    title: "Coste de una obra pública en un centro de salud",
-    description: "Consulta los contratos y adjudicaciones de obras en infraestructuras sanitarias publicadas por las Administraciones Públicas.",
-  },
-  {
-    title: "Coste de una obra pública en un edificio municipal",
-    description: "Consulta los contratos de reforma o construcción de edificios municipales adjudicados por entidades locales.",
-  },
-  {
-    title: "Coste de una obra pública en una instalación deportiva",
-    description: "Consulta los contratos y licitaciones de obras en polideportivos, piscinas y otras instalaciones deportivas públicas.",
-  },
-];
+const pageTypeLabels: Record<string, string> = {
+  navigation: "Índice de secciones",
+  leaf_static: "Contenido estático",
+  leaf_dynamic: "Contenido dinámico",
+  buscador_entry: "Buscador oficial",
+  external: "Fuente externa",
+};
 
 function CivioLogo({ className = "" }: { className?: string }) {
   return (
@@ -98,7 +81,59 @@ function CivioLogo({ className = "" }: { className?: string }) {
   );
 }
 
-function ResultsView({ query, onReset }: { query: string; onReset: () => void }) {
+function renderInlineMarkdown(text: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
+function AssistantMessage({ message }: { message: string }) {
+  const paragraphs = message
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return (
+    <div className="space-y-3">
+      {paragraphs.map((paragraph, index) => (
+        <p key={`${paragraph}-${index}`} className="text-sm text-muted-foreground leading-relaxed">
+          {renderInlineMarkdown(paragraph)}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function ResultsView({
+  query,
+  response,
+  error,
+  onReset,
+}: {
+  query: string;
+  response: ChatResponse | null;
+  error: string;
+  onReset: () => void;
+}) {
+  const matchedNode = response?.matched_node;
+  const sourceUrl = response?.url || derechoAccesoURL;
+  const sourceTitle =
+    matchedNode?.title ||
+    (response?.found
+      ? "Fuente oficial relacionada"
+      : "Procedimiento de solicitud de información pública");
+  const sourceDescription =
+    matchedNode?.description ||
+    response?.hint ||
+    "Si la información no aparece publicada, puedes solicitarla formalmente mediante el Derecho de Acceso.";
+  const pageType = matchedNode?.page_type
+    ? (pageTypeLabels[matchedNode.page_type] ?? matchedNode.page_type)
+    : "Fuente oficial";
+  const path = response?.path ?? [];
+
   return (
     <section className="mx-auto max-w-7xl px-6 pb-20 animate-fade-in">
       <a
@@ -116,16 +151,22 @@ function ResultsView({ query, onReset }: { query: string; onReset: () => void })
       <div className="mb-8">
         <p className="text-sm text-muted-foreground inline-flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-civio-yellow" />
-          Entendimos tu consulta como
+          Consulta enviada al asistente
         </p>
         <h2 className="mt-2 text-2xl md:text-3xl font-bold text-civio-blue leading-tight tracking-tight">
-          Coste de una obra pública (reforma) en un centro educativo
+          {query}
         </h2>
-        <p className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-civio-blue">
+        <p
+          className={`mt-3 inline-flex items-center gap-2 text-sm font-medium ${error ? "text-destructive" : "text-civio-blue"}`}
+        >
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-civio-green-soft">
             <CheckCircle2 className="h-3.5 w-3.5 text-civio-green" />
           </span>
-          Encontramos 3 fuentes oficiales donde puedes consultar esta información.
+          {error
+            ? "No pudimos conectar con el asistente en este momento."
+            : response?.found
+              ? "Encontramos una fuente oficial relacionada con tu consulta."
+              : "No encontramos una publicación directa; te indicamos cómo continuar."}
         </p>
       </div>
 
@@ -134,71 +175,94 @@ function ResultsView({ query, onReset }: { query: string; onReset: () => void })
         <div>
           <h3 className="text-lg font-semibold text-civio-blue">Cómo obtener esta información</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Hemos encontrado las siguientes fuentes oficiales relacionadas con tu consulta.
+            Resultado generado a partir del grafo del Portal de Transparencia.
           </p>
 
-          {/* Tip */}
-          <div className="mt-5 rounded-xl border border-civio-green/30 bg-civio-green-soft/50 p-5">
+          <div
+            className={`mt-5 rounded-xl border p-5 ${error ? "border-destructive/30 bg-destructive/5" : "border-civio-green/30 bg-civio-green-soft/50"}`}
+          >
             <div className="flex items-center gap-2 text-civio-blue font-semibold">
               <Lightbulb className="h-4 w-4 text-civio-green" />
-              Consejo
+              Respuesta del asistente
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Si conoces el organismo responsable (ayuntamiento, ministerio o consejería), podrás encontrar la información más rápido.
-            </p>
+            {error ? (
+              <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+            ) : response?.message ? (
+              <div className="mt-2">
+                <AssistantMessage message={response.message} />
+              </div>
+            ) : null}
+            {!error && response?.hint ? (
+              <p className="mt-3 rounded-lg bg-white/70 p-3 text-sm text-muted-foreground">
+                {response.hint}
+              </p>
+            ) : null}
           </div>
 
           {/* Sources */}
           <div className="mt-5 space-y-4">
-            {sources.map((s) => (
-              <article
-                key={s.title}
-                className="rounded-xl border border-border bg-card p-5 transition-all hover:border-civio-blue/30 hover:shadow-sm"
-              >
-                <h4 className="text-base font-semibold text-civio-blue">
-                  {s.title}
-                </h4>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  {s.description}
-                </p>
-                <div className="mt-4 flex items-center justify-between flex-wrap gap-3">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-civio-green-soft px-2 py-1 text-[11px] font-medium text-civio-blue">
-                    <span className="h-1.5 w-1.5 rounded-full bg-civio-green" />
-                    Fuente oficial
-                  </span>
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-civio-blue/20 px-3 py-1.5 text-sm font-medium text-civio-blue hover:bg-civio-blue hover:text-primary-foreground transition-colors"
-                  >
-                    Ir a la fuente
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </div>
-              </article>
-            ))}
+            <article className="rounded-xl border border-border bg-card p-5 transition-all hover:border-civio-blue/30 hover:shadow-sm">
+              <h4 className="text-base font-semibold text-civio-blue">{sourceTitle}</h4>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {sourceDescription}
+              </p>
+              <div className="mt-4 flex items-center justify-between flex-wrap gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-civio-green-soft px-2 py-1 text-[11px] font-medium text-civio-blue">
+                  <span className="h-1.5 w-1.5 rounded-full bg-civio-green" />
+                  {pageType}
+                </span>
+                <a
+                  href={sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-civio-blue/20 px-3 py-1.5 text-sm font-medium text-civio-blue hover:bg-civio-blue hover:text-primary-foreground transition-colors"
+                >
+                  Ir a la fuente
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </article>
           </div>
         </div>
 
-        {/* Sidebar — Related searches */}
+        {/* Sidebar — Path and future related searches */}
         <aside>
-          <h3 className="text-base font-semibold text-civio-blue">Consultas similares</h3>
+          <h3 className="text-base font-semibold text-civio-blue">Contexto en el portal</h3>
           <div className="mt-4 space-y-3">
-            {relatedSearches.map((r) => (
-              <article
-                key={r.title}
-                className="rounded-xl border border-border bg-card p-4 transition-all hover:border-civio-blue/30 hover:shadow-sm"
-              >
-                <h4 className="text-sm font-semibold text-civio-blue leading-snug">{r.title}</h4>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{r.description}</p>
-                <a
-                  href="#"
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-civio-blue hover:underline"
+            {path.length > 0 ? (
+              path.map((step, index) => (
+                <article
+                  key={`${step.url}-${index}`}
+                  className="rounded-xl border border-border bg-card p-4 transition-all hover:border-civio-blue/30 hover:shadow-sm"
                 >
-                  Abrir esta consulta
-                  <ArrowRight className="h-3 w-3" />
-                </a>
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Nivel {index + 1}
+                  </span>
+                  <h4 className="mt-1 text-sm font-semibold text-civio-blue leading-snug">
+                    {step.title}
+                  </h4>
+                  <a
+                    href={step.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-civio-blue hover:underline"
+                  >
+                    Abrir en el portal
+                    <ArrowRight className="h-3 w-3" />
+                  </a>
+                </article>
+              ))
+            ) : (
+              <article className="rounded-xl border border-border bg-card p-4">
+                <h4 className="text-sm font-semibold text-civio-blue leading-snug">
+                  Consultas relacionadas
+                </h4>
+                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                  En este MVP mostramos el resultado principal del backend. La proximidad entre
+                  nodos queda preparada como siguiente iteración.
+                </p>
               </article>
-            ))}
+            )}
           </div>
         </aside>
       </div>
@@ -211,11 +275,14 @@ function ResultsView({ query, onReset }: { query: string; onReset: () => void })
         <div className="flex-1">
           <h4 className="text-base font-semibold text-civio-blue">¿No aparece la información?</h4>
           <p className="mt-1 text-sm text-muted-foreground">
-            Si la información no está publicada, puedes solicitarla formalmente mediante el Derecho de Acceso.
+            Si la información no está publicada, puedes solicitarla formalmente mediante el Derecho
+            de Acceso.
           </p>
         </div>
         <a
-          href="#"
+          href={derechoAccesoURL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded-lg bg-civio-yellow px-5 py-3 text-sm font-semibold text-civio-blue hover:brightness-95 transition"
         >
           Solicitar información pública
@@ -237,7 +304,8 @@ function ResultsView({ query, onReset }: { query: string; onReset: () => void })
         </div>
         <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
           <Lock className="h-3 w-3" />
-          Las respuestas se generan con información de fuentes oficiales. Verifica siempre en los portales originales.
+          Las respuestas se generan con información de fuentes oficiales. Verifica siempre en los
+          portales originales.
         </p>
         <span className="sr-only">Consulta: {query}</span>
       </div>
@@ -250,29 +318,52 @@ function Index() {
   const [isSearching, setIsSearching] = useState(false);
   const [hasResults, setHasResults] = useState(false);
   const [submittedQuery, setSubmittedQuery] = useState("");
+  const [chatResponse, setChatResponse] = useState<ChatResponse | null>(null);
+  const [searchError, setSearchError] = useState("");
   const [stepIndex, setStepIndex] = useState(0);
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => () => timeouts.current.forEach(clearTimeout), []);
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!query.trim() || isSearching) return;
+  useEffect(() => {
     timeouts.current.forEach(clearTimeout);
     timeouts.current = [];
-    setHasResults(false);
-    setSubmittedQuery(query.trim());
-    setIsSearching(true);
+
+    if (!isSearching) {
+      return;
+    }
+
     setStepIndex(0);
     timeouts.current.push(setTimeout(() => setStepIndex(1), 700));
     timeouts.current.push(setTimeout(() => setStepIndex(2), 1400));
-    timeouts.current.push(
-      setTimeout(() => {
-        setIsSearching(false);
-        setHasResults(true);
-        setQuery("");
-      }, 2100),
-    );
+
+    return () => {
+      timeouts.current.forEach(clearTimeout);
+      timeouts.current = [];
+    };
+  }, [isSearching]);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!query.trim() || isSearching) return;
+
+    const trimmedQuery = query.trim();
+    setHasResults(false);
+    setChatResponse(null);
+    setSearchError("");
+    setSubmittedQuery(trimmedQuery);
+    setIsSearching(true);
+
+    try {
+      const response = await askChat(trimmedQuery);
+      setChatResponse(response);
+    } catch (error) {
+      setSearchError(
+        error instanceof Error ? error.message : "No pudimos consultar el backend del asistente.",
+      );
+    } finally {
+      setIsSearching(false);
+      setHasResults(true);
+      setQuery("");
+    }
   };
 
   const resetSearch = () => {
@@ -282,6 +373,8 @@ function Index() {
     setHasResults(false);
     setQuery("");
     setSubmittedQuery("");
+    setChatResponse(null);
+    setSearchError("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -314,13 +407,19 @@ function Index() {
                   Beta
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground">De la pregunta a la información pública</p>
+              <p className="text-xs text-muted-foreground">
+                De la pregunta a la información pública
+              </p>
             </div>
           </div>
 
           <nav className="ml-auto hidden lg:flex items-center gap-7 text-sm text-civio-blue">
             {navItems.map(({ icon: Icon, label }) => (
-              <a key={label} href="#" className="flex items-center gap-2 hover:text-civio-blue/70 transition-colors">
+              <a
+                key={label}
+                href="#"
+                className="flex items-center gap-2 hover:text-civio-blue/70 transition-colors"
+              >
                 <Icon className="h-4 w-4" />
                 {label}
               </a>
@@ -344,7 +443,6 @@ function Index() {
             collapsed ? "pt-8 pb-6" : "pt-16 pb-12"
           }`}
         >
-
           <div className={`mx-auto ${collapsed ? "max-w-7xl" : "max-w-3xl text-center"}`}>
             <div
               className={`grid transition-all duration-700 ease-out ${
@@ -411,7 +509,8 @@ function Index() {
               <div className="overflow-hidden">
                 <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                   <Lightbulb className="h-4 w-4 text-civio-yellow" />
-                  También puedes preguntar por subvenciones, contratos, presupuestos, altos cargos o gasto público.
+                  También puedes preguntar por subvenciones, contratos, presupuestos, altos cargos o
+                  gasto público.
                 </p>
               </div>
             </div>
@@ -434,7 +533,9 @@ function Index() {
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-civio-green-soft text-civio-green">
                     <Icon className="h-4.5 w-4.5" strokeWidth={2} />
                   </span>
-                  <span className="flex-1 text-sm font-medium text-civio-blue leading-snug">{text}</span>
+                  <span className="flex-1 text-sm font-medium text-civio-blue leading-snug">
+                    {text}
+                  </span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-civio-blue transition-colors" />
                 </button>
               ))}
@@ -445,8 +546,7 @@ function Index() {
             <div className="rounded-2xl border border-border bg-card/60 px-6 py-8">
               <ul className="space-y-4">
                 {loadingSteps.map((step, i) => {
-                  const state =
-                    i < stepIndex ? "done" : i === stepIndex ? "active" : "pending";
+                  const state = i < stepIndex ? "done" : i === stepIndex ? "active" : "pending";
                   return (
                     <li
                       key={step}
@@ -479,7 +579,12 @@ function Index() {
             </div>
           </section>
         ) : (
-          <ResultsView query={submittedQuery} onReset={resetSearch} />
+          <ResultsView
+            query={submittedQuery}
+            response={chatResponse}
+            error={searchError}
+            onReset={resetSearch}
+          />
         )}
       </main>
 
