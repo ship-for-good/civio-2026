@@ -1,61 +1,76 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
 ## What this project is
 
-A hackathon project built during **Ship for Good 2026** (May 29–30, Barcelona) for **Civio**, an independent journalism foundation. The challenge is to improve Civio's ability to access, monitor, and manage public information — reducing manual administrative work and increasing investigative coverage.
+A hackathon project built during **Ship for Good 2026** (May 29–30, Barcelona) for **Civio**, an independent journalism foundation. The goal: reduce manual admin work on transparency-request monitoring.
 
-The team branch is `team-IT_Power`. Work stays on this branch; never commit to `main`.
+**Branch:** `team-IT_Power`. Never commit to `main`.  
+**Deadline:** Saturday May 30th at 19:00 — push to `team-IT_Power`.
 
-## Current app
+## App
 
-A React + Vite single-page application ("Tracker de Solicitudes de Transparencia") located in `app/`. It requires Node.js and a Supabase project for authentication.
+React + Vite + TypeScript SPA ("Tracker de Solicitudes de Transparencia") in `app/`.
 
-**Tech stack:** React 18, Vite 6, Supabase (`@supabase/supabase-js`)
+**Tech stack:** React 18, Vite 6, TypeScript 6, Supabase (`@supabase/supabase-js`), Vitest
 
-**Key components (`app/src/`):**
-- `App.jsx` — root component; wires auth guard, CSV state, drag-and-drop, filters, and sort
-- `components/LoginPage.jsx` — magic-link login form (Supabase OTP)
-- `components/Header.jsx` — top bar with CSV file-input loader
-- `components/StatsBar.jsx` — summary counts by urgency/estado
-- `components/DigestSection.jsx` — daily digest: silencio administrativo, reclamadas ante CTBG, contencioso
-- `components/FiltersBar.jsx` — filter controls (estado, autor, ámbito, urgencia, free text)
-- `components/RequestsTable.jsx` — sortable table of all requests
-- `components/Toast.jsx` — ephemeral notification
-- `contexts/AuthContext.jsx` — Supabase session provider (`useAuth` hook)
-- `lib/supabase.js` — Supabase client (reads `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)
-- `utils/urgency.js` — `enrichRequests` / `computeUrgency` logic
-- `utils/csv.js` — CSV parser
-- `utils/dates.js` — date helpers
-- `data/csvData.js` — bundled CSV dataset (`CSV_RAW`)
+**Run locally:** `cd app && npm install && npm run dev` — needs `.env` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
-**Auth flow:** unauthenticated users see `LoginPage`; they enter an email and receive a magic link (Supabase OTP). On click, Supabase redirects back to the app and the session is set.
+### Key source files (`app/src/`)
 
-**To run locally:** see `app/README.md`.
+| File | Role |
+|------|------|
+| `App.tsx` | Root: auth guard, CSV state, drag-and-drop, filters, sort, Supabase merge on load |
+| `components/LoginPage.tsx` | Magic-link login (Supabase OTP) |
+| `components/Header.tsx` | Top bar: CSV file-input + "Nuevo expediente" button |
+| `components/StatsBar.tsx` | Summary counts by urgency/estado |
+| `components/DigestSection.tsx` | Daily digest: silencio administrativo, reclamadas, contencioso |
+| `components/FiltersBar.tsx` | Filter controls (estado, autor, ámbito, urgencia, free text) |
+| `components/RequestsTable.tsx` | Sortable table of all requests |
+| `components/NewExpedienteModal.tsx` | Modal to create a new expediente with file attachments |
+| `components/Toast.tsx` | Ephemeral notification |
+| `contexts/AuthContext.tsx` | Supabase session provider (`useAuth` hook) |
+| `lib/supabase.ts` | Supabase client |
+| `lib/expedientesRepo.ts` | Supabase DB/storage: `fetchExpedientes`, `insertExpediente`, `uploadAttachments` |
+| `utils/urgency.ts` | `enrichRequests` / `computeUrgency` |
+| `utils/expediente.ts` | `buildExpediente`, `validateExpediente`, `mergeById`, `slugifyFilename` |
+| `utils/csv.ts` | CSV parser |
+| `utils/dates.ts` | Date helpers (`TODAY`, `toISODate`) |
+| `data/csvData.ts` | Bundled CSV dataset (`CSV_RAW`) |
+
+### Data flow
+
+1. On mount, `App` loads the bundled CSV (`CSV_RAW`) as the initial state.
+2. Then fetches from Supabase `expedientes` table and merges via `mergeById` (Supabase rows override CSV by `Id`; Supabase-only rows are prepended).
+3. Users can also drag-and-drop or load a new CSV file.
+4. New expedientes are created via `NewExpedienteModal` → `insertExpediente` (Supabase) + optional file upload to `expediente-adjuntos` storage bucket.
+
+### Auth flow
+
+Unauthenticated users see `LoginPage`. They enter an email → receive a magic link (Supabase OTP) → redirected back → session set.
 
 ## Data
 
-`Solicitudes_anonimizado.csv` (and `Datos/Solicitudes_anonimizado.csv`) — the real dataset of Civio's transparency requests (22 rows). CSV columns: `Id`, `Ámbito`, `Fecha`, `Estado`, `Asunto`, `Ministerio`, `Inicio tramitación`, `Art 20.1 (volumen)`, `Vencimiento normal`, `Vencimiento 20.1`, `Vencimiento`, `Resolución`, `Notificación`, `Días para respuesta`, `Días para reclamar por silencio administrativo`, `Días para reclamar resolución`, `Notas`, `Autor`, `Reclamación`.
+`Solicitudes_anonimizado.csv` — 22 real Civio transparency requests.
+
+CSV columns: `Id`, `Ámbito`, `Fecha`, `Estado`, `Asunto`, `Ministerio`, `Inicio tramitación`, `Art 20.1 (volumen)`, `Vencimiento normal`, `Vencimiento 20.1`, `Vencimiento`, `Resolución`, `Notificación`, `Días para respuesta`, `Días para reclamar por silencio administrativo`, `Días para reclamar resolución`, `Notas`, `Autor`, `Reclamación`.
 
 Key domain concepts:
-- **Silencio administrativo** — when the response deadline (`Vencimiento`) passes without a resolution, Civio has ~30 days (`CLAIM_WINDOW_DAYS`) to file a claim with the CTBG.
-- **CTBG** — Consejo de Transparencia y Buen Gobierno, the oversight body for transparency claims.
-- **Estados**: `En tramitación` (active, response pending), `Reclamada` (claim filed with CTBG), `Contencioso` (judicial proceedings), `Resuelta` (resolved).
+- **Silencio administrativo** — response deadline (`Vencimiento`) passed with no resolution; Civio has ~30 days (`CLAIM_WINDOW_DAYS`) to file with CTBG.
+- **CTBG** — Consejo de Transparencia y Buen Gobierno, the oversight body.
+- **Estados**: `En tramitación`, `Reclamada`, `Contencioso`, `Resuelta`.
 
-## Civio AI policy (non-negotiable constraints)
+## Tests
 
-**Vetado (forbidden):** generating journalistic text, legal claims/resources, images; acting as an information source for investigations; communicating directly with readers or partners.
+`npm test` runs Vitest. Unit tests exist for `utils/dates.ts` and `utils/expediente.ts`.
 
-**Permitido (allowed):** format conversion and data cleaning (PDF → CSV, normalisation), local interview transcription, programming assistance, internal management automation, exploratory queries on their own databases.
+## Civio AI policy (non-negotiable)
 
-## Submission
+**Forbidden:** generating journalistic text, legal claims, images; acting as an information source for investigations; communicating directly with readers or partners.
 
-- Deadline: **Saturday May 30th at 19:00** — all work pushed to `team-IT_Power`
-- Demo format: 3 minutes demo + 3 minutes jury feedback
-- The project must be working (deployed or running locally), not a mockup
-- README on the branch must describe: team/project name, problem solved, prerequisites, setup instructions, env vars, main technologies
+**Allowed:** format conversion/data cleaning, programming assistance, internal management automation, exploratory queries on their own databases.
 
 ## Git conventions
 
-Conventional Commits recommended: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`. Push to `team-IT_Power` with `git push origin team-IT_Power`.
+Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`. Push with `git push origin team-IT_Power`.
