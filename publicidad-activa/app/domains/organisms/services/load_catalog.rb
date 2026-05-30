@@ -19,6 +19,10 @@ module Organisms
         @data = data || JSON.parse(CATALOG_PATH.read)
       end
 
+      def known?(code)
+        @data.key?(code.to_s)
+      end
+
       def label(code)
         @data.dig(code.to_s, "label") || code.to_s.upcase
       end
@@ -60,6 +64,7 @@ module Organisms
 
       def group_resource_counts(counts)
         counts
+          .select { |code, _count| known?(code) }
           .group_by { |code, _count| label(code) }
           .map do |label, pairs|
             sorted = pairs.sort_by { |code, count| [ -count, code ] }

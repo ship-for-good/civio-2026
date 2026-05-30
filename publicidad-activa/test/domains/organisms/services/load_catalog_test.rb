@@ -70,6 +70,25 @@ class Organisms::Services::LoadCatalogTest < ActiveSupport::TestCase
     assert_equal "magrama", agriculture[:code]
   end
 
+  test "excludes unknown codes from grouped resource counts" do
+    catalog = Organisms::Services::LoadCatalog.new(
+      "mdef" => { "label" => "Ministerio de Defensa", "aliases" => [ "mdef" ] }
+    )
+
+    grouped = catalog.group_resource_counts("mdef" => 5, "diciembre-2021" => 1, "junio-2020" => 1)
+
+    assert_equal 1, grouped.size
+    assert_equal "Ministerio de Defensa", grouped.first[:label]
+    assert_equal 5, grouped.first[:count]
+  end
+
+  test "known? reflects catalog membership" do
+    catalog = Organisms::Services::LoadCatalog.new(CATALOG)
+
+    assert catalog.known?("mdef")
+    assert_not catalog.known?("diciembre-2021")
+  end
+
   test "loads real catalog file" do
     catalog = Organisms::Services::LoadCatalog.call
 

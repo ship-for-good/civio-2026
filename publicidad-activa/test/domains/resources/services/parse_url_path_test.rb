@@ -62,6 +62,29 @@ class Resources::Services::ParseUrlPathTest < ActiveSupport::TestCase
     assert_nil result.tipo
   end
 
+  test "parses historic RPT period index without organismo" do
+    url = "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/relaciones-puestos-trabajo/historico/rpt-diciembre-2021"
+    segments = url.sub("https://transparencia.gob.es/", "").split("/")
+
+    result = Resources::Services::ParseUrlPath.call(url: url, path_segments: segments)
+
+    assert_equal "historico", result.vigencia
+    assert_equal "rpt-diciembre-2021", result.periodo
+    assert_equal "rpt", result.tipo
+    assert_nil result.organismo_code
+  end
+
+  test "parses historic normativa legislatura without organismo" do
+    url = "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/normativa/historico/normativa-aplicacionxiiilegislatura"
+    segments = url.sub("https://transparencia.gob.es/", "").split("/")
+
+    result = Resources::Services::ParseUrlPath.call(url: url, path_segments: segments)
+
+    assert_equal "normativa-aplicacionxiiilegislatura", result.periodo
+    assert_equal "normativa", result.tipo
+    assert_nil result.organismo_code
+  end
+
   test "generates stable canonical id from url" do
     url = "https://transparencia.gob.es/publicidad-activa"
     id = Resources::Services::ParseUrlPath.canonical_id(url)

@@ -4,8 +4,6 @@ module Resources
   module Services
     class LoadIndex
       INDEX_JSON_PATH = Rails.root.join("data/publicidad-activa-index.json")
-      ORGANISM_CODE_PATTERN = /\A[a-z]{2,5}\z/
-
       FeaturedOrganism = Struct.new(:code, :label, :description, :icon, :count, keyword_init: true)
 
       def self.call(path: INDEX_JSON_PATH)
@@ -48,7 +46,7 @@ module Resources
         catalog = Organisms::Services::LoadCatalog.call
 
         counts
-          .select { |code, _| code.match?(ORGANISM_CODE_PATTERN) }
+          .select { |code, _| catalog.known?(code) }
           .sort_by { |_, count| -count }
           .first(12)
           .map do |code, count|

@@ -7,6 +7,19 @@ module Resources
     class ParseUrlPath
       BASE_URL = "https://transparencia.gob.es"
       ORGANISMO_SLUG_PATTERN = /\A(rpt|estructura|funciones|normativa|rat)-(.+)\z/
+      MONTH_NAMES = %w[
+        enero febrero marzo abril mayo junio julio agosto
+        septiembre setiembre octubre noviembre diciembre
+      ].join("|").freeze
+      PERIOD_CODE_PATTERN = /
+        \A-?(?:#{MONTH_NAMES})-\d{4}\z
+        | \A\d{4}\z
+        | legislatura
+        | \Axleg\d+
+        | \Ahistorico\z
+        | otras-disposiciones
+        | aplicacion
+      /xi
 
       ParsedPath = Struct.new(
         :id,
@@ -38,7 +51,7 @@ module Resources
         last_segment = @segments.last
         tipo, organismo_code = extract_tipo_organismo(last_segment)
         vigencia = @segments.include?("historico") ? "historico" : "vigente"
-        periodo = extract_periodo(last_segment, organismo_code)
+        periodo = extract_periodo(last_segment, organismo_code, tipo)
 
         ParsedPath.new(
           id: canonical_id(@url),
@@ -86,10 +99,16 @@ module Resources
         code = match[2]
         return [ nil, nil ] if code.include?(".") || code.include?("html")
 
+        return [ match[1], nil ] if period_code?(code)
+
         [ match[1], code ]
       end
 
-      def extract_periodo(last_segment, organismo_code)
+      def extract_periodo(last_segment, organismo_code, tipo)
+        if organismo_code.nil? && tipo && period_segment?(last_segment)
+          return last_segment
+        end
+
         return nil unless organismo_code
 
         idx = @segments.rindex(last_segment)
@@ -102,10 +121,14 @@ module Resources
         candidate
       end
 
+      def period_code?(code)
+        code.match?(PERIOD_CODE_PATTERN)
+      end
+
       def period_segment?(segment)
-        segment.match?(/\A(rpt-|rpt--|xii|xiii|xiv|xi|x-legislatura|ejercicio-)/i) ||
+        segment.match?(/\A(rpt-|rpt--|funciones-|normativa-|estructura-|xii|xiii|xiv|xi|x-legislatura|ejercicio-)/i) ||
           segment.match?(/legislatura/i) ||
-          segment.match?(/\A\d{4}\z/)
+          segment.match?(PERIOD_CODE_PATTERN)
       end
 
       def canonical_id(url)
