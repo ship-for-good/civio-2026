@@ -1,3 +1,4 @@
+import type { ChangeEvent } from 'react'
 import { TODAY } from '../utils/dates.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
@@ -12,7 +13,7 @@ export default function Header({ onCSVLoad, onNewExpediente }: HeaderProps) {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
