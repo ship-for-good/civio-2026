@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: "html",
   use: {
     baseURL: "http://localhost:3000",
@@ -20,8 +20,8 @@ export default defineConfig({
   ],
   webServer: {
     command: "pnpm dev",
-    url: "http://localhost:3000",
+    url: "http://localhost:3000/es/buscador",
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    timeout: 120_000,
   },
 });

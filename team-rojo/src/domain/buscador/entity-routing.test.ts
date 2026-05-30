@@ -51,7 +51,18 @@ describe("entityMatch en Classification — link + datos", () => {
     expect(result.deepLink).toBeUndefined();
   });
 
-  it("Given un tema que no es derecho_acceso, Then nunca adjunta entityMatch", () => {
+  it("Given topicId hacienda (atajo del grafo), Then adjunta entityMatch y deepLink sin detectEntity", () => {
+    const result = buildClassificationFromTopicId("hacienda", "hacienda");
+
+    expect(result.topicId).toBe("hacienda");
+    expect(result.portal).toBe("DERECHO_ACCESO");
+    expect(result.entityMatch).toBeDefined();
+    expect(result.entityMatch!.idAmb).toBe(101514);
+    expect(result.entityMatch!.portadaUrl).toBe(HACIENDA_PORTADA);
+    expect(result.deepLink).toBe(HACIENDA_PORTADA);
+  });
+
+  it("Given un tema que no es derecho_acceso ni hacienda, Then nunca adjunta entityMatch", () => {
     const result = classify("contratos de limpieza del ayuntamiento");
 
     expect(result.portal).toBe("PLACE");

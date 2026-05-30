@@ -1,5 +1,8 @@
 const PROC_ID = 133628;
 
+/** idAmb of Ministerio de Hacienda — v1 happy-path entity (Marc's `hacienda` topic). */
+export const HACIENDA_ID_AMB = 101514;
+
 export type EntityMatch = {
   idAmb: number;
   name: string;

@@ -107,18 +107,22 @@ describe("Test Suite 2: Everyday Citizen (Interactive Routing & Error Handling)"
 
 describe("Test Suite 3: Fallback & Edge Cases", () => {
   describe("Feature: Fuzzy search fallback for typos in keywords", () => {
-    it("Given 'solistud aceso Hacienda' con fuzzyThreshold=2, Then clasifica como DERECHO_ACCESO con deepLink a Hacienda", () => {
+    it("Given 'solistud aceso Hacienda' con fuzzyThreshold=2, Then clasifica como hacienda con deepLink a Hacienda", () => {
       const result = classify("solistud aceso Hacienda", { fuzzyThreshold: 2 });
 
+      expect(result.topicId).toBe("hacienda");
       expect(result.portal).toBe("DERECHO_ACCESO");
       expect(result.deepLink).toBeDefined();
       expect(result.deepLink).toContain("idAmb=101514");
+      expect(result.entityMatch?.idAmb).toBe(101514);
     });
 
-    it("Given 'solistud aceso Hacienda' sin fuzzy matching, Then NO clasifica como DERECHO_ACCESO (typos)", () => {
+    it("Given 'solistud aceso Hacienda' sin fuzzy, Then clasifica como hacienda por keyword exacta", () => {
       const result = classify("solistud aceso Hacienda");
 
-      expect(result.portal).not.toBe("DERECHO_ACCESO");
+      expect(result.topicId).toBe("hacienda");
+      expect(result.portal).toBe("DERECHO_ACCESO");
+      expect(result.deepLink).toContain("idAmb=101514");
     });
 
     it("Given consulta con typos y fuzzyThreshold=2, Then detectEntity encuentra 'Hacienda' como entidad", () => {

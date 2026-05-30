@@ -136,6 +136,25 @@ describe("Buscador — Derecho de Acceso (flujo US-1)", () => {
     vi.unstubAllGlobals();
   });
 
+  it("When el ciudadano busca 'hacienda', Then muestra el atajo hacienda con entityMatch y portada", async () => {
+    const user = userEvent.setup();
+    render(<Buscador />);
+
+    const input = screen.getByRole("textbox", { name: /Pregunta de información pública/i });
+    await user.type(input, "hacienda");
+    await user.click(screen.getByRole("button", { name: /Buscar/i }));
+
+    expect(await screen.findByText("Derecho de acceso — Ministerio de Hacienda")).toBeInTheDocument();
+    expect(screen.getByText(/Tu solicitud va dirigida a/i)).toBeInTheDocument();
+
+    const link = screen.getByRole("link", { name: /Ir al portal/i });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514"
+    );
+    expect(link).toHaveTextContent("búsqueda lista");
+  });
+
   it("When el ciudadano busca 'solicitud acceso información Ministerio de Hacienda', Then se muestra Sede Electrónica con deepLink a Hacienda", async () => {
     const user = userEvent.setup();
     render(<Buscador />);
@@ -180,21 +199,5 @@ describe("Buscador — Derecho de Acceso (flujo US-1)", () => {
     await user.click(screen.getByText(/Contratos de limpieza del Ayuntamiento de Madrid/i));
 
     expect(await screen.findByText("Plataforma de Contratación del Sector Público")).toBeInTheDocument();
-  });
-
-  it("When el ciudadano busca 'pedir documentos Defensa', Then se muestra DERECHO_ACCESO con deepLink a Defensa", async () => {
-    const user = userEvent.setup();
-    render(<Buscador />);
-
-    const input = screen.getByRole("textbox", { name: /Pregunta de información pública/i });
-    await user.type(input, "pedir documentos Defensa");
-    await user.click(screen.getByRole("button", { name: /Buscar/i }));
-
-    expect(await screen.findByText("Sede Electrónica — Derecho de Acceso")).toBeInTheDocument();
-    const link = screen.getByRole("link", { name: /Ir al portal/i });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101510"
-    );
   });
 });

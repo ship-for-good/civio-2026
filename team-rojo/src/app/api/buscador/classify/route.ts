@@ -27,20 +27,30 @@ export async function POST(request: Request) {
   const { buildClassificationFromTopicId } = await import(
     "@/domain/buscador/classification"
   );
+  const { classify } = await import("@/domain/buscador/classify");
+
+  let classification;
+  let source: "cursor" | "deterministic";
+  let warning: string | undefined;
 
   try {
     getCursorApiKey();
+    const resolved = await resolveTopicId(query);
+    classification = buildClassificationFromTopicId(query, resolved.topicId);
+    source = "cursor";
+    warning = resolved.error;
   } catch (err) {
-    const message = err instanceof Error ? err.message : "CURSOR_API_KEY no configurada";
-    return NextResponse.json({ error: message }, { status: 503 });
+    classification = classify(query);
+    source = "deterministic";
+    const message = err instanceof Error ? err.message : "";
+    if (message.includes("CURSOR_API_KEY")) {
+      warning = "Clasificación determinista (CURSOR_API_KEY no configurada)";
+    }
   }
-
-  const resolved = await resolveTopicId(query);
-  const classification = buildClassificationFromTopicId(query, resolved.topicId);
 
   return NextResponse.json({
     classification,
-    source: "cursor" as const,
-    ...(resolved.error !== undefined && { warning: resolved.error }),
+    source,
+    ...(warning !== undefined && { warning }),
   });
 }

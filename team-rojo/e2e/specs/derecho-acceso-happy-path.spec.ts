@@ -27,8 +27,15 @@ test.describe("Happy Path: Derecho de Acceso → Ministerio de Hacienda", () => 
       await buscador.waitForResult();
 
       await expect(buscador.resultLabel).toHaveText(
-        "Sede Electrónica — Derecho de Acceso"
+        "Derecho de acceso — Ministerio de Hacienda"
       );
+
+      await expect(
+        page.getByText(/Tu solicitud va dirigida a/i)
+      ).toBeVisible();
+      await expect(
+        page.getByText("Ministerio de Hacienda", { exact: true })
+      ).toBeVisible();
 
       const href = await buscador.getDeepLinkHref();
       expect(href).toBe(HACIENDA_DERECHO_ACCESO_DEEP_LINK);
@@ -38,7 +45,6 @@ test.describe("Happy Path: Derecho de Acceso → Ministerio de Hacienda", () => 
     });
 
     test("A4: Clicking deep-link opens Ministerio de Hacienda sede in new tab", async ({
-      context,
       page,
     }) => {
       const buscador = new BuscadorPage(page);
@@ -89,11 +95,18 @@ test.describe("Happy Path: Derecho de Acceso → Ministerio de Hacienda", () => 
       await buscador.waitForResult();
 
       await expect(buscador.resultLabel).toHaveText(
-        "Sede Electrónica — Derecho de Acceso"
+        "Derecho de acceso — Ministerio de Hacienda"
       );
 
+      await expect(
+        page.getByText(/Tu solicitud va dirigida a/i)
+      ).toBeVisible();
+      await expect(
+        page.getByText("Ministerio de Hacienda", { exact: true })
+      ).toBeVisible();
+
       const explanation = await buscador.explanation.innerText();
-      expect(explanation.toLowerCase()).toContain("derecho de acceso");
+      expect(explanation.toLowerCase()).toContain("hacienda");
 
       const stepsCount = await buscador.getStepsCount();
       expect(stepsCount).toBeGreaterThanOrEqual(3);

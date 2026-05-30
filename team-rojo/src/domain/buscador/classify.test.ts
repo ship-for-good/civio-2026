@@ -141,13 +141,18 @@ describe("classify — grafo v2 (keywords.json)", () => {
   });
 
   describe("hacienda", () => {
-    it("Given hacienda, Then topicId es hacienda con URL del ámbito Hacienda", () => {
+    const HACIENDA_PORTADA =
+      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514";
+
+    it("Given hacienda, Then topicId es hacienda con entityMatch y deepLink a portada Hacienda", () => {
       const result = classify("hacienda");
       expect(result.topicId).toBe("hacienda");
-      expect(result.portalUrl).toBe(
-        "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514"
-      );
+      expect(result.portal).toBe("DERECHO_ACCESO");
+      expect(result.portalUrl).toBe(HACIENDA_PORTADA);
       expect(result.routingType).toBe("externo");
+      expect(result.entityMatch?.idAmb).toBe(101514);
+      expect(result.entityMatch?.name).toBe("Ministerio de Hacienda");
+      expect(result.deepLink).toBe(HACIENDA_PORTADA);
     });
   });
 

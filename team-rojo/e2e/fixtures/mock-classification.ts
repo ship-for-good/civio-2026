@@ -1,4 +1,5 @@
 import type { Classification } from "../../src/domain/buscador/types";
+import type { EntityMatch } from "../../src/domain/buscador/entities";
 import type { Page } from "@playwright/test";
 
 export const MINISTERIO_HACIENDA_ENTITY_ID = 101514;
@@ -6,27 +7,40 @@ export const PROC_ID = 133628;
 
 export const HACIENDA_DERECHO_ACCESO_DEEP_LINK = `https://transparencia.sede.gob.es/procedimiento/portada?idProc=${PROC_ID}&idAmb=${MINISTERIO_HACIENDA_ENTITY_ID}`;
 
+export function createHaciendaEntityMatch(): EntityMatch {
+  return {
+    idAmb: MINISTERIO_HACIENDA_ENTITY_ID,
+    name: "Ministerio de Hacienda",
+    portadaUrl: HACIENDA_DERECHO_ACCESO_DEEP_LINK,
+    certAuthUrl: `https://transparencia.sede.gob.es/procedimiento/formulario?idProc=${PROC_ID}&idAmb=${MINISTERIO_HACIENDA_ENTITY_ID}`,
+  };
+}
+
+/** v1 happy path: Marc's `hacienda` topic with entityMatch + portada deepLink. */
 export function createMockClassification(
-  query: string,
+  _query: string,
   overrides?: Partial<Classification>
 ): Classification {
+  const entityMatch = createHaciendaEntityMatch();
+
   return {
-    topicId: "derecho_acceso",
+    topicId: "hacienda",
     portal: "DERECHO_ACCESO",
-    label: "Sede Electrónica — Derecho de Acceso",
-    portalUrl: "https://transparencia.gob.es",
+    label: "Derecho de acceso — Ministerio de Hacienda",
+    portalUrl: HACIENDA_DERECHO_ACCESO_DEEP_LINK,
     routingType: "externo",
     isSpecialSection: false,
     explanation:
-      "Si la información no está publicada, puedes ejercer tu derecho de acceso ante el organismo que la tenga. El Portal de Transparencia explica el procedimiento y los plazos.",
+      "Para pedir información del Ministerio de Hacienda que no esté publicada, debes presentar una solicitud de acceso en la sede electrónica del Portal de la Transparencia, en el procedimiento del ámbito de Hacienda.",
     steps: [
-      "Identifica el organismo que tiene la información (ministerio, agencia, etc.).",
-      "Entra en la sección de derecho de acceso del Portal de Transparencia.",
-      "Presenta tu solicitud por el canal indicado (formulario, email o sede electrónica).",
-      "El organismo debe responder en el plazo legal (un mes, ampliable).",
+      "Abre el procedimiento de derecho de acceso en la sede de transparencia (ámbito Hacienda).",
+      "Identifícate con Cl@ve, certificado digital o DNI-e.",
+      "Cumplimenta el formulario describiendo con claridad la información que solicitas.",
+      "Guarda el resguardo de registro; podrás seguir el expediente en «Mis expedientes».",
     ],
     searchTip:
-      "Indica el ministerio u organismo en tu consulta para ir directamente a su sede electrónica.",
+      "Indica el documento o dato concreto; no hace falta justificar el motivo de la solicitud.",
+    entityMatch,
     deepLink: HACIENDA_DERECHO_ACCESO_DEEP_LINK,
     ...overrides,
   };

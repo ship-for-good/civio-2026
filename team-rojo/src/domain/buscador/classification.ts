@@ -1,7 +1,12 @@
 import type { Classification, KnowledgeNode, TopicId } from "./types";
 import { KNOWLEDGE_GRAPH } from "./knowledge-graph";
 import { TOPICS } from "./topics";
-import { detectEntity, findEntityById, type EntityMatch } from "./entities";
+import {
+  detectEntity,
+  findEntityById,
+  HACIENDA_ID_AMB,
+  type EntityMatch,
+} from "./entities";
 
 /** Opciones de resolución. `idAmb` permite que el agente fije la entidad. */
 export type ClassifyOptions = {
@@ -20,7 +25,13 @@ const TOPIC_TO_PORTAL: Record<TopicId, string> = {
   derecho_acceso: "DERECHO_ACCESO",
   normativa_boe: "BOE",
   estatales_generales: "TRANSPARENCIA",
+  hacienda: "DERECHO_ACCESO",
   unknown: "UNKNOWN",
+};
+
+/** Entity-backed topics: graph node carries the portada URL; entity data comes from idAmb. */
+const ENTITY_TOPIC_ID_AMB: Partial<Record<TopicId, number>> = {
+  hacienda: HACIENDA_ID_AMB,
 };
 
 export function isKnownTopicId(id: string): id is TopicId {
@@ -61,14 +72,18 @@ export function buildClassificationFromTopicId(
 }
 
 /**
- * Resuelve la entidad para una solicitud de derecho de acceso: si el agente ya
- * fijó el `idAmb`, se recupera por id; si no, se detecta a partir de la consulta.
+ * Resuelve la entidad objetivo:
+ * - Temas con entidad fija (`hacienda`, …) → lookup por idAmb del grafo.
+ * - `derecho_acceso` → idAmb del agente o detección heurística en la consulta.
  */
 function resolveEntity(
   topicId: TopicId,
   query: string,
   options?: ClassifyOptions
 ): EntityMatch | null {
+  const topicEntityId = ENTITY_TOPIC_ID_AMB[topicId];
+  if (topicEntityId != null) return findEntityById(topicEntityId);
+
   if (topicId !== "derecho_acceso") return null;
   if (options?.idAmb != null) return findEntityById(options.idAmb);
   return detectEntity(query, { fuzzyThreshold: options?.fuzzyThreshold ?? 0 });

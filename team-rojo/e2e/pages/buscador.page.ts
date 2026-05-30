@@ -42,11 +42,12 @@ export class BuscadorPage {
   }
 
   async goto(locale = "es"): Promise<void> {
-    await this.page.goto(`/${locale}/buscador`, { waitUntil: "networkidle" });
+    await this.page.goto(`/${locale}/buscador`, { waitUntil: "domcontentloaded" });
+    await this.heading.waitFor({ state: "visible", timeout: 30_000 });
   }
 
   async search(query: string): Promise<void> {
-    await this.searchInput.waitFor({ state: "visible", timeout: 10_000 });
+    await this.searchInput.waitFor({ state: "visible", timeout: 15_000 });
     await this.searchInput.fill(query);
     await this.submitButton.click();
   }
