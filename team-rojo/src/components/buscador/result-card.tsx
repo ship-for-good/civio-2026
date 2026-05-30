@@ -10,12 +10,12 @@ type ResultCardProps = {
 
 export function ResultCard({ data, onReset }: ResultCardProps) {
   return (
-    <div className="border border-border bg-background rounded-xl p-6 shadow-sm space-y-6">
+    <div data-testid="result-card" className="border border-border bg-background rounded-xl p-6 shadow-sm space-y-6">
       <PortalBadge data={data} />
 
       <div>
         <h2 className="text-base font-semibold text-foreground mb-2">Por qué aquí</h2>
-        <p className="text-foreground-muted leading-relaxed">{data.explanation}</p>
+        <p data-testid="result-explanation" className="text-foreground-muted leading-relaxed">{data.explanation}</p>
       </div>
 
       <div>

@@ -7,7 +7,7 @@ type PortalBadgeProps = {
 export function PortalBadge({ data }: PortalBadgeProps) {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <span className="inline-flex items-center px-3 py-1 rounded-full bg-accent-light text-accent text-sm font-medium">
+      <span data-testid="result-label" className="inline-flex items-center px-3 py-1 rounded-full bg-accent-light text-accent text-sm font-medium">
         {data.label}
       </span>
       <a
