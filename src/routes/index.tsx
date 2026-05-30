@@ -1,73 +1,52 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { SiteHeader } from "@/components/aina/SiteHeader";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChatHero } from "@/components/aina/ChatHero";
 import { FeatureCards } from "@/components/aina/FeatureCards";
-import { NearbyPanel } from "@/components/aina/NearbyPanel";
-import { PopularPanel } from "@/components/aina/PopularPanel";
-import { MissedPanel } from "@/components/aina/MissedPanel";
-import { SiteFooter } from "@/components/aina/SiteFooter";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AIna de Transparència — La transparència pública, al teu abast" },
+      { title: "AIna de Transparència — MCP super powered, dades públiques certeres" },
       {
         name: "description",
         content:
-          "Fes preguntes sobre dades públiques de manera senzilla i entenedora. Pregunta. Descobreix. Entén.",
+          "Pregunta sobre dades públiques amb una IA MCP super powered. Respostes verificables, fonts oficials i informació en directe.",
       },
       { property: "og:title", content: "AIna de Transparència" },
-      {
-        property: "og:description",
-        content: "La transparència pública, al teu abast. Pregunta. Descobreix. Entén.",
-      },
+      { property: "og:description", content: "MCP super powered. Pregunta. Descobreix. Entén." },
     ],
   }),
   component: Index,
 });
 
 function Index() {
-  const [active, setActive] = useState<string | null>(null);
-
-  const toggle = (id: string) => setActive((cur) => (cur === id ? null : id));
-
   return (
-    <div className="bg-background flex min-h-dvh flex-col">
-      <SiteHeader />
-      <main className="flex-1">
-        <ChatHero />
-        <FeatureCards active={active} onToggle={toggle} />
+    <div className="bg-background relative flex min-h-dvh flex-col overflow-hidden">
+      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-0 h-[75vh]">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, oklch(0.62 0.13 235 / 0.55) 0%, oklch(0.78 0.10 235 / 0.30) 35%, oklch(0.95 0.04 230 / 0.15) 65%, transparent 100%)",
+          }}
+        />
+      </div>
 
-        {active && (
-          <section
-            id={`${active}-panel`}
-            aria-live="polite"
-            className="mx-auto max-w-6xl px-4 pb-16 sm:px-6"
-          >
-            <div className="animate-fade-in-up border-border bg-card/50 rounded-2xl border p-4 sm:p-6">
-              <header className="mb-5 flex items-center justify-between">
-                <h2 className="text-foreground text-xl font-semibold tracking-tight">
-                  {active === "nearby" && "Què passa a prop meu?"}
-                  {active === "popular" && "Temes populars"}
-                  {active === "missed" && "Potser t'has perdut això"}
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setActive(null)}
-                  className="border-border bg-background text-muted-foreground hover:bg-muted rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors"
-                >
-                  Tanca
-                </button>
-              </header>
-              {active === "nearby" && <NearbyPanel />}
-              {active === "popular" && <PopularPanel />}
-              {active === "missed" && <MissedPanel />}
-            </div>
-          </section>
-        )}
+      <div className="absolute top-0 right-0 left-0 z-30 flex items-center justify-between px-4 pt-4 sm:px-6 sm:pt-5">
+        <Link to="/" aria-label="Inici" className="inline-flex items-center gap-2">
+          <img src={logo} alt="" width={28} height={28} className="h-7 w-7 drop-shadow-sm" />
+          <span className="text-foreground/90 text-sm font-semibold tracking-tight">AIna</span>
+        </Link>
+        <ThemeToggle />
+      </div>
+
+      <main className="relative z-10 flex flex-1 flex-col justify-start overflow-y-auto pt-14 sm:pt-16">
+        <ChatHero />
+        <div className="pb-6 sm:pb-8">
+          <FeatureCards />
+        </div>
       </main>
-      <SiteFooter />
     </div>
   );
 }

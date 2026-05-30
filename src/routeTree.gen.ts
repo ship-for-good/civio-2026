@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TemesPopularsRouteImport } from './routes/temes-populars'
+import { Route as PotserThasPerdutRouteImport } from './routes/potser-thas-perdut'
+import { Route as ApropMeuRouteImport } from './routes/aprop-meu'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TemesPopularsRoute = TemesPopularsRouteImport.update({
+  id: '/temes-populars',
+  path: '/temes-populars',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PotserThasPerdutRoute = PotserThasPerdutRouteImport.update({
+  id: '/potser-thas-perdut',
+  path: '/potser-thas-perdut',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApropMeuRoute = ApropMeuRouteImport.update({
+  id: '/aprop-meu',
+  path: '/aprop-meu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,66 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aprop-meu': typeof ApropMeuRoute
+  '/potser-thas-perdut': typeof PotserThasPerdutRoute
+  '/temes-populars': typeof TemesPopularsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aprop-meu': typeof ApropMeuRoute
+  '/potser-thas-perdut': typeof PotserThasPerdutRoute
+  '/temes-populars': typeof TemesPopularsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aprop-meu': typeof ApropMeuRoute
+  '/potser-thas-perdut': typeof PotserThasPerdutRoute
+  '/temes-populars': typeof TemesPopularsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/aprop-meu' | '/potser-thas-perdut' | '/temes-populars'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/aprop-meu' | '/potser-thas-perdut' | '/temes-populars'
+  id:
+    | '__root__'
+    | '/'
+    | '/aprop-meu'
+    | '/potser-thas-perdut'
+    | '/temes-populars'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApropMeuRoute: typeof ApropMeuRoute
+  PotserThasPerdutRoute: typeof PotserThasPerdutRoute
+  TemesPopularsRoute: typeof TemesPopularsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/temes-populars': {
+      id: '/temes-populars'
+      path: '/temes-populars'
+      fullPath: '/temes-populars'
+      preLoaderRoute: typeof TemesPopularsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/potser-thas-perdut': {
+      id: '/potser-thas-perdut'
+      path: '/potser-thas-perdut'
+      fullPath: '/potser-thas-perdut'
+      preLoaderRoute: typeof PotserThasPerdutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aprop-meu': {
+      id: '/aprop-meu'
+      path: '/aprop-meu'
+      fullPath: '/aprop-meu'
+      preLoaderRoute: typeof ApropMeuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +109,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApropMeuRoute: ApropMeuRoute,
+  PotserThasPerdutRoute: PotserThasPerdutRoute,
+  TemesPopularsRoute: TemesPopularsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

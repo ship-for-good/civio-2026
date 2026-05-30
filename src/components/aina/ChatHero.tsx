@@ -1,20 +1,45 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowUp, Sparkles } from "lucide-react";
-
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowUp, Database, ShieldCheck, Zap } from "lucide-react";
 import { useExampleQuestions } from "@/hooks/use-aina-queries";
 import { EXAMPLE_QUESTIONS } from "@/lib/db/seed-data";
+
+const SECONDARY_TOGGLES = [
+  { id: "sources", label: "Fonts oficials", Icon: ShieldCheck },
+  { id: "live", label: "Dades en directe", Icon: Database },
+] as const;
 
 function useTypewriter(phrases: string[], active: boolean) {
   const [text, setText] = useState("");
   const [phraseIdx, setPhraseIdx] = useState(0);
+  const phrasesRef = useRef(phrases);
+  phrasesRef.current = phrases;
+
+  const phrasesKey = phrases.join("\n");
+  useEffect(() => {
+    setPhraseIdx(0);
+    setText("");
+  }, [phrasesKey]);
 
   useEffect(() => {
-    if (!active || phrases.length === 0) return;
-    const phrase = phrases[phraseIdx % phrases.length];
+    if (!active) {
+      setText("");
+      return;
+    }
+    const list = phrasesRef.current;
+    if (list.length === 0) return;
+
+    const phrase = list[phraseIdx % list.length];
     let i = 0;
+    let cancelled = false;
     let timeout: ReturnType<typeof setTimeout>;
 
+    const stop = () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+
     const type = () => {
+      if (cancelled) return;
       if (i <= phrase.length) {
         setText(phrase.slice(0, i));
         i++;
@@ -24,17 +49,18 @@ function useTypewriter(phrases: string[], active: boolean) {
       }
     };
     const erase = () => {
+      if (cancelled) return;
       if (i >= 0) {
         setText(phrase.slice(0, i));
         i--;
         timeout = setTimeout(erase, 20);
       } else {
-        setPhraseIdx((p) => (p + 1) % phrases.length);
+        setPhraseIdx((p) => (p + 1) % list.length);
       }
     };
     timeout = setTimeout(type, 300);
-    return () => clearTimeout(timeout);
-  }, [phraseIdx, active, phrases]);
+    return stop;
+  }, [phraseIdx, active]);
 
   return text;
 }
@@ -44,7 +70,10 @@ export function ChatHero() {
   const [reply, setReply] = useState<string | null>(null);
   const isEmpty = value.length === 0;
   const { data: questions } = useExampleQuestions();
-  const phrases = questions?.map((q) => q.text_ca) ?? EXAMPLE_QUESTIONS;
+  const phrases = useMemo(
+    () => (questions?.length ? questions.map((q) => q.text_ca) : EXAMPLE_QUESTIONS),
+    [questions],
+  );
   const placeholder = useTypewriter(phrases, isEmpty);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -59,29 +88,32 @@ export function ChatHero() {
   };
 
   return (
-    <section id="top" className="bg-hero relative overflow-hidden">
-      <div className="mx-auto max-w-3xl px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-24 sm:pb-20">
-        <div className="animate-fade-in-up border-border bg-card/70 text-muted-foreground shadow-soft inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-          <Sparkles className="text-accent h-3.5 w-3.5" aria-hidden="true" />
-          La transparència pública, al teu abast
+    <section id="top" className="relative w-full">
+      <div className="mx-auto max-w-3xl px-4 pt-4 pb-6 text-center sm:px-6 sm:pt-6 sm:pb-8">
+        <div className="animate-fade-in-up border-accent/40 bg-background/60 text-accent inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold shadow-[0_0_0_4px_oklch(0.74_0.16_55/0.08)] backdrop-blur-md">
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+          <span>
+            <strong className="font-semibold">MCP</strong> super powered
+          </span>
         </div>
 
-        <h1 className="animate-fade-in-up text-foreground mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-          AIna de Transparència
+        <h1 className="animate-fade-in-up text-foreground mt-6 text-4xl tracking-tight text-balance sm:mt-8 sm:text-6xl">
+          <span className="font-extrabold">AI</span>
+          <span className="font-medium">na de Transparència</span>
         </h1>
-        <p className="animate-fade-in-up text-muted-foreground mx-auto mt-4 max-w-xl text-base text-pretty sm:text-lg">
-          Fes preguntes sobre dades públiques de manera senzilla i entenedora.
-        </p>
-        <p className="animate-fade-in-up text-muted-foreground mt-2 text-sm">
-          Pregunta. Descobreix. Entén.
+
+        <p className="animate-fade-in-up text-muted-foreground mx-auto mt-4 max-w-xl text-pretty text-sm sm:text-base">
+          No és una IA qualsevol. Connectada amb el protocol{" "}
+          <strong className="text-accent">MCP</strong>, consulta dades públiques en directe i et
+          respon amb fonts verificables. Més precisa, més certera.
         </p>
 
         <form
           onSubmit={onSubmit}
-          className="animate-fade-in-up mx-auto mt-10 max-w-2xl"
+          className="animate-fade-in-up relative mx-auto mt-6 max-w-2xl sm:mt-8"
           aria-label="Fes una pregunta sobre dades públiques"
         >
-          <div className="group border-border bg-card shadow-soft focus-within:border-primary/40 focus-within:shadow-glow relative rounded-2xl border p-2 transition-shadow">
+          <div className="liquid-glass liquid-glass-focus relative rounded-3xl p-3">
             <label htmlFor="aina-input" className="sr-only">
               Pregunta
             </label>
@@ -100,34 +132,62 @@ export function ChatHero() {
                 }
               }}
               rows={2}
-              className="text-foreground block w-full resize-none rounded-xl bg-transparent px-4 py-3 text-base placeholder:text-transparent focus:outline-none"
+              className="text-foreground block w-full resize-none rounded-2xl bg-transparent px-4 py-4 text-base placeholder:text-transparent focus:outline-none"
               placeholder="Escriu la teva pregunta…"
               aria-describedby="aina-helper"
             />
             {isEmpty && (
               <div
                 aria-hidden="true"
-                className="text-muted-foreground pointer-events-none absolute top-5 left-6 text-left text-base"
+                className="text-muted-foreground pointer-events-none absolute top-7 left-7 text-left text-base"
               >
-                <span className="caret">{placeholder}</span>
+                <span className="typewriter-caret">{placeholder}</span>
               </div>
             )}
-            <div className="flex items-center justify-between px-2 pt-1 pb-1">
-              <p id="aina-helper" className="text-muted-foreground text-xs">
-                Prem Enter per enviar
-              </p>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 px-2 pt-2.5 pb-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  aria-pressed="true"
+                  title="MCP super powered (sempre actiu)"
+                  className="border-accent/50 bg-accent/10 text-accent inline-flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold"
+                >
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="bg-accent absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" />
+                    <span className="bg-accent relative inline-flex h-1.5 w-1.5 rounded-full" />
+                  </span>
+                  MCP super powered
+                </button>
+                {SECONDARY_TOGGLES.map(({ id, label, Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-pressed="true"
+                    title={`${label} (sempre actiu)`}
+                    className="border-border bg-background/40 text-muted-foreground inline-flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium backdrop-blur-sm"
+                  >
+                    <Icon className="h-3 w-3" />
+                    {label}
+                  </button>
+                ))}
+              </div>
               <button
                 type="submit"
                 disabled={!value.trim()}
                 aria-label="Enviar pregunta"
-                className="bg-primary text-primary-foreground shadow-soft inline-flex h-10 w-10 items-center justify-center rounded-xl transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-[oklch(0.66_0.17_45)] text-white shadow-[0_8px_24px_-8px_oklch(0.74_0.16_55/0.6)] transition-all hover:scale-[1.04] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
               >
                 <ArrowUp className="h-5 w-5" />
               </button>
             </div>
           </div>
-          <p className="text-muted-foreground mt-3 text-xs">
-            Prototip visual · no connectat a un model d&apos;IA real
+          <p
+            id="aina-helper"
+            className="text-muted-foreground mt-4 inline-flex items-center gap-1.5 text-xs"
+          >
+            <Zap className="text-accent h-3 w-3" />
+            Prem Enter per enviar · Prototip visual, encara no connectat a un MCP real
           </p>
         </form>
 

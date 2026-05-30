@@ -11,22 +11,25 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+
+const NO_FLASH_SCRIPT = `(() => { try { const s = localStorage.getItem('aina-theme'); const m = window.matchMedia('(prefers-color-scheme: dark)').matches; const dark = s ? s === 'dark' : m; if (dark) document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = dark ? 'dark' : 'light'; } catch(e){} })();`;
 
 function NotFoundComponent() {
   return (
     <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
         <h1 className="text-foreground text-7xl font-bold">404</h1>
-        <h2 className="text-foreground mt-4 text-xl font-semibold">Page not found</h2>
+        <h2 className="text-foreground mt-4 text-xl font-semibold">Pàgina no trobada</h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          The page you're looking for doesn't exist or has been moved.
+          La pàgina que cerques no existeix o s&apos;ha mogut.
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
           >
-            Go home
+            Torna a l&apos;inici
           </Link>
         </div>
       </div>
@@ -45,10 +48,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
         <h1 className="text-foreground text-xl font-semibold tracking-tight">
-          This page didn't load
+          No s&apos;ha pogut carregar la pàgina
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Alguna cosa ha fallat. Pots refrescar o tornar a l&apos;inici.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -58,13 +61,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
           >
-            Try again
+            Torna-ho a provar
           </button>
           <a
             href="/"
             className="border-input bg-background text-foreground hover:bg-accent inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
           >
-            Go home
+            Inici
           </a>
         </div>
       </div>
@@ -86,17 +89,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "AIna de Transparència" },
       {
         property: "og:description",
-        content: "Pregunta. Descobreix. Entén. Portal de transparència per a ciutadans.",
+        content: "MCP super powered. Pregunta. Descobreix. Entén.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",
       },
+      { rel: "stylesheet", href: appCss },
     ],
   }),
   shellComponent: RootShell,
@@ -110,6 +114,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="ca">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SCRIPT }} />
       </head>
       <body>
         {children}
@@ -123,9 +128,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

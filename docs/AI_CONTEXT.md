@@ -35,6 +35,8 @@ Els ciutadans no saben on buscar dades públiques: el portal de transparencia é
 
 Fallback estàtic: `src/data/fallback.ts` si la DB no està disponible.
 
+Mapa «A prop meu»: `src/data/barcelona-tenders-verified.ts` — només licitacions reals de [licitacions.bcn.cat](https://licitacions.bcn.cat/) (URL `.../detalle?id={id}`). No usar IDs ficticis 9001–9015.
+
 ## Prompt semilla (enganxa al iniciar sessió)
 
 ```
