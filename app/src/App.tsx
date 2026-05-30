@@ -1,70 +1,75 @@
 import { useState, useCallback, useRef, useMemo } from 'react'
 import { parseCSV } from './utils/csv.js'
-import { enrichRequests } from './utils/urgency.js'
+import { enrichRequests, type EnrichedRequest } from './utils/urgency.js'
 import { CSV_RAW } from './data/csvData.js'
 import { TODAY, toISODate } from './utils/dates.js'
-import { buildExpediente } from './utils/expediente.js'
+import { buildExpediente, type ExpedienteInput } from './utils/expediente.js'
 import { uploadAttachments, insertExpediente } from './lib/expedientesRepo.js'
 import { useAuth } from './contexts/AuthContext.jsx'
 import Header from './components/Header.jsx'
 import StatsBar from './components/StatsBar.jsx'
 import DigestSection from './components/DigestSection.jsx'
-import FiltersBar from './components/FiltersBar.jsx'
+import FiltersBar, { type Filters } from './components/FiltersBar.jsx'
 import RequestsTable from './components/RequestsTable.jsx'
 import Toast from './components/Toast.jsx'
 import LoginPage from './components/LoginPage.jsx'
 import NewExpedienteModal from './components/NewExpedienteModal.jsx'
 
-const EMPTY_FILTERS = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
+const EMPTY_FILTERS: Filters = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
 
-function loadAndEnrich(csvText) {
+function loadAndEnrich(csvText: string): EnrichedRequest[] {
   return enrichRequests(parseCSV(csvText))
+}
+
+interface Sort {
+  column: string
+  dir: 'asc' | 'desc'
 }
 
 export default function App() {
   const { session } = useAuth()
-  const [requests, setRequests] = useState(() => loadAndEnrich(CSV_RAW))
-  const [filters, setFilters] = useState(EMPTY_FILTERS)
-  const [sort, setSort] = useState({ column: 'urgencyOrder', dir: 'asc' })
-  const [toastMsg, setToastMsg] = useState(null)
-  const [highlightedId, setHighlightedId] = useState(null)
+  const [requests, setRequests] = useState<EnrichedRequest[]>(() => loadAndEnrich(CSV_RAW))
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
+  const [sort, setSort] = useState<Sort>({ column: 'urgencyOrder', dir: 'asc' })
+  const [toastMsg, setToastMsg] = useState<string | null>(null)
+  const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const dragCounter = useRef(0)
 
   const existingIds = useMemo(() => requests.map(r => r['Id']), [requests])
 
-  const showToast = useCallback((msg) => {
+  const showToast = useCallback((msg: string) => {
     setToastMsg(msg)
     setTimeout(() => setToastMsg(null), 3000)
   }, [])
 
-  const handleCSVLoad = useCallback((csvText, sourceName) => {
+  const handleCSVLoad = useCallback((csvText: string, sourceName: string) => {
     const loaded = loadAndEnrich(csvText)
     setRequests(loaded)
     setFilters(EMPTY_FILTERS)
     showToast(`CSV cargado: ${sourceName} (${loaded.length} solicitudes)`)
   }, [showToast])
 
-  const handleHighlight = useCallback((id) => {
+  const handleHighlight = useCallback((id: string) => {
     setHighlightedId(id)
     setTimeout(() => setHighlightedId(null), 2000)
   }, [])
 
-  const handleSort = useCallback((col) => {
+  const handleSort = useCallback((col: string) => {
     setSort(prev => ({
       column: col,
       dir: prev.column === col && prev.dir === 'asc' ? 'desc' : 'asc',
     }))
   }, [])
 
-  const handleDragEnter = useCallback((e) => {
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     dragCounter.current++
     setIsDragOver(true)
   }, [])
 
-  const handleDragOver = useCallback((e) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
   }, [])
 
@@ -73,22 +78,21 @@ export default function App() {
     if (dragCounter.current === 0) setIsDragOver(false)
   }, [])
 
-  const handleDrop = useCallback((e) => {
+  const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     dragCounter.current = 0
     setIsDragOver(false)
     const file = e.dataTransfer.files[0]
     if (file && file.name.endsWith('.csv')) {
       const reader = new FileReader()
-      reader.onload = ev => handleCSVLoad(ev.target.result, file.name)
+      reader.onload = ev => handleCSVLoad(ev.target?.result as string, file.name)
       reader.readAsText(file, 'UTF-8')
     } else {
       showToast('Solo se aceptan archivos .csv')
     }
   }, [handleCSVLoad, showToast])
 
-  // Errors bubble up to the modal — no try/catch here (single error-handling site).
-  const handleCreateExpediente = useCallback(async (input, files) => {
+  const handleCreateExpediente = useCallback(async (input: ExpedienteInput, files: File[]) => {
     const raw = buildExpediente(input, toISODate(TODAY), { autor: session?.user?.email })
     const attachments = files.length
       ? await uploadAttachments(files, raw['Id'])
@@ -122,8 +126,8 @@ export default function App() {
   })
 
   const sorted = [...filtered].sort((a, b) => {
-    let va = a[sort.column] ?? ''
-    let vb = b[sort.column] ?? ''
+    let va: string | number = (a as Record<string, unknown>)[sort.column] as string ?? ''
+    let vb: string | number = (b as Record<string, unknown>)[sort.column] as string ?? ''
     if (sort.column === 'urgencyOrder' || sort.column === 'daysUntilDeadline') {
       va = va === '' || va === null || va === undefined ? 9999 : Number(va)
       vb = vb === '' || vb === null || vb === undefined ? 9999 : Number(vb)
