@@ -1,0 +1,23 @@
+<nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+  <%= link_to "Organismos", organisms_path, class: "hover:text-blue-700" %>
+  <% if @code %>
+    <span class="mx-1">›</span>
+    <% if @materia %>
+      <%= link_to @label, organism_path(@code), class: "hover:text-blue-700" %>
+    <% else %>
+      <span class="text-gray-700"><%= @label %></span>
+    <% end %>
+  <% end %>
+  <% if @materia %>
+    <span class="mx-1">›</span>
+    <% if @subtema %>
+      <%= link_to @materia_label, organism_materia_path(@code, @materia), class: "hover:text-blue-700" %>
+    <% else %>
+      <span class="text-gray-700"><%= @materia_label %></span>
+    <% end %>
+  <% end %>
+  <% if @subtema %>
+    <span class="mx-1">›</span>
+    <span class="text-gray-700"><%= @subtema_label %></span>
+  <% end %>
+</nav>

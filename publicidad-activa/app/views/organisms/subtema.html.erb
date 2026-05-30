@@ -1,0 +1,29 @@
+<% content_for :title, "#{@subtema_label} — #{@label}" %>
+
+<%= render "breadcrumb" %>
+
+<h1 class="text-2xl font-semibold mb-1"><%= @subtema_label %></h1>
+<p class="text-sm text-gray-500 mb-6"><%= @label %> · <%= @materia_label %></p>
+
+<% if @vigente %>
+  <section class="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+    <h2 class="font-medium mb-2">Versión vigente</h2>
+    <%= link_to "Abrir en transparencia.gob.es", @vigente.url, target: "_blank", rel: "noopener", class: "text-sm text-blue-700 hover:underline" %>
+  </section>
+<% end %>
+
+<% if @historicos.any? %>
+  <section>
+    <h2 class="font-medium mb-3">Histórico</h2>
+    <ul class="space-y-3">
+      <% @historicos.each do |resource| %>
+        <li class="bg-white border border-gray-200 rounded-lg p-4">
+          <p class="font-medium"><%= resource.periodo.presence || "Sin periodo" %><%= " · #{resource.tipo&.upcase}" if resource.tipo %></p>
+          <%= link_to "Abrir en transparencia.gob.es", resource.url, target: "_blank", rel: "noopener", class: "text-sm text-blue-700 hover:underline mt-2 inline-block" %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<p class="mt-6"><%= link_to "← #{@materia_label}", organism_materia_path(@code, @materia), class: "text-blue-700 hover:underline" %></p>
