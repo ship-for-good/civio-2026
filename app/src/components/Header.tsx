@@ -1,17 +1,22 @@
 import { TODAY } from '../utils/dates.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
-export default function Header({ onCSVLoad, onNewExpediente }) {
+interface HeaderProps {
+  onCSVLoad: (csvText: string, sourceName: string) => void
+  onNewExpediente: () => void
+}
+
+export default function Header({ onCSVLoad, onNewExpediente }: HeaderProps) {
   const { session, signOut } = useAuth()
   const todayStr = TODAY.toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
 
-  function handleFileChange(e) {
-    const file = e.target.files[0]
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = ev => onCSVLoad(ev.target.result, file.name)
+    reader.onload = ev => onCSVLoad(ev.target?.result as string, file.name)
     reader.readAsText(file, 'UTF-8')
     e.target.value = ''
   }
