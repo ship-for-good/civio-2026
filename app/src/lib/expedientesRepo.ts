@@ -1,11 +1,10 @@
-// Thin Supabase I/O — no business logic, fail fast (throws on error).
 import { supabase } from './supabase.js'
 import { slugifyFilename } from '../utils/expediente.js'
 
 const BUCKET = 'expediente-adjuntos'
 
-export async function uploadAttachments(files, expedienteId) {
-  const paths = []
+export async function uploadAttachments(files: File[], expedienteId: string): Promise<string[]> {
+  const paths: string[] = []
   for (const file of files) {
     const safeName = slugifyFilename(file.name)
     const path = `${expedienteId}/${safeName}`
@@ -16,12 +15,22 @@ export async function uploadAttachments(files, expedienteId) {
   return paths
 }
 
-export async function insertExpediente(record) {
+export interface ExpedienteRecord {
+  id: string
+  asunto: string
+  estado: string
+  fecha: string
+  vencimiento: string | null
+  autor: string
+  attachments: string[]
+}
+
+export async function insertExpediente(record: ExpedienteRecord): Promise<ExpedienteRecord> {
   const { data, error } = await supabase
     .from('expedientes')
     .insert(record)
     .select()
     .single()
   if (error) throw error
-  return data
+  return data as ExpedienteRecord
 }
