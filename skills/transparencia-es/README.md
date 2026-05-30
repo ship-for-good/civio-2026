@@ -50,6 +50,12 @@ python scripts/etl_placsp.py --periodo 202504 --organo "Barcelona" --cpv 4521 \
     --out data/contratos_demo.json
 ```
 
+Alternativa a instalar Python, Docker:
+
+```
+docker run -it --rm -v $PWD:/usr/src/app python bash
+```
+
 ## Ejemplos de preguntas que resuelve
 
 - *"¿Cuánto se ha gastado el Ayuntamiento de Barcelona en obras de colegios?"*
