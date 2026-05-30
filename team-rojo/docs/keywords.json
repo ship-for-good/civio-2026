@@ -1,0 +1,65 @@
+{
+  "version": "2.0",
+  "config": {
+    "fallback_strategy": "fuzzy_search",
+    "allow_external_routing": true
+  },
+  "knowledge_graph": [
+    {
+      "id": "retribuciones",
+      "keywords": ["sueldo", "salario", "retribución", "alto cargo", "ministro", "secretario", "nómina", "dieta"],
+      "url_fuente": "https://transparencia.gob.es/transparencia/publicidad-activa/organizacion-empleo/retribuciones",
+      "tipo": "interno",
+      "es_seccion_especial": false
+    },
+    {
+      "id": "contratacion",
+      "keywords": ["contrato", "obra", "servicio", "suministro", "licitación", "adjudicación", "cpv", "perfil del contratante", "licitador"],
+      "url_fuente": "https://contrataciondelestado.es",
+      "tipo": "externo",
+      "es_seccion_especial": false
+    },
+    {
+      "id": "subvenciones",
+      "keywords": ["subvención", "ayuda", "beca", "fondos europeos", "prestación", "subvenciones"],
+      "url_fuente": "https://www.infosubvenciones.es",
+      "tipo": "externo",
+      "es_seccion_especial": false
+    },
+    {
+      "id": "bienes_patrimonio",
+      "keywords": ["patrimonio", "bienes", "declaración", "renta", "conflicto de intereses", "declaración bienes"],
+      "url_fuente": "https://www.boe.es",
+      "tipo": "externo",
+      "es_seccion_especial": false
+    },
+    {
+      "id": "casa_real",
+      "keywords": ["casa real", "zarzuela", "jefatura del estado", "rey", "familia real"],
+      "url_fuente": "https://www.casareal.es/ES/transparencia/Paginas/transparencia.aspx",
+      "tipo": "externo",
+      "es_seccion_especial": true
+    },
+    {
+      "id": "derecho_acceso",
+      "keywords": ["solicitud", "acceso información", "derecho de acceso", "reclamación", "silencio administrativo", "queja", "pedir documentos"],
+      "url_fuente": "https://transparencia.gob.es/transparencia/atencion-ciudadano/derecho-acceso",
+      "tipo": "interno",
+      "es_seccion_especial": false
+    },
+    {
+      "id": "normativa_boe",
+      "keywords": ["boe", "ley", "real decreto", "norma", "reglamento", "convenio", "legislación"],
+      "url_fuente": "https://www.boe.es",
+      "tipo": "externo",
+      "es_seccion_especial": false
+    },
+    {
+      "id": "estatales_generales",
+      "keywords": ["ministerio", "organismo", "agencia", "administración general", "gobierno"],
+      "url_fuente": "https://transparencia.gob.es/transparencia/publicidad-activa/organizacion-empleo",
+      "tipo": "interno",
+      "es_seccion_especial": false
+    }
+  ]
+}
