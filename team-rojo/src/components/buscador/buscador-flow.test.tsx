@@ -3,11 +3,23 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Buscador } from "./buscador";
 import { buildClassificationFromTopicId } from "@/domain/buscador/classification";
+import { classify } from "@/domain/buscador/classify";
 
 function mockClassifyApi(classification: ReturnType<typeof buildClassificationFromTopicId>) {
   return vi.fn().mockResolvedValue({
     ok: true,
     json: async () => ({ classification, source: "cursor" }),
+  });
+}
+
+function mockClassifyApiDynamic() {
+  return vi.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
+    const { query } = JSON.parse((init?.body as string) ?? "{}") as { query: string };
+    const classification = classify(query);
+    return {
+      ok: true,
+      json: async () => ({ classification, source: "deterministic" }),
+    };
   });
 }
 
@@ -116,6 +128,14 @@ describe("Buscador — demo con API Cursor (mock)", () => {
 });
 
 describe("Buscador — Derecho de Acceso (flujo US-1)", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", mockClassifyApiDynamic());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("When el ciudadano busca 'solicitud acceso información Ministerio de Hacienda', Then se muestra Sede Electrónica con deepLink a Hacienda", async () => {
     const user = userEvent.setup();
     render(<Buscador />);

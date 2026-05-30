@@ -6,6 +6,24 @@
   },
   "knowledge_graph": [
     {
+      "id": "derecho_acceso",
+      "keywords": [
+        "solicitud",
+        "solicitar",
+        "acceso información",
+        "derecho de acceso",
+        "reclamación",
+        "silencio administrativo",
+        "queja",
+        "pedir documentos",
+        "pedir información",
+        "pedir"
+      ],
+      "source_url": "https://transparencia.sede.gob.es",
+      "type": "interno",
+      "is_special_section": false
+    },
+    {
       "id": "retribuciones",
       "keywords": [
         "sueldo",
@@ -78,21 +96,6 @@
       "source_url": "https://www.casareal.es/ES/transparencia/Paginas/transparencia.aspx",
       "type": "externo",
       "is_special_section": true
-    },
-    {
-      "id": "derecho_acceso",
-      "keywords": [
-        "solicitud",
-        "acceso información",
-        "derecho de acceso",
-        "reclamación",
-        "silencio administrativo",
-        "queja",
-        "pedir documentos"
-      ],
-      "source_url": "https://transparencia.gob.es/transparencia/atencion-ciudadano/derecho-acceso",
-      "type": "interno",
-      "is_special_section": false
     },
     {
       "id": "normativa_boe",

@@ -30,6 +30,7 @@ export type KeywordsConfig = {
 
 export type Classification = {
   topicId: TopicId;
+  portal: string;
   label: string;
   portalUrl: string;
   routingType: RoutingType;
@@ -45,5 +46,5 @@ export type TopicCopy = {
   explanation: string;
   steps: string[];
   searchTip?: string;
-  buildDeepLink?: (query: string) => string;
+  buildDeepLink?: (query: string) => string | undefined;
 };

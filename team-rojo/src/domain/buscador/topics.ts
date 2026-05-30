@@ -1,5 +1,6 @@
 import type { TopicCopy, TopicId } from "./types";
 import { buildContratacionDeepLink } from "./deep-links";
+import { detectEntity, buildPortadaUrl } from "./entities";
 
 export const TOPICS: Record<TopicId, TopicCopy> = {
   retribuciones: {
@@ -72,7 +73,7 @@ export const TOPICS: Record<TopicId, TopicCopy> = {
   },
 
   derecho_acceso: {
-    label: "Derecho de acceso a la información",
+    label: "Sede Electrónica — Derecho de Acceso",
     explanation:
       "Si la información no está publicada, puedes ejercer tu derecho de acceso ante el organismo que la tenga. El Portal de Transparencia explica el procedimiento y los plazos.",
     steps: [
@@ -82,7 +83,11 @@ export const TOPICS: Record<TopicId, TopicCopy> = {
       "El organismo debe responder en el plazo legal (un mes, ampliable).",
     ],
     searchTip:
-      "Describe con claridad qué documento o dato pides; no hace falta justificar el motivo.",
+      "Indica el ministerio u organismo en tu consulta para ir directamente a su sede electrónica.",
+    buildDeepLink: (query: string) => {
+      const entity = detectEntity(query);
+      return entity ? buildPortadaUrl(entity.idAmb) : undefined;
+    },
   },
 
   normativa_boe: {
