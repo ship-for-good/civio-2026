@@ -8,7 +8,7 @@ Internal tool for the Civio team to monitor, filter, and manage public informati
 
 - Node.js ≥ 18
 - npm ≥ 9
-- A [Supabase](https://supabase.com) project with magic link authentication enabled
+- A [Supabase](https://supabase.com) project with email/password authentication enabled
 
 ---
 
@@ -48,11 +48,12 @@ npm run preview   # serves the build locally for verification
 
 ## Authentication flow
 
-1. The user enters their email on the login screen.
-2. Supabase sends a magic link to that email.
-3. Clicking the link redirects back to the app and activates the session.
+The login screen supports **email + password** authentication with two modes:
 
-Only accounts registered in Supabase can log in. To add users: **Supabase → Authentication → Users → Invite user**.
+- **Login** — enter your email and password and click "Entrar".
+- **Sign up** — switch to sign-up mode, enter your email and password and click "Crear cuenta". If email confirmation is enabled in your Supabase project, a confirmation email will be sent before access is granted.
+
+To manage users: **Supabase → Authentication → Users → Invite user** (or users can self-register from the login screen).
 
 ---
 
@@ -73,4 +74,4 @@ The CSV must follow the format of `Solicitudes_anonimizado.csv` (columns: `Id`, 
 |---|---|---|
 | React | 18 | UI and state |
 | Vite | 6 | Build tool and dev server |
-| Supabase JS | 2 | Authentication (magic link) |
+| Supabase JS | 2 | Authentication (email + password) |

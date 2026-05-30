@@ -581,6 +581,24 @@ tr.highlighted { animation: highlight-pulse 2s ease-out; }
   cursor: not-allowed;
 }
 
+.login-toggle {
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  margin-top: 16px;
+}
+
+.login-toggle-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--civio-blue);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .login-sent {
   text-align: center;
   padding: 16px 0;

@@ -16,16 +16,16 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = (email) =>
-    supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin },
-    })
+  const signInWithPassword = (email, password) =>
+    supabase.auth.signInWithPassword({ email, password })
+
+  const signUp = (email, password) =>
+    supabase.auth.signUp({ email, password })
 
   const signOut = () => supabase.auth.signOut()
 
   return (
-    <AuthContext.Provider value={{ session, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, signInWithPassword, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   )
