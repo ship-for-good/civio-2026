@@ -99,7 +99,7 @@ describe('buildExpediente', () => {
       'Notas', 'Reclamación',
     ]
     for (const key of defaultedKeys) {
-      expect(req[key]).toBe('')
+      expect((req as unknown as Record<string, string>)[key]).toBe('')
     }
   })
 

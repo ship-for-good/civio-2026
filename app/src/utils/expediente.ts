@@ -40,7 +40,7 @@ export function buildExpediente(
   today: string,
   options: { autor?: string } = {},
 ): RawRequest {
-  const base = Object.fromEntries(CSV_KEYS.map(k => [k, ''])) as RawRequest
+  const base = Object.fromEntries(CSV_KEYS.map(k => [k, ''])) as unknown as RawRequest
 
   return {
     ...base,

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useMemo } from 'react'
 import { parseCSV } from './utils/csv.js'
-import { enrichRequests, type EnrichedRequest } from './utils/urgency.js'
+import { enrichRequests, type EnrichedRequest, type RawRequest } from './utils/urgency.js'
 import { CSV_RAW } from './data/csvData.js'
 import { TODAY, toISODate } from './utils/dates.js'
 import { buildExpediente, type ExpedienteInput } from './utils/expediente.js'
@@ -12,13 +12,12 @@ import DigestSection from './components/DigestSection.jsx'
 import FiltersBar, { type Filters } from './components/FiltersBar.jsx'
 import RequestsTable from './components/RequestsTable.jsx'
 import Toast from './components/Toast.jsx'
-import LoginPage from './components/LoginPage.jsx'
 import NewExpedienteModal from './components/NewExpedienteModal.jsx'
 
 const EMPTY_FILTERS: Filters = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
 
 function loadAndEnrich(csvText: string): EnrichedRequest[] {
-  return enrichRequests(parseCSV(csvText))
+  return enrichRequests(parseCSV(csvText) as unknown as RawRequest[])
 }
 
 interface Sort {
@@ -126,8 +125,8 @@ export default function App() {
   })
 
   const sorted = [...filtered].sort((a, b) => {
-    let va: string | number = (a as Record<string, unknown>)[sort.column] as string ?? ''
-    let vb: string | number = (b as Record<string, unknown>)[sort.column] as string ?? ''
+    let va: string | number = (a as unknown as Record<string, unknown>)[sort.column] as string ?? ''
+    let vb: string | number = (b as unknown as Record<string, unknown>)[sort.column] as string ?? ''
     if (sort.column === 'urgencyOrder' || sort.column === 'daysUntilDeadline') {
       va = va === '' || va === null || va === undefined ? 9999 : Number(va)
       vb = vb === '' || vb === null || vb === undefined ? 9999 : Number(vb)
