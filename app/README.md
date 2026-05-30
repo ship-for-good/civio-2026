@@ -1,76 +1,76 @@
-# Civio · Tracker de Solicitudes de Transparencia
+# Civio · Transparency Request Tracker
 
-Herramienta interna para que el equipo de Civio monitorice, filtre y gestione sus solicitudes de acceso a la información pública, automatizando el seguimiento de plazos (silencio administrativo, reclamaciones ante el CTBG, contencioso-administrativo).
+Internal tool for the Civio team to monitor, filter, and manage public information requests, automating deadline tracking (administrative silence, CTBG claims, judicial proceedings).
 
 ---
 
-## Requisitos
+## Requirements
 
 - Node.js ≥ 18
 - npm ≥ 9
-- Un proyecto en [Supabase](https://supabase.com) con autenticación por magic link habilitada
+- A [Supabase](https://supabase.com) project with magic link authentication enabled
 
 ---
 
-## Variables de entorno
+## Environment variables
 
-Crea un archivo `.env.local` en la carpeta `app/` con:
+Create a `.env.local` file inside the `app/` folder:
 
 ```
-VITE_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon-public-key>
 ```
 
-Ambos valores están en **Supabase → Project Settings → API**.
+Both values are available at **Supabase → Project Settings → API**.
 
 ---
 
-## Instalación y arranque en local
+## Local setup
 
 ```bash
-# Desde la carpeta app/
+# From the app/ folder
 npm install
 npm run dev
 ```
 
-La app queda disponible en `http://localhost:5173`.
+The app will be available at `http://localhost:5173`.
 
 ---
 
-## Build para producción
+## Production build
 
 ```bash
-npm run build     # genera dist/
-npm run preview   # sirve el build localmente para verificarlo
+npm run build     # outputs to dist/
+npm run preview   # serves the build locally for verification
 ```
 
 ---
 
-## Flujo de autenticación
+## Authentication flow
 
-1. El usuario introduce su correo en la pantalla de login.
-2. Supabase envía un magic link al correo.
-3. Al hacer clic en el enlace, Supabase redirige de vuelta a la app y la sesión queda activa.
+1. The user enters their email on the login screen.
+2. Supabase sends a magic link to that email.
+3. Clicking the link redirects back to the app and activates the session.
 
-Solo cuentas registradas en Supabase pueden acceder. Para añadir usuarios: **Supabase → Authentication → Users → Invite user**.
-
----
-
-## Cargar datos
-
-La app incluye el dataset de Civio embebido (`src/data/csvData.js`). Para cargar un CSV actualizado:
-
-- **Arrastrar y soltar** el archivo `.csv` sobre cualquier parte de la pantalla, o
-- Usar el botón de carga en la cabecera.
-
-El CSV debe seguir el formato de `Solicitudes_anonimizado.csv` (columnas: `Id`, `Ámbito`, `Fecha`, `Estado`, `Asunto`, `Ministerio`, `Vencimiento`, `Resolución`, `Reclamación`, etc.).
+Only accounts registered in Supabase can log in. To add users: **Supabase → Authentication → Users → Invite user**.
 
 ---
 
-## Tecnologías principales
+## Loading data
 
-| Tecnología | Versión | Uso |
+The app ships with Civio's dataset embedded (`src/data/csvData.js`). To load an updated CSV:
+
+- **Drag and drop** a `.csv` file anywhere on the screen, or
+- Use the upload button in the header.
+
+The CSV must follow the format of `Solicitudes_anonimizado.csv` (columns: `Id`, `Ámbito`, `Fecha`, `Estado`, `Asunto`, `Ministerio`, `Vencimiento`, `Resolución`, `Reclamación`, etc.).
+
+---
+
+## Main technologies
+
+| Technology | Version | Purpose |
 |---|---|---|
-| React | 18 | UI y estado |
-| Vite | 6 | Build y dev server |
-| Supabase JS | 2 | Autenticación (magic link) |
+| React | 18 | UI and state |
+| Vite | 6 | Build tool and dev server |
+| Supabase JS | 2 | Authentication (magic link) |
