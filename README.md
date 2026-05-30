@@ -1,70 +1,146 @@
 # AIna de Transparència
 
-**Equip:** Team Aina  
-**Hackathon:** [Ship for Good 2026](https://www.shipforgood.org/es) × [Civio](https://civio.es/)
+Equip: Team Aina  
+Hackathon: [Ship for Good 2026](https://www.shipforgood.org/es) x [Civio](https://civio.es/)
 
 > La transparència pública, al teu abast.  
 > Pregunta. Descobreix. Entén.
 
-## Què és
+## Motivació
 
-**AIna de Transparència** és un prototip web en català per facilitar l'accés ciutadà a dades públiques.  
-Neix per reduir les barreres actuals de transparència: informació dispersa, llenguatge tècnic i dependència de coneixement expert per trobar dades rellevants.
+La informació pública existeix, però sovint és difícil de trobar i d'entendre:
 
-L'aplicació ofereix una experiència de consulta simple amb tres blocs de contingut:
+- està repartida entre molts portals i formats,
+- utilitza vocabulari tècnic (CPV, expedients, procediments),
+- i pressuposa coneixement expert sobre on buscar primer.
 
-- **Què passa a prop meu?** (mapa + taula)
-- **Temes populars**
-- **Potser t'has perdut això**
+AIna vol reduir aquesta barrera. El projecte neix per apropar la transparència a qualsevol persona, no només a perfils especialitzats en periodisme de dades o dret administratiu.
 
-## Estat actual del producte
+## Què és el projecte
 
-- UI funcional en català.
-- Xat de portada amb efecte typewriter i enviament de preguntes.
-- **No hi ha IA real connectada**: la resposta del xat és un missatge local de prototip.
-- Dades carregades des de SQLite local (`data/aina.db`) amb fallback estàtic si la base de dades no està disponible.
+**AIna de Transparència** és una aplicació web en català que centralitza l'exploració de dades públiques en una experiència senzilla.
 
-## Arquitectura (resum)
+Actualment ofereix tres espais principals:
 
-- **Frontend:** React 19 + TypeScript
-- **Routing i server functions:** TanStack Router / TanStack Start
-- **Estils i UI:** Tailwind CSS 4 + shadcn/ui
-- **Dades:** SQLite via `sql.js` (fitxer local)
-- **Capa de dades client:** TanStack Query
-- **Tooling:** Vite 7, ESLint, Prettier
+- **Què passa a prop meu?**: mapa i taula d'elements de territori.
+- **Temes populars**: temàtiques consultades amb context i enllaços.
+- **Potser t'has perdut això**: publicacions destacades amb font oficial.
 
-Flux simplificat:
+També incorpora un **xat de portada** (prototip d'experiència conversacional).
 
-1. Els components UI consumeixen hooks de `src/hooks/use-aina-queries.ts`.
-2. Els hooks invoquen `createServerFn` de `src/lib/api/aina.functions.ts`.
-3. Les queries de servidor llegeixen SQLite a `src/lib/db/client.server.ts`.
-4. Si falla la DB, els hooks retornen dades de `src/data/fallback.ts`.
+## Estat actual (important)
 
-## Estructura principal
+- Interfície funcional en català.
+- Navegació completa amb rutes i panells de contingut.
+- Flux de dades amb DB local i fallback.
+- Xat de portada amb UX completa (input, suggeriments, enviament).
+- **No hi ha IA de producció connectada encara**: la resposta del xat és de prototip local.
+
+## D'on surten les dades
+
+Les dades es carreguen principalment des de SQLite local (`data/aina.db`), generada per script.
+
+### Fonts i ingestió actuals
+
+- **Seed principal**: `data/seed-content.json`
+- **Generació DB**: `scripts/seed.mjs`
+- **Taules creades**:
+  - `example_questions`
+  - `topics`
+  - `featured_items`
+  - `nearby_items`
+  - `popular_topics`
+  - `popular_topic_summaries`
+  - `popular_topic_articles`
+- **Licitacions verificades** per al panell territorial: `src/data/barcelona-tenders-verified.ts`
+
+### Fallback
+
+Si la DB no està disponible, el client no queda en blanc: hi ha dades alternatives a `src/data/fallback.ts`.
+
+## Com funciona (end-to-end)
+
+Flux funcional simplificat:
+
+1. Els components de UI consumeixen hooks de `src/hooks/use-aina-queries.ts`.
+2. Els hooks llancen consultes amb TanStack Query.
+3. Les consultes invoquen server functions (`createServerFn`) a `src/lib/api/aina.functions.ts`.
+4. La capa servidor consulta SQLite a `src/lib/db/client.server.ts`.
+5. Si alguna consulta falla, el hook retorna fallback estàtic.
+
+Server functions actuals:
+
+- `getHealth`
+- `getExampleQuestions`
+- `getTopics`
+- `getPopularTopics`
+- `getFeatured`
+- `getNearby`
+
+## Stack tecnològic
+
+### Frontend
+
+- React 19
+- TypeScript
+- TanStack Router / TanStack Start
+- TanStack Query
+
+### UI i estils
+
+- Tailwind CSS 4
+- shadcn/ui
+- Radix UI
+- Lucide React
+
+### Dades i servidor
+
+- SQLite amb `sql.js`
+- Server functions via `createServerFn`
+- Entrades de servidor a `src/server.ts` i `src/start.ts`
+
+### Tooling
+
+- Vite 7
+- ESLint
+- Prettier
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+  A[UI React] --> B[Hooks TanStack Query]
+  B --> C[Server Functions]
+  C --> D[(SQLite data/aina.db)]
+  B --> E[Fallback static]
+```
+
+Arquitectura de carpetes clau:
 
 ```text
 src/
-	components/aina/         # Components de la pàgina principal
-	hooks/                   # Hooks de consulta (TanStack Query)
-	lib/api/                 # Server functions (createServerFn)
-	lib/db/                  # Accés SQLite + seed data
-	data/fallback.ts         # Dades alternatives si la DB no respon
-	routes/index.tsx         # Landing principal
+  components/aina/         Components de producte
+  routes/                  Rutes de l'aplicació
+  hooks/                   Capa client de consultes
+  lib/api/                 Server functions
+  lib/db/                  Accés a SQLite
+  data/                    Dades client i assets mapatge
 scripts/
-	seed.mjs                 # Generació de data/aina.db
+  seed.mjs                 Construcció de data/aina.db
+  fetch-storyset-featured.mjs
 docs/
-	AI_CONTEXT.md            # Context de producte i tècnic
-	lovable-stack.md         # Flux de treball Lovable -> repo
+  AI_CONTEXT.md
+  lovable-stack.md
 ```
 
 ## Requisits
 
-- Node.js **>= 20.19** (recomanat **>= 22.12**)
-- npm (o bun)
+- Node.js >= 20.19 (recomanat >= 22.12)
+- npm o bun
 
 ## Instal·lació i execució
 
-### Opció A: npm
+### Opció npm
 
 ```bash
 git clone https://github.com/ship-for-good/civio-2026
@@ -75,7 +151,7 @@ npm run db:seed
 npm run dev
 ```
 
-### Opció B: bun
+### Opció bun
 
 ```bash
 bun install
@@ -83,68 +159,89 @@ bun run db:seed
 bun run dev
 ```
 
-Per defecte, Vite arrenca a `http://localhost:5173`.
+URL local per defecte: `http://localhost:5173`
 
 ## Scripts disponibles
 
-| Script | Descripció |
-|---|---|
-| `npm run dev` | Arrenca el servidor de desenvolupament |
+| Script | Què fa |
+| --- | --- |
+| `npm run dev` | Arrenca desenvolupament |
 | `npm run build` | Build de producció |
 | `npm run build:dev` | Build en mode development |
 | `npm run preview` | Serveix la build localment |
-| `npm run db:seed` | Regenera `data/aina.db` amb dades de demo |
-| `npm run lint` | Executa ESLint |
-| `npm run format` | Formata el codi amb Prettier |
-| `npm run format:check` | Comprova format sense escriure |
+| `npm run db:seed` | Regenera `data/aina.db` |
+| `npm run assets:storyset-featured` | Baixa/regenera il·lustracions destacades |
+| `npm run lint` | Lint del codi |
+| `npm run format` | Format Prettier |
+| `npm run format:check` | Comprovació de format |
 
 ## Variables d'entorn
 
-Existeix un exemple a `.env.example`.
+Fitxer d'exemple: `.env.example`
 
 | Variable | Obligatòria | Descripció |
-|---|---|---|
-| `VITE_GOOGLE_MAPS_EMBED_URL` | No | URL d'embed de Google Maps per al panell «Què passa a prop meu?» |
+| --- | --- | --- |
+| `VITE_GOOGLE_MAPS_EMBED_URL` | No | URL embed de mapa per al panell territorial |
 
-Important:
+Nota: qualsevol variable `VITE_*` es publica al client. No hi guardis secrets.
 
-- Les variables `VITE_*` són públiques (arriben al client).
-- No guardis secrets ni claus privades en variables amb prefix `VITE_`.
+## Limitacions actuals
 
-## Endpoints interns (server functions)
+- No hi ha assistent IA real connectat a fonts en temps real.
+- Cobertura de dades encara parcial (focus en demo i cas d'ús inicial).
+- No hi ha suite de tests automatitzats definida als scripts.
+- No hi ha sistema d'alertes d'actualització per usuari final.
 
-Definits a `src/lib/api/aina.functions.ts`:
+## Full de ruta (futur)
 
-- `getHealth`: comprovació bàsica de la DB
-- `getExampleQuestions`: preguntes d'exemple del xat
-- `getTopics`: llistat de temes populars
-- `getFeatured`: llistat de destacats
-- `getNearby`: dades del panell «a prop meu»
+### Prioritat alta
 
-## Base de dades de demo
+1. **Scraping complet de portals de transparència**
+	- Cobrir administració general, autonòmica i local.
+	- Detectar noves seccions, canvis d'estructura i documents nous.
+	- Normalitzar metadades (organisme, tema, territori, data, URL font).
 
-El seed (`scripts/seed.mjs`) crea `data/aina.db` i les taules:
+2. **MCP real per consultes verificables**
+	- Construir un servidor MCP amb eines de cerca, lectura i traçabilitat de fonts.
+	- Respostes amb cites i enllaços oficials, no text opac.
+	- Suport per consultes guiades per ciutadania i per redacció.
 
-- `example_questions`
-- `topics`
-- `featured_items`
-- `nearby_items`
+3. **Sistema d'alertes per correu electrònic**
+	- Subscripcions per tema, territori, organisme o paraula clau.
+	- Alertes de canvi (publicació nova, modificació, caducitat de termini).
+	- Frequència configurable (instant, diari, setmanal).
 
-Si no existeix `data/aina.db`, la capa servidor pot fallar; la capa client té fallback per mantenir la UI operativa.
+### Bones idees addicionals
 
-## Demo ràpida
+1. **Índex de qualitat de transparència per organisme**
+	- Completitud, actualització i facilitat d'accés.
+	- Rànquing públic i evolució temporal.
 
-1. Obre la landing.
-2. Escriu una pregunta i envia-la (Enter o botó).
-3. Revisa el missatge de resposta de prototip.
-4. Obre cadascuna de les tres targetes per veure contingut de transparència.
+2. **Glossari ciutadà automàtic**
+	- Traducció de vocabulari tècnic (CPV, procediment obert, expedient).
+	- Explicacions curtes contextuals dins de cada resultat.
 
-## Línies de continuació suggerides
+3. **Timeline d'expedients i canvis**
+	- Històric de què es publica, quan i per qui.
+	- Vista comparativa entre organismes.
 
-- Connectar el xat a fonts públiques reals i/o un motor RAG.
-- Afegir filtres avançats per territori, organisme i data.
-- Persistir consultes recents i historial d'usuari.
-- Incorporar tests (actualment no hi ha suite de tests definida als scripts).
+4. **Motor de cerca semàntica + filtres avançats**
+	- Cerca per intenció en llenguatge natural.
+	- Filtres combinats: data, import, territori, organisme, estat.
+
+5. **Espai per periodisme i recerca**
+	- Export CSV/JSON d'evidències.
+	- Dossiers de tema amb fonts verificades i seguiment automàtic.
+
+6. **Observabilitat i qualitat de dades**
+	- Monitoratge de pipelines (scrapers, parser, ingestió).
+	- Alertes internes quan una font cau o canvia HTML/API.
+
+### Evolució de producte recomanada
+
+Fase 1: robustesa de dades (scraping + normalització + alertes internes).  
+Fase 2: experiència d'usuari (alertes email, cerca avançada, glossari).  
+Fase 3: intel·ligència assistida (MCP, citacions automàtiques, workflows periodístics).
 
 ## Documentació relacionada
 
