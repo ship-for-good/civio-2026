@@ -1,3 +1,119 @@
+# Civio · Tracker de Solicitudes de Transparencia
+
+**Team IT_Power · Ship for Good 2026**
+
+Herramienta interna para el equipo de Civio que automatiza el seguimiento de plazos en solicitudes de información pública: silencio administrativo, reclamaciones ante el CTBG y procedimientos contenciosos.
+
+---
+
+## Problema que resuelve
+
+Civio gestiona decenas de solicitudes de transparencia simultáneas, con plazos críticos y diferenciados para cada una. Hasta ahora, este seguimiento se hacía manualmente con hojas de cálculo. Esta herramienta centraliza el estado de cada expediente, calcula automáticamente la urgencia y alerta sobre los plazos que vencen próximamente.
+
+---
+
+## Funcionalidades principales
+
+- **Dashboard de expedientes** — tabla ordenable y filtrable con todos los expedientes activos
+- **Urgencia automática** — calcula si un expediente está en riesgo según los días restantes hasta el vencimiento
+- **Digest diario** — sección resumen de silencio administrativo inminente, reclamadas y contenciosos
+- **Nuevo expediente** — formulario modal con adjuntos (almacenados en Supabase Storage)
+- **Edición de expedientes** — clic en fila abre modal de edición completa
+- **Carga de CSV** — arrastrar y soltar o subir un `.csv` actualizado desde el header
+- **Autenticación** — acceso restringido por email y contraseña (Supabase Auth)
+- **Persistencia** — los expedientes creados se almacenan en Supabase y se fusionan con el CSV base al cargar
+
+---
+
+## Requisitos previos
+
+- Node.js ≥ 18
+- npm ≥ 9
+- Proyecto en [Supabase](https://supabase.com) con autenticación por email activada
+
+---
+
+## Variables de entorno
+
+Crear un archivo `.env.local` dentro de la carpeta `app/`:
+
+```
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
+VITE_SUPABASE_ANON_KEY=<anon-public-key>
+```
+
+Ambos valores están en **Supabase → Project Settings → API**.
+
+---
+
+## Instalación y arranque local
+
+```bash
+cd app
+npm install
+npm run dev
+```
+
+La app estará disponible en `http://localhost:5173`.
+
+---
+
+## Build de producción
+
+```bash
+cd app
+npm run build    # genera dist/
+npm run preview  # sirve el build localmente
+```
+
+---
+
+## Tests
+
+```bash
+cd app
+npm test
+```
+
+---
+
+## Tecnologías principales
+
+| Tecnología | Versión | Uso |
+|---|---|---|
+| React | 18 | UI y estado |
+| Vite | 6 | Build tool y dev server |
+| TypeScript | 6 | Tipado estático |
+| Supabase JS | 2 | Auth, base de datos y storage |
+| Vitest | 4 | Tests unitarios |
+
+---
+
+## Arquitectura
+
+```
+app/src/
+├── components/     # UI: tabla, modales, filtros, header, digest
+├── contexts/       # AuthContext (sesión Supabase)
+├── lib/            # Cliente Supabase + repositorio de expedientes
+├── utils/          # Lógica de urgencia, fechas, CSV, validación
+└── data/           # Dataset CSV de Civio embebido
+```
+
+Los expedientes se cargan del CSV embebido al iniciar y se fusionan con los registros de Supabase (los de Supabase tienen precedencia por `Id`).
+
+---
+
+## Próximos pasos
+
+- Notificaciones automáticas por email cuando un plazo se acerca
+- Historial de cambios por expediente
+- Exportación filtrada a CSV
+- Integración con el portal de transparencia para importar solicitudes automáticamente
+
+---
+---
+
 # Ship for Good · 1st Edition
 
 think · build · help
