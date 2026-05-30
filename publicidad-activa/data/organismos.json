@@ -1,233 +1,523 @@
 {
   "aepd": {
-    "label": "Agencia Española de Protección de Datos"
+    "label": "Agencia Española de Protección de Datos",
+    "aliases": [
+      "aepd",
+      "protección",
+      "proteccion",
+      "datos"
+    ]
   },
   "aipi": {
-    "label": "Agencia Española de Propiedad Industrial"
+    "label": "Agencia Española de Propiedad Industrial",
+    "aliases": [
+      "aipi",
+      "propiedad",
+      "industrial"
+    ]
   },
   "airef": {
-    "label": "Autoridad Independiente de Responsabilidad Fiscal"
+    "label": "Autoridad Independiente de Responsabilidad Fiscal",
+    "aliases": [
+      "airef",
+      "fiscal",
+      "fiscalidad"
+    ]
   },
   "apd": {
-    "label": "Agencia de Protección de Datos"
+    "label": "Agencia de Protección de Datos",
+    "aliases": [
+      "apd"
+    ]
   },
   "cnmc": {
-    "label": "Comisión Nacional de los Mercados y la Competencia"
+    "label": "Comisión Nacional de los Mercados y la Competencia",
+    "aliases": [
+      "cnmc",
+      "competencia",
+      "mercados"
+    ]
   },
   "cnmv": {
-    "label": "Comisión Nacional del Mercado de Valores"
+    "label": "Comisión Nacional del Mercado de Valores",
+    "aliases": [
+      "cnmv",
+      "valores"
+    ]
   },
   "csn": {
-    "label": "Consejo de Seguridad Nuclear"
+    "label": "Consejo de Seguridad Nuclear",
+    "aliases": [
+      "csn",
+      "nuclear"
+    ]
   },
   "ctbg": {
-    "label": "Comisión del Mercado de Tabacos y Grupo"
+    "label": "Comisión del Mercado de Tabacos y Grupo",
+    "aliases": [
+      "ctbg",
+      "tabaco"
+    ]
   },
   "maec": {
     "label": "Asuntos Exteriores y UE",
     "description": "Diplomacia, Unión Europea y cooperación internacional.",
-    "icon": "flag"
+    "icon": "flag",
+    "aliases": [
+      "maec",
+      "exteriores",
+      "diplomacia",
+      "ue"
+    ]
   },
   "magrama": {
-    "label": "Ministerio de Agricultura, Alimentación y Medio Ambiente"
+    "label": "Ministerio de Agricultura, Alimentación y Medio Ambiente",
+    "aliases": [
+      "magrama",
+      "medio",
+      "ambiente"
+    ]
   },
   "mapa": {
     "label": "Agricultura, Pesca y Alimentación",
     "description": "Política agrícola, pesca y cadena alimentaria.",
-    "icon": "leaf"
+    "icon": "leaf",
+    "aliases": [
+      "mapa",
+      "agricultura",
+      "pesca",
+      "alimentación",
+      "alimentacion"
+    ]
   },
   "mapama": {
-    "label": "Ministerio de Agricultura, Alimentación y Medio Ambiente"
+    "label": "Ministerio de Agricultura, Alimentación y Medio Ambiente",
+    "aliases": [
+      "mapama"
+    ]
   },
   "mauc": {
-    "label": "Ministerio de Administraciones Públicas"
+    "label": "Ministerio de Administraciones Públicas",
+    "aliases": [
+      "mauc",
+      "administraciones"
+    ]
   },
   "mcin": {
-    "label": "Ministerio de Ciencia e Innovación"
+    "label": "Ministerio de Ciencia e Innovación",
+    "aliases": [
+      "mcin",
+      "ciencia",
+      "innovación",
+      "innovacion"
+    ]
   },
   "mclt": {
-    "label": "Ministerio de Cultura"
+    "label": "Ministerio de Cultura",
+    "aliases": [
+      "mclt",
+      "cultura"
+    ]
   },
   "mcnu": {
-    "label": "Ministerio de Ciencia e Innovación"
+    "label": "Ministerio de Ciencia e Innovación",
+    "aliases": [
+      "mcnu"
+    ]
   },
   "mcsm": {
-    "label": "Ministerio de Sanidad, Consumo y Bienestar Social"
+    "label": "Ministerio de Sanidad, Consumo y Bienestar Social",
+    "aliases": [
+      "mcsm",
+      "bienestar"
+    ]
   },
   "mcud": {
-    "label": "Ministerio de Cultura y Deporte"
+    "label": "Ministerio de Cultura y Deporte",
+    "aliases": [
+      "mcud",
+      "deporte"
+    ]
   },
   "mdca": {
-    "label": "Ministerio de Cultura y Deporte"
+    "label": "Ministerio de Cultura y Deporte",
+    "aliases": [
+      "mdca"
+    ]
   },
   "mdef": {
     "label": "Ministerio de Defensa",
     "description": "Fuerzas Armadas, industria de defensa y cooperación internacional.",
-    "icon": "star"
+    "icon": "star",
+    "aliases": [
+      "mdef",
+      "defensa"
+    ]
   },
   "mdsa": {
-    "label": "Ministerio de Sanidad"
+    "label": "Ministerio de Sanidad",
+    "aliases": [
+      "mdsa"
+    ]
   },
   "mecd": {
     "label": "Educación y FP",
     "description": "Educación, formación profesional y universidades.",
-    "icon": "book"
+    "icon": "book",
+    "aliases": [
+      "mecd",
+      "educación",
+      "educacion",
+      "fp"
+    ]
   },
   "mece": {
-    "label": "Ministerio de Economía y Competitividad"
+    "label": "Ministerio de Economía y Competitividad",
+    "aliases": [
+      "mece",
+      "competitividad"
+    ]
   },
   "mecm": {
-    "label": "Ministerio de Consumo"
+    "label": "Ministerio de Consumo",
+    "aliases": [
+      "mecm",
+      "consumo"
+    ]
   },
   "meco": {
-    "label": "Ministerio de Economía y Competitividad"
+    "label": "Ministerio de Economía y Competitividad",
+    "aliases": [
+      "meco"
+    ]
   },
   "mefd": {
-    "label": "Ministerio de Educación y Formación Profesional"
+    "label": "Ministerio de Educación y Formación Profesional",
+    "aliases": [
+      "mefd"
+    ]
   },
   "mefp": {
     "label": "Trabajo y Economía Social",
     "description": "Empleo, relaciones laborales y economía social.",
-    "icon": "users"
+    "icon": "users",
+    "aliases": [
+      "mefp",
+      "trabajo",
+      "empleo",
+      "social"
+    ]
   },
   "metd": {
-    "label": "Ministerio de Industria, Comercio y Turismo"
+    "label": "Ministerio de Industria, Comercio y Turismo",
+    "aliases": [
+      "metd",
+      "comercio"
+    ]
   },
   "meyss": {
-    "label": "Ministerio de Empleo y Seguridad Social"
+    "label": "Ministerio de Empleo y Seguridad Social",
+    "aliases": [
+      "meyss",
+      "previsión",
+      "prevision"
+    ]
   },
   "mfom": {
     "label": "Transportes y Movilidad",
     "description": "Infraestructuras, movilidad y vivienda.",
-    "icon": "train"
+    "icon": "train",
+    "aliases": [
+      "mfom",
+      "transportes",
+      "movilidad"
+    ]
   },
   "mhac": {
     "label": "Ministerio de Hacienda",
     "description": "Presupuestos, tributos y financiación territorial.",
-    "icon": "coins"
+    "icon": "coins",
+    "aliases": [
+      "mhac",
+      "hacienda",
+      "presupuestos",
+      "tributos"
+    ]
   },
   "mhfp": {
-    "label": "Ministerio de Hacienda y Función Pública"
+    "label": "Ministerio de Hacienda y Función Pública",
+    "aliases": [
+      "mhfp",
+      "función",
+      "funcion",
+      "publica",
+      "pública"
+    ]
   },
   "mict": {
-    "label": "Ministerio de Industria, Comercio y Turismo"
+    "label": "Ministerio de Industria, Comercio y Turismo",
+    "aliases": [
+      "mict",
+      "industria",
+      "turismo"
+    ]
   },
   "migd": {
-    "label": "Ministerio de Igualdad"
+    "label": "Ministerio de Igualdad",
+    "aliases": [
+      "migd",
+      "igualdad"
+    ]
   },
   "mineco": {
-    "label": "Ministerio de Economía"
+    "label": "Ministerio de Economía",
+    "aliases": [
+      "mineco",
+      "economía",
+      "economia"
+    ]
   },
   "minetad": {
     "label": "Transición Ecológica",
     "description": "Medio ambiente, energía y cambio climático.",
-    "icon": "globe"
+    "icon": "globe",
+    "aliases": [
+      "minetad",
+      "ecológica",
+      "ecologica",
+      "transición",
+      "transicion",
+      "climático",
+      "climatico"
+    ]
   },
   "minetur": {
-    "label": "Ministerio de Industria, Energía y Turismo"
+    "label": "Ministerio de Industria, Energía y Turismo",
+    "aliases": [
+      "minetur",
+      "energía",
+      "energia"
+    ]
   },
   "minhap": {
-    "label": "Ministerio de Hacienda y Administraciones Públicas"
+    "label": "Ministerio de Hacienda y Administraciones Públicas",
+    "aliases": [
+      "minhap"
+    ]
   },
   "ministeriossuprimidos": {
-    "label": "Ministerios suprimidos"
+    "label": "Ministerios suprimidos",
+    "aliases": [
+      "suprimidos"
+    ]
   },
   "mint": {
     "label": "Ministerio del Interior",
     "description": "Seguridad, Guardia Civil, Policía Nacional y prisiones.",
-    "icon": "shield"
+    "icon": "shield",
+    "aliases": [
+      "mint",
+      "interior"
+    ]
   },
   "mism": {
-    "label": "Ministerio de Inclusión, Seguridad Social y Migraciones"
+    "label": "Ministerio de Inclusión, Seguridad Social y Migraciones",
+    "aliases": [
+      "mism",
+      "inclusión",
+      "inclusion",
+      "migraciones"
+    ]
   },
   "mitu": {
-    "label": "Ministerio de Industria y Turismo"
+    "label": "Ministerio de Industria y Turismo",
+    "aliases": [
+      "mitu"
+    ]
   },
   "mjui": {
-    "label": "Ministerio de Justicia e Interior"
+    "label": "Ministerio de Justicia e Interior",
+    "aliases": [
+      "mjui"
+    ]
   },
   "mjus": {
     "label": "Ministerio de Justicia",
     "description": "Normativa, registros y administración de justicia.",
-    "icon": "scale"
+    "icon": "scale",
+    "aliases": [
+      "mjus",
+      "justicia"
+    ]
   },
   "mpat": {
-    "label": "Ministerio de Patrimonio"
+    "label": "Ministerio de Patrimonio",
+    "aliases": [
+      "mpat",
+      "patrimonio"
+    ]
   },
   "mpci": {
-    "label": "Ministerio de la Presidencia, Relaciones con las Cortes y Memoria Democrática"
+    "label": "Ministerio de la Presidencia, Relaciones con las Cortes y Memoria Democrática",
+    "aliases": [
+      "mpci",
+      "cortes",
+      "memoria"
+    ]
   },
   "mpcm": {
-    "label": "Ministerio de la Presidencia"
+    "label": "Ministerio de la Presidencia",
+    "aliases": [
+      "mpcm"
+    ]
   },
   "mpjc": {
-    "label": "Ministerio de la Presidencia, Justicia y Relaciones con las Cortes"
+    "label": "Ministerio de la Presidencia, Justicia y Relaciones con las Cortes",
+    "aliases": [
+      "mpjc"
+    ]
   },
   "mpr": {
-    "label": "Ministerio de la Presidencia"
+    "label": "Ministerio de la Presidencia",
+    "aliases": [
+      "mpr"
+    ]
   },
   "mpt": {
-    "label": "Ministerio de Política Territorial y Función Pública"
+    "label": "Ministerio de Política Territorial y Función Pública",
+    "aliases": [
+      "mpt",
+      "territorial"
+    ]
   },
   "mscb": {
-    "label": "Ministerio de Sanidad, Consumo y Bienestar Social"
+    "label": "Ministerio de Sanidad, Consumo y Bienestar Social",
+    "aliases": [
+      "mscb"
+    ]
   },
   "msnd": {
-    "label": "Ministerio de Sanidad"
+    "label": "Ministerio de Sanidad",
+    "aliases": [
+      "msnd"
+    ]
   },
   "msssi": {
     "label": "Ministerio de Sanidad",
     "description": "Salud pública, sanidad exterior y política farmacéutica.",
-    "icon": "heart"
+    "icon": "heart",
+    "aliases": [
+      "msssi",
+      "sanidad",
+      "salud"
+    ]
   },
   "mtdf": {
-    "label": "Ministerio de Transformación Digital y de la Función Pública"
+    "label": "Ministerio de Transformación Digital y de la Función Pública",
+    "aliases": [
+      "mtdf",
+      "digital"
+    ]
   },
   "mtec": {
-    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana",
+    "aliases": [
+      "mtec"
+    ]
   },
   "mted": {
-    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana",
+    "aliases": [
+      "mted",
+      "urbana"
+    ]
   },
   "mtes": {
-    "label": "Ministerio para la Transición Ecológica y el Reto Demográfico"
+    "label": "Ministerio para la Transición Ecológica y el Reto Demográfico",
+    "aliases": [
+      "mtes",
+      "demográfica",
+      "demografica"
+    ]
   },
   "mtfp": {
-    "label": "Ministerio de Trabajo y Previsión Social"
+    "label": "Ministerio de Trabajo y Previsión Social",
+    "aliases": [
+      "mtfp"
+    ]
   },
   "mtma": {
-    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana",
+    "aliases": [
+      "mtma"
+    ]
   },
   "mtmd": {
-    "label": "Ministerio de Transición Demográfica"
+    "label": "Ministerio de Transición Demográfica",
+    "aliases": [
+      "mtmd"
+    ]
   },
   "mtms": {
-    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana",
+    "aliases": [
+      "mtms"
+    ]
   },
   "mtrm": {
-    "label": "Ministerio de Transportes y Movilidad"
+    "label": "Ministerio de Transportes y Movilidad",
+    "aliases": [
+      "mtrm"
+    ]
   },
   "muni": {
-    "label": "Ministerio de Universidades"
+    "label": "Ministerio de Universidades",
+    "aliases": [
+      "muni",
+      "universidades"
+    ]
   },
   "mvau": {
-    "label": "Ministerio de Vivienda y Agenda Urbana"
+    "label": "Ministerio de Vivienda y Agenda Urbana",
+    "aliases": [
+      "mvau",
+      "vivienda"
+    ]
   },
   "pg": {
     "label": "Presidencia del Gobierno",
     "description": "Moncloa, Vicepresidencias y gabinete.",
-    "icon": "building"
+    "icon": "building",
+    "aliases": [
+      "pg",
+      "presidencia",
+      "moncloa",
+      "gobierno"
+    ]
   },
   "vdsa": {
-    "label": "Vicepresidencia del Gobierno"
+    "label": "Vicepresidencia del Gobierno",
+    "aliases": [
+      "vdsa",
+      "vicepresidencia"
+    ]
   },
   "vetd": {
-    "label": "Vicepresidencia de Transición Ecológica"
+    "label": "Vicepresidencia de Transición Ecológica",
+    "aliases": [
+      "vetd"
+    ]
   },
   "vpcm": {
-    "label": "Vicepresidencia del Gobierno"
+    "label": "Vicepresidencia del Gobierno",
+    "aliases": [
+      "vpcm"
+    ]
   },
   "vted": {
-    "label": "Vicepresidencia de Transición Ecológica y Demográfica"
+    "label": "Vicepresidencia de Transición Ecológica y Demográfica",
+    "aliases": [
+      "vted"
+    ]
   }
 }

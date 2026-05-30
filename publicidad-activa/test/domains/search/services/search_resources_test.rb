@@ -37,6 +37,20 @@ class Search::Services::SearchResourcesTest < ActiveSupport::TestCase
       path_segments: %w[publicidad-activa por-materias organizacion-empleo relaciones-puestos-trabajo historico rpt-enero-2026 rpt-mdef],
       depth: 7
     )
+
+    Resources::Models::Resource.create!(
+      id: "rpt-aepd-vigente",
+      url: "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/relaciones-puestos-trabajo/rpt-aepd",
+      materia: "organizacion-empleo",
+      materia_label: "Organización y empleo",
+      subtema: "relaciones-puestos-trabajo",
+      subtema_label: "Relaciones de puestos de trabajo (RPT)",
+      tipo: "rpt",
+      organismo_code: "aepd",
+      vigencia: "vigente",
+      path_segments: %w[publicidad-activa por-materias organizacion-empleo relaciones-puestos-trabajo rpt-aepd],
+      depth: 5
+    )
   end
 
   test "defaults to vigente only" do
@@ -52,6 +66,12 @@ class Search::Services::SearchResourcesTest < ActiveSupport::TestCase
     ids = result.resources.map(&:id)
     assert_includes ids, "rpt-mdef-vigente"
     assert_includes ids, "rpt-mdef-historico"
+  end
+
+  test "searches organism alias from catalog" do
+    result = Search::Services::SearchResources.call(query: "protección", vigencia: "all")
+
+    assert result.resources.any? { |r| r.organismo_code == "aepd" }
   end
 
   test "filters by materia" do

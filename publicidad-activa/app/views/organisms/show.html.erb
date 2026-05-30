@@ -1,7 +1,11 @@
 <% content_for :title, "#{@label} — Organismos" %>
 
 <h1 class="text-2xl font-semibold mb-4"><%= @label %></h1>
-<p class="text-sm text-gray-500 mb-4"><%= @code.upcase %></p>
+<% if @codes.size > 1 %>
+  <p class="text-sm text-gray-500 mb-4"><%= @codes.map(&:upcase).join(" · ") %></p>
+<% else %>
+  <p class="text-sm text-gray-500 mb-4"><%= @code.upcase %></p>
+<% end %>
 
 <ul class="space-y-3">
   <% @resources.each do |resource| %>

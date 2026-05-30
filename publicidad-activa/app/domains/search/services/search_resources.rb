@@ -3,13 +3,7 @@
 module Search
   module Services
     class SearchResources
-      SYNONYMS = {
-        "defensa" => "mdef",
-        "sanidad" => "msnd",
-        "hacienda" => "mhac",
-        "interior" => "mint",
-        "justicia" => "mjui",
-        "presidencia" => "pg",
+      SUBTEMA_SYNONYMS = {
         "rpt" => "relaciones-puestos-trabajo"
       }.freeze
 
@@ -59,7 +53,7 @@ module Search
 
       def apply_text_search(scope)
         @query.downcase.split(/\s+/).each do |term|
-          variants = [ term, SYNONYMS[term] ].compact.uniq
+          variants = [ term, synonyms[term] ].compact.uniq
           clauses = variants.map do |variant|
             pattern = "%#{ActiveRecord::Base.sanitize_sql_like(variant)}%"
             <<~SQL.squish
@@ -76,6 +70,10 @@ module Search
           scope = scope.where(clauses.join(" OR "))
         end
         scope
+      end
+
+      def synonyms
+        @synonyms ||= Organisms::Services::LoadCatalog.call.alias_index.merge(SUBTEMA_SYNONYMS)
       end
 
       def build_facets(scope)

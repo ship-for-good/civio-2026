@@ -8,14 +8,16 @@ class OrganismsController < ApplicationController
       .group(:organismo_code)
       .count
 
-    @organisms = counts.map do |code, count|
-      { code: code, label: catalog.label(code), count: count }
-    end.sort_by { |organism| organism[:label] }
+    @organisms = catalog.group_resource_counts(counts)
   end
 
   def show
+    catalog = Organisms::Services::LoadCatalog.call
     @code = params[:code]
-    @label = Organisms::Services::LoadCatalog.label(@code)
-    @resources = Resources::Models::Resource.by_organism(@code).order(:tipo, :subtema, :url)
+    @label = catalog.label(@code)
+    @codes = catalog.codes_with_label(@label)
+    @resources = Resources::Models::Resource
+      .where(organismo_code: @codes)
+      .order(:tipo, :subtema, :url)
   end
 end
