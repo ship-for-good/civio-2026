@@ -73,6 +73,9 @@ ORDER BY depth, path
 }
 
 func (s *Store) SaveDynamicContent(nodeID int64, content *models.DynamicContent, hash string) error {
+	s.writeMu.Lock()
+	defer s.writeMu.Unlock()
+
 	if err := s.migrateDynamicColumns(); err != nil {
 		return err
 	}

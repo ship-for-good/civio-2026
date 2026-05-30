@@ -163,6 +163,7 @@ func scrapeDynamicCmd(dbPath *string) *cobra.Command {
 	var (
 		types         string
 		limit         int
+		workers       int
 		skipUnchanged bool
 		force         bool
 		headless      bool
@@ -191,6 +192,7 @@ Requires Playwright browsers. Use the crawler-playwright Docker service:
 			result, err := dynamic.Run(context.Background(), store, dynamic.RunConfig{
 				PageTypes:     pageTypes,
 				Limit:         limit,
+				Workers:       workers,
 				SkipUnchanged: skipUnchanged && !force,
 				Headless:      headless,
 				TimeoutSec:    timeoutSec,
@@ -207,6 +209,7 @@ Requires Playwright browsers. Use the crawler-playwright Docker service:
 
 	cmd.Flags().StringVar(&types, "types", "leaf_dynamic", "Comma-separated page_type values to scrape")
 	cmd.Flags().IntVar(&limit, "limit", 0, "Max nodes to process (0 = all)")
+	cmd.Flags().IntVar(&workers, "workers", 5, "Parallel Playwright workers (goroutines, max 10)")
 	cmd.Flags().BoolVar(&skipUnchanged, "skip-unchanged", true, "Skip nodes whose dynamic content hash is unchanged")
 	cmd.Flags().BoolVar(&force, "force", false, "Re-scrape even if content hash matches")
 	cmd.Flags().BoolVar(&headless, "headless", true, "Run browser headless")

@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"log"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/civio/civio-2026/internal/graph"
@@ -15,6 +17,7 @@ import (
 type RunConfig struct {
 	PageTypes     []string
 	Limit         int
+	Workers       int
 	SkipUnchanged bool
 	Headless      bool
 	TimeoutSec    int
@@ -26,10 +29,21 @@ type RunResult struct {
 	Errors    int
 }
 
+func normalizeWorkers(workers int) int {
+	if workers <= 0 {
+		return 5
+	}
+	if workers > 10 {
+		return 10
+	}
+	return workers
+}
+
 func Run(ctx context.Context, store *graph.Store, cfg RunConfig) (*RunResult, error) {
 	if len(cfg.PageTypes) == 0 {
 		cfg.PageTypes = []string{string(models.PageTypeLeafDynamic)}
 	}
+	cfg.Workers = normalizeWorkers(cfg.Workers)
 
 	scraper, err := NewScraper(ScraperConfig{
 		TimeoutSec: cfg.TimeoutSec,
@@ -45,44 +59,94 @@ func Run(ctx context.Context, store *graph.Store, cfg RunConfig) (*RunResult, er
 		return nil, err
 	}
 
-	log.Printf("scrape-dynamic: %d nodes to process (types: %v)", len(nodes), cfg.PageTypes)
+	log.Printf("scrape-dynamic: %d nodes, %d workers (types: %v)", len(nodes), cfg.Workers, cfg.PageTypes)
 
-	result := &RunResult{}
-	for _, node := range nodes {
-		select {
-		case <-ctx.Done():
-			return result, ctx.Err()
-		default:
-		}
-
-		html, err := scraper.FetchRenderedHTML(ctx, node.URL)
-		if err != nil {
-			result.Errors++
-			log.Printf("playwright error %s: %v", node.URL, err)
-			continue
-		}
-
-		content := ExtractFromHTML(html, node.Title)
-		content.ScrapedAt = time.Now().UTC().Format(time.RFC3339)
-
-		hash := hashContent(content)
-		if cfg.SkipUnchanged && node.DynamicHash != "" && node.DynamicHash == hash {
-			result.Skipped++
-			continue
-		}
-
-		if err := store.SaveDynamicContent(node.ID, content, hash); err != nil {
-			result.Errors++
-			log.Printf("save error %s: %v", node.URL, err)
-			continue
-		}
-
-		result.Processed++
-		log.Printf("scraped dynamic: %s (%d tables)", node.Title, len(content.Tables))
+	if len(nodes) == 0 {
+		return &RunResult{}, nil
 	}
 
-	log.Printf("scrape-dynamic finished: %d processed, %d skipped, %d errors", result.Processed, result.Skipped, result.Errors)
+	jobs := make(chan graph.DynamicNodeRow, len(nodes))
+	for _, node := range nodes {
+		jobs <- node
+	}
+	close(jobs)
+
+	var processed, skipped, errors atomic.Int32
+	start := time.Now()
+
+	var wg sync.WaitGroup
+	for i := 0; i < cfg.Workers; i++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for node := range jobs {
+				if ctx.Err() != nil {
+					return
+				}
+				scrapeNode(ctx, scraper, store, cfg, node, &processed, &skipped, &errors)
+			}
+		}(i)
+	}
+
+	wg.Wait()
+
+	elapsed := time.Since(start)
+	result := &RunResult{
+		Processed: int(processed.Load()),
+		Skipped:   int(skipped.Load()),
+		Errors:    int(errors.Load()),
+	}
+
+	log.Printf("scrape-dynamic finished: %d processed, %d skipped, %d errors in %s (%.1fs/page avg)",
+		result.Processed, result.Skipped, result.Errors,
+		elapsed.Round(time.Second),
+		avgSecondsPerPage(elapsed, len(nodes)))
+
+	if ctx.Err() != nil {
+		return result, ctx.Err()
+	}
 	return result, nil
+}
+
+func scrapeNode(
+	ctx context.Context,
+	scraper *Scraper,
+	store *graph.Store,
+	cfg RunConfig,
+	node graph.DynamicNodeRow,
+	processed, skipped, errors *atomic.Int32,
+) {
+	html, err := scraper.FetchRenderedHTML(ctx, node.URL)
+	if err != nil {
+		errors.Add(1)
+		log.Printf("playwright error %s: %v", node.URL, err)
+		return
+	}
+
+	content := ExtractFromHTML(html, node.Title)
+	content.ScrapedAt = time.Now().UTC().Format(time.RFC3339)
+
+	hash := hashContent(content)
+	if cfg.SkipUnchanged && node.DynamicHash != "" && node.DynamicHash == hash {
+		skipped.Add(1)
+		return
+	}
+
+	if err := store.SaveDynamicContent(node.ID, content, hash); err != nil {
+		errors.Add(1)
+		log.Printf("save error %s: %v", node.URL, err)
+		return
+	}
+
+	processed.Add(1)
+	log.Printf("scraped dynamic: %s (%d tables)", node.Title, len(content.Tables))
+}
+
+func avgSecondsPerPage(elapsed time.Duration, total int) float64 {
+	if total == 0 {
+		return 0
+	}
+	return elapsed.Seconds() / float64(total)
 }
 
 func hashContent(c *models.DynamicContent) string {

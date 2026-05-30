@@ -154,12 +154,14 @@ docker compose run --rm crawler-playwright scrape-dynamic --db /data/graph.db
 
 # Incluir buscadores con iframe (muchas páginas)
 docker compose run --rm crawler-playwright scrape-dynamic \
-  --db /data/graph.db --types leaf_dynamic,buscador_entry --limit 10
+  --db /data/graph.db --types leaf_dynamic,buscador_entry --workers 5
 
 docker compose run --rm crawler export --db /data/graph.db --out /data/graph.json
 ```
 
 Resultado en cada nodo: `dynamic_content` con `text`, `tables`, `iframe_srcs`.
+
+Por defecto usa **5 workers** (goroutines con pestañas Playwright en paralelo). Ajustable con `--workers` (máx. 10).
 
 | Servicio | Imagen | Comandos |
 |----------|--------|----------|
