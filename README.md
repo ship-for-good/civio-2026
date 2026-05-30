@@ -2,7 +2,7 @@
 
 **Encuentra en qué se gasta el dinero público, explicado en lenguaje normal y con la fuente oficial al lado.**
 
-🔗 **Demo:** [transparencia-es (Lovable)](https://tu-ayuda-publica.lovable.app)
+🔗 **Demo:** [transparencia-es (Lovable)](https://transparencia-es.lovable.app)
 
 Proyecto del equipo **turquesa** en el hackathon [Ship for Good 2026](https://www.shipforgood.org/es),
 con [Civio](https://civio.es/) como organización aliada.
@@ -29,7 +29,7 @@ cabeza, y que un ciudadano normal no tiene por qué saber.
 
 ## Qué hace Transparencia ES
 
-Le preguntas en lenguaje normal —*"¿cuánto se ha gastado mi ayuntamiento en colegios?"*— y el
+Le preguntas en lenguaje normal —_"¿cuánto se ha gastado mi ayuntamiento en colegios?"_— y el
 asistente traduce esa pregunta al lenguaje de los portales oficiales (deduce el órgano y el código
 CPV), busca los contratos reales y te los explica de forma sencilla: qué es, cuánto costó, quién lo
 ganó y cuándo. Cada dato viene con el **enlace al expediente oficial**, para que puedas comprobarlo.
@@ -47,11 +47,11 @@ El proyecto son dos cosas que comparten el mismo cerebro:
   hackathon usa un conjunto de datos curado, así que responde especialmente bien a los casos que
   hemos preparado.
 
-- **La skill `transparencia-es`** (`skills/transparencia-es/`) — el motor. Es una *skill* en formato
+- **La skill `transparencia-es`** (`skills/transparencia-es/`) — el motor. Es una _skill_ en formato
   estándar (Claude Agent Skill) que puedes añadir a tu propio agente de IA. Detrás tiene scripts que
   extraen los datos directamente del portal oficial, así que no está limitada a unos pocos ejemplos:
   consulta cualquier órgano, cualquier CPV y cualquier periodo. La misma skill es la que alimenta el
-  *system prompt* del chat de la web. La ejecución desde la nube puede ser rechazada por los portales
+  _system prompt_ del chat de la web. La ejecución desde la nube puede ser rechazada por los portales
   de transparencia, para evitar esto se debe ejecutar desde local, por ejemplo Claude Code desde el
   terminal.
 
@@ -71,7 +71,7 @@ El agente carga `SKILL.md`, consulta las referencias y llama a los scripts cuand
 ### Opción B — empaquetar el `.zip` (p. ej. para subirla a Claude)
 
 El paquete tiene que llevar `SKILL.md` **en la raíz del zip** (no dentro de una carpeta
-`transparencia-es/`). Por eso se comprime el *contenido* de la carpeta, desde dentro:
+`transparencia-es/`). Por eso se comprime el _contenido_ de la carpeta, desde dentro:
 
 ```bash
 cd skills/transparencia-es
@@ -119,7 +119,7 @@ publica ficheros mensuales, y por eso trabajamos sobre una copia con su fecha a 
 
 - **Skill / ETL:** Python (solo librería estándar) y formato Claude Agent Skill (Markdown).
 - **Web:** Lovable — frontend, Lovable Cloud (Supabase: Storage y Edge Functions en TypeScript/Deno)
-  y Lovable AI (Gemini con *function calling*).
+  y Lovable AI (Gemini con _function calling_).
 - **Fuente de datos:** open data de la Plataforma de Contratación del Sector Público (ATOM / CODICE 2.07).
 
 ### Variables de entorno
