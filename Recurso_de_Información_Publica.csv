@@ -1,0 +1,21 @@
+titulo,descripcion,url,tipo_informacion,nivel_administracion,estado_acceso,palabras_clave
+Portal de Contratación del Sector Público,Base oficial de licitaciones y adjudicaciones,https://contrataciondelestado.es,contratos,estatal,accesible,contratos;licitaciones;adjudicaciones;obras
+Plataforma de Subvenciones,Buscador de subvenciones estatales,https://www.infosubvenciones.es,subvenciones,estatal,accesible,subvenciones;ayudas;convocatorias
+Retribuciones de Altos Cargos,Listado de salarios de altos cargos,https://transparencia.gob.es/retribuciones,retribuciones,estatal,accesible,salarios;altos cargos;retribuciones
+BOE,Boletín Oficial del Estado con normativa y anuncios,https://boe.es,boe,estatal,accesible,boe;normativa;publicaciones
+Declaraciones de Bienes,Declaraciones patrimoniales de altos cargos,https://boe.es/bienes,bienes,estatal,accesible,bienes;patrimonio;altos cargos
+Portal de Transparencia Estatal,Agregador de enlaces externos de transparencia,https://transparencia.gob.es,general,estatal,incompleto,transparencia;datos públicos;información
+Transparencia Generalitat de Catalunya,Portal autonómico de transparencia,https://transparencia.gencat.cat,general,autonómico,accesible,cataluña;gencat;transparencia
+Contratación Pública Catalunya,Contratos públicos de Cataluña,https://contractaciopublica.gencat.cat,contratos,autonómico,accesible,contratos;cataluña;licitaciones
+Transparencia Comunidad de Madrid,Portal autonómico de transparencia,https://www.comunidad.madrid/transparencia,general,autonómico,accesible,madrid;transparencia
+Portal de Transparencia Andalucía,Portal autonómico de transparencia,https://juntadeandalucia.es/transparencia,general,autonómico,accesible,andalucía;transparencia
+Ayuntamiento de Barcelona – Transparencia,Portal municipal de transparencia,https://ajuntament.barcelona.cat/transparencia,general,local,accesible,barcelona;transparencia
+Ayuntamiento de Madrid – Transparencia,Portal municipal de transparencia,https://transparencia.madrid.es,general,local,accesible,madrid;transparencia
+Perfil del Contratante Barcelona,Contratos municipales de Barcelona,https://contractaciopublica.barcelona.cat,contratos,local,accesible,contratos;barcelona;licitaciones
+Portal de Subvenciones Barcelona,Subvenciones municipales de Barcelona,https://ajuntament.barcelona.cat/subvencions,subvenciones,local,accesible,subvenciones;barcelona
+Portal de Transparencia Valencia,Portal municipal de transparencia,https://www.valencia.es/transparencia,general,local,accesible,valencia;transparencia
+Portal de Transparencia Aragón,Portal autonómico de transparencia,https://transparencia.aragon.es,general,autonómico,accesible,aragon;transparencia
+Portal de Transparencia Castilla y León,Portal autonómico de transparencia,https://transparencia.jcyl.es,general,autonómico,accesible,castilla y leon;transparencia
+Portal de Transparencia Galicia,Portal autonómico de transparencia,https://transparencia.xunta.gal,general,autonómico,accesible,galicia;transparencia
+Portal de Transparencia País Vasco,Portal autonómico de transparencia,https://www.euskadi.eus/transparencia,general,autonómico,accesible,euskadi;transparencia
+Portal de Transparencia Murcia,Portal autonómico de transparencia,https://transparencia.carm.es,general,autonómico,accesible,murcia;transparencia
