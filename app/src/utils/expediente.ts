@@ -1,6 +1,6 @@
-// Pure domain logic — no Supabase, no React, no side effects.
+import type { RawRequest } from './urgency.js'
 
-const CSV_KEYS = [
+const CSV_KEYS: (keyof RawRequest)[] = [
   'Id', 'Ámbito', 'Fecha', 'Estado', 'Asunto', 'Ministerio',
   'Inicio tramitación', 'Art 20.1 (volumen)', 'Vencimiento normal',
   'Vencimiento 20.1', 'Vencimiento', 'Resolución', 'Notificación',
@@ -8,8 +8,18 @@ const CSV_KEYS = [
   'Días para reclamar resolución', 'Notas', 'Autor', 'Reclamación',
 ]
 
-export function validateExpediente(input, existingIds) {
-  const errors = {}
+export interface ExpedienteInput {
+  numeroExpediente?: string
+  asunto?: string
+}
+
+export interface ValidationResult {
+  valid: boolean
+  errors: Partial<Record<keyof ExpedienteInput, string>>
+}
+
+export function validateExpediente(input: ExpedienteInput, existingIds: string[]): ValidationResult {
+  const errors: Partial<Record<keyof ExpedienteInput, string>> = {}
   const trimmedId = (input.numeroExpediente ?? '').trim()
 
   if (!trimmedId) {
@@ -25,9 +35,12 @@ export function validateExpediente(input, existingIds) {
   return { valid: Object.keys(errors).length === 0, errors }
 }
 
-// Caller must pass result through enrichRequests() before adding to the requests list.
-export function buildExpediente(input, today, options = {}) {
-  const base = Object.fromEntries(CSV_KEYS.map(k => [k, '']))
+export function buildExpediente(
+  input: ExpedienteInput,
+  today: string,
+  options: { autor?: string } = {},
+): RawRequest {
+  const base = Object.fromEntries(CSV_KEYS.map(k => [k, ''])) as RawRequest
 
   return {
     ...base,
@@ -39,7 +52,7 @@ export function buildExpediente(input, today, options = {}) {
   }
 }
 
-export function slugifyFilename(filename) {
+export function slugifyFilename(filename: string): string {
   const lastDot = filename.lastIndexOf('.')
   const hasExt = lastDot > 0
   const name = hasExt ? filename.slice(0, lastDot) : filename
@@ -47,7 +60,7 @@ export function slugifyFilename(filename) {
 
   const safeName = name
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // strip combining diacritics (accents)
+    .replace(/[̀-ͯ]/g, '')
     .replace(/\s+/g, '_')
     .replace(/[^a-zA-Z0-9_.-]/g, '')
 
