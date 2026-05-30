@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "dataset_tipo": "muestra_demo",
+    "descripcion": "Conjunto de MUESTRA con la estructura real de los datos abiertos de PLACSP (CODICE 2.07). Sirve para construir y demostrar el chatbot sin depender de la red. NO son adjudicaciones reales: los importes y adjudicatarios son de ejemplo y los nombres de empresa son genéricos a propósito.",
+    "como_regenerar_con_datos_reales": "python scripts/etl_placsp.py --periodo AAAAMM --organo \"Barcelona\" --cpv 4521 --out data/contratos_demo.json",
+    "fuente_oficial": "https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_643/licitacionesPerfilesContratanteCompleto3_AAAAMM.zip",
+    "nota_enlaces": "url_expediente apunta al buscador oficial de licitaciones de PLACSP; al regenerar con el ETL, cada contrato enlaza a su expediente concreto.",
+    "n": 10
+  },
+  "contratos": [
+    {
+      "objeto": "Obras de construcción de un nuevo centro de educación infantil y primaria (CEIP) en el distrito de Sant Martí",
+      "importe": 6840000.0,
+      "adjudicatario": "UTE Obres Escolars Demo (empresa de ejemplo)",
+      "cpv": "45214210",
+      "tipo_contrato": "Obras",
+      "fecha": "2024-03-18",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2024/OB-00142",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Obras de reforma y ampliación de un colegio público en el distrito de Nou Barris",
+      "importe": 2310500.0,
+      "adjudicatario": "Construccions Demo Catalunya, S.A. (empresa de ejemplo)",
+      "cpv": "45214210",
+      "tipo_contrato": "Obras",
+      "fecha": "2024-06-27",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2024/OB-00531",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Redacción del proyecto y dirección de obra de centros educativos municipales",
+      "importe": 415000.0,
+      "adjudicatario": "Estudi d'Arquitectura Exemple, S.L.P. (empresa de ejemplo)",
+      "cpv": "71200000",
+      "tipo_contrato": "Servicios",
+      "fecha": "2024-02-05",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2024/SE-00088",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Servicio de limpieza de los centros educativos públicos de titularidad municipal",
+      "importe": 8950000.0,
+      "adjudicatario": "Neteja Urbana Exemple, S.L. (empresa de ejemplo)",
+      "cpv": "90910000",
+      "tipo_contrato": "Servicios",
+      "fecha": "2024-09-12",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2024/SE-00410",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Servicio de gestión de comedores escolares en escuelas municipales",
+      "importe": 5120000.0,
+      "adjudicatario": "Càtering Escolar Demo, S.A. (empresa de ejemplo)",
+      "cpv": "15894200",
+      "tipo_contrato": "Servicios",
+      "fecha": "2025-01-22",
+      "estado": "En evaluación",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2025/SE-00017",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Obras de urbanización y mejora del entorno de un grupo escolar (zona de juegos y accesibilidad)",
+      "importe": 980000.0,
+      "adjudicatario": "Paisatge i Obra Civil Demo, S.L. (empresa de ejemplo)",
+      "cpv": "45112700",
+      "tipo_contrato": "Obras",
+      "fecha": "2024-11-08",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2024/OB-00802",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Suministro de mobiliario y equipamiento para aulas de centros educativos",
+      "importe": 1240000.0,
+      "adjudicatario": "Equipaments Escolars Demo, S.L. (empresa de ejemplo)",
+      "cpv": "39160000",
+      "tipo_contrato": "Suministros",
+      "fecha": "2025-02-14",
+      "estado": "En plazo de presentación",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2025/SU-00045",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Servicio de mantenimiento de las instalaciones de alumbrado público",
+      "importe": 3450000.0,
+      "adjudicatario": "Enllumenat i Manteniment Demo, S.A. (empresa de ejemplo)",
+      "cpv": "50232100",
+      "tipo_contrato": "Servicios",
+      "fecha": "2024-05-30",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Barcelona",
+      "expediente": "2024/SE-00256",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Obras de construcción de una nueva escuela de educación infantil y primaria",
+      "importe": 4575000.0,
+      "adjudicatario": "Construccions Vallès Demo, S.L. (empresa de ejemplo)",
+      "cpv": "45214210",
+      "tipo_contrato": "Obras",
+      "fecha": "2024-07-19",
+      "estado": "Adjudicada",
+      "organo": "Ajuntament de Sant Cugat del Vallès",
+      "expediente": "2024/333-OBR",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    },
+    {
+      "objeto": "Servicio de limpieza viaria y recogida de residuos",
+      "importe": 21800000.0,
+      "adjudicatario": "Serveis Urbans Demo, S.A. (empresa de ejemplo)",
+      "cpv": "90511000",
+      "tipo_contrato": "Servicios",
+      "fecha": "2024-04-11",
+      "estado": "Adjudicada",
+      "organo": "Ayuntamiento de Madrid",
+      "expediente": "2024/CONTR-09912",
+      "url_expediente": "https://contrataciondelestado.es/wps/portal/licitaciones"
+    }
+  ]
+}
