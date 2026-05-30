@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.shipforgood.org/es</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.shipforgood.org/es"/>
+    <xhtml:link rel="alternate" hreflang="ca" href="https://www.shipforgood.org/ca"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.shipforgood.org/en"/>
+    <lastmod>2026-04-28</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.shipforgood.org/ca</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.shipforgood.org/es"/>
+    <xhtml:link rel="alternate" hreflang="ca" href="https://www.shipforgood.org/ca"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.shipforgood.org/en"/>
+    <lastmod>2026-04-28</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.shipforgood.org/en</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.shipforgood.org/es"/>
+    <xhtml:link rel="alternate" hreflang="ca" href="https://www.shipforgood.org/ca"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.shipforgood.org/en"/>
+    <lastmod>2026-04-28</lastmod>
+    <priority>1.0</priority>
+  </url>
+</urlset>

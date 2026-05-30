@@ -1,0 +1,4 @@
+1:"$Sreact.fragment"
+2:I[72934,["/ship-for-good-bcn/_next/static/chunks/77b2f83ebb82ab03.js","/ship-for-good-bcn/_next/static/chunks/c221ad8ac624fc67.js"],"default"]
+3:I[60043,["/ship-for-good-bcn/_next/static/chunks/77b2f83ebb82ab03.js","/ship-for-good-bcn/_next/static/chunks/c221ad8ac624fc67.js"],"default"]
+0:{"buildId":"wvGRoUhJvnabSIOnyzQUw","rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"loading":null,"isPartial":false}

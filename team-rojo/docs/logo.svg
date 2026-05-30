@@ -1,0 +1,11 @@
+<!-- Ship For Good official logo — replace this placeholder with the final SVG from the brand kit -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <!-- Heart icon -->
+  <path d="M22 18c-3.3-3.3-8.7-3.3-12 0-3.3 3.3-3.3 8.7 0 12l12 12 12-12c3.3-3.3 3.3-8.7 0-12-3.3-3.3-8.7-3.3-12 0z" fill="#f6c24e"/>
+  <!-- Sparkle top-right -->
+  <path d="M34 12l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" fill="#f6c24e"/>
+  <!-- Sparkle right -->
+  <path d="M40 22l0.6 2 2 0.6-2 0.6-0.6 2-0.6-2-2-0.6 2-0.6z" fill="#f6c24e"/>
+  <!-- Wordmark -->
+  <text x="52" y="37" font-family="monospace, sans-serif" font-size="18" font-weight="700" fill="#f6c24e" letter-spacing="-0.5">shipforgood</text>
+</svg>

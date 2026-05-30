@@ -1,0 +1,8 @@
+:HL["/ship-for-good-bcn/_next/static/chunks/32c111e464908e01.css","style"]
+:HL["/ship-for-good-bcn/_next/static/media/GeistPixel_Circle.p.e967dc6b.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/ship-for-good-bcn/_next/static/media/GeistPixel_Grid.p.2192fce6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/ship-for-good-bcn/_next/static/media/GeistPixel_Line.p.e7444037.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/ship-for-good-bcn/_next/static/media/GeistPixel_Square.p.31e87829.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/ship-for-good-bcn/_next/static/media/GeistPixel_Triangle.p.41e14d68.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/ship-for-good-bcn/_next/static/media/e41d5df559864f9e-s.p.380d09ea.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+0:{"buildId":"wvGRoUhJvnabSIOnyzQUw","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"locale","paramType":"d","paramKey":"ca","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":true}},"isRootLayout":false},"staleTime":300}

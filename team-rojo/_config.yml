@@ -1,0 +1,5 @@
+theme: null
+exclude:
+  - node_modules
+  - pnpm-lock.yaml
+  - out
