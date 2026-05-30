@@ -1,144 +1,196 @@
-# Ship for Good · 1st Edition
+# Monitor Civio · Team Morado
 
-think · build · help
+**Ship for Good 2026** · Rama [`team-morado`](https://github.com/ship-for-good/civio-2026/tree/team-morado)
 
-**May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/)**
+Sistema de monitorización de cambios en páginas web de información pública para [Civio](https://civio.es/). Los periodistas registran una URL y un email; cuando el contenido cambia, reciben una alerta sin tener que revisar el portal a mano.
 
-**Official website:** [shipforgood.org/es](https://www.shipforgood.org/es)
+## Equipo
 
-A hackathon with purpose: helping social organizations and benefiting society
-through technology. No smoke. No prizes. Just impact.
+| Nombre |
+|--------|
+| Sergio Arce Chijo |
+| Emilio Gerdez |
+| Ivan Betriu |
+| Victor Gonzalez |
 
----
+## Problema que resuelve
 
-## The Challenge
+En Civio, detectar cambios en portales de transparencia, contratación u otras fuentes públicas sigue siendo un trabajo manual y fácil de olvidar (oportunidad **OPP-1b** del discovery). Este proyecto automatiza esa vigilancia: centraliza qué URLs se siguen, con qué frecuencia y a quién avisar, reduciendo el esfuerzo repetitivo y permitiendo seguimiento temático a largo plazo.
 
-In this first edition we work with **[Civio](https://civio.es/)**, an independent
-foundation that fights institutional opacity and uses journalism, technology and
-open data to give citizens access to information.
+## Tecnologías principales
 
-The challenges we work on are theirs. The impact belongs to all of us.
+| Componente | Tecnología |
+|------------|------------|
+| Motor de detección de cambios | [changedetection.io](https://github.com/dgtlmoon/changedetection.io) (Docker) |
+| Navegador headless | Sockpuppet Browser (Playwright) |
+| Panel URL → email | Node.js 20 + Express |
+| Orquestación | Docker Compose |
+| Notificaciones | SMTP (integración vía API de changedetection.io) |
+| Persistencia | JSON en volumen (`mappings.json`) + datastore de watches |
 
----
+## Requisitos previos
 
-## Challenge Discovery
+- [Docker](https://docs.docker.com/get-docker/) y [Docker Compose](https://docs.docker.com/compose/) v2
+- Puertos libres en localhost (por defecto **3000** panel y **5000** changedetection.io)
+- Para desarrollo local del panel (opcional): **Node.js ≥ 20**
 
-More info: [challenge-discovery.md](./challenge-discovery.md)
-
-## Lovable Tokens
-
-More info: [lovable-tokens.md](./lovable-tokens.md)
-
-## Cursor Tokens
-
-More info: [cursor-tokens.md](./cursor-tokens.md)
-
-## Schedule
-
-### Friday, May 29th
-
-| Time | Activity |
-|------|----------|
-| 17:45 | Check-in |
-| 18:00 | Opening and discovery |
-| 21:00 | Closing |
-
-### Saturday, May 30th
-
-| Time | Activity |
-|------|----------|
-| 09:30 | Check-in starts |
-| 10:00 | Opening |
-| 10:30 | Optional talk - AI augmented development |
-| 15:00 | Optional talk - Debate "The ethics of Artificial Intelligence" with Civio |
-| 21:00 | Closing |
-
----
-
-## Slack Channels
-
-- announcements: https://ship-for-good.slack.com/archives/C0B1GNT77QB
-- q&a (questions for the hackathon organizers): https://ship-for-good.slack.com/archives/C0B1M3UCQS2
-- ask-civio (ask the people at Civil about the problem): https://ship-for-good.slack.com/archives/C0B6YE9GYSG
-- tech-support (questions and help on technical topics): https://ship-for-good.slack.com/archives/C0B6RERAELV
-
----
-
-## Wi-Fi
-
-Use the 42 Barcelona network:
-
-- UID: `42barcelona`
-- PASS: `bienvenido42BCN`
-
----
-
-## Team Branches
-
-Each team works on their own dedicated branch:
-
-| Team | Branch |
-|------|--------|
-| Delfos | `team-delfos` |
-| IT_Power | `team-it-power` |
-| Team Aina | `team-aina` |
-| Team Azul | `team-azul` |
-| Team Verde | `team-verde` |
-| Team Rojo | `team-rojo` |
-| Team Amarillo | `team-amarillo` |
-| Team Naranja | `team-naranja` |
-| Team Morado | `team-morado` |
-| Team Rosa | `team-rosa` |
-| Team Turquesa | `team-turquesa` |
-
-To get started:
+## Instalación y puesta en marcha
 
 ```bash
-git clone https://github.com/ship-for-good/civio-2026 
+git clone https://github.com/ship-for-good/civio-2026
 cd civio-2026
-git checkout team-your-team-name
+git checkout team-morado
+cd changedetection
+cp .env.example .env
+# Edita .env si necesitas SMTP, otra API key o URLs en red privada (ver abajo)
+docker compose up -d --build
 ```
 
----
+Comprueba que los contenedores están en marcha:
 
-## Repository Docs
+```bash
+docker compose ps
+```
 
-| Document | Description |
+### Acceso local
+
+| Servicio | URL | Uso |
+|----------|-----|-----|
+| **Panel de configuración** | http://127.0.0.1:3000 | Alta de URL + email, listado y borrado de monitors |
+| **changedetection.io** | http://127.0.0.1:5000 | UI avanzada, historial de capturas y diffs |
+
+### Flujo de demo (3 min)
+
+1. Abre el panel en http://127.0.0.1:3000.
+2. Añade una URL pública (p. ej. un portal de transparencia o contratación) y un email de prueba.
+3. Opcional: intervalo corto (5 min) para ver un ciclo de comprobación en la demo.
+4. Configura SMTP en `.env` para recibir el correo real; sin SMTP el alta de monitors fallará al crear la notificación (el motor y el panel siguen funcionando para revisar watches en el puerto 5000).
+5. Cuando changedetection.io detecte un cambio, el destinatario recibe el aviso por email.
+
+### Parar y limpiar
+
+```bash
+docker compose down
+# Para borrar también el volumen de datos de watches:
+docker compose down -v
+```
+
+### URLs en red privada / LAN
+
+Si monitorizas hosts internos (p. ej. `http://10.x.x.x/...`), en `.env` define:
+
+`ALLOW_IANA_RESTRICTED_ADDRESSES=true`
+
+Solo en redes de confianza: aumenta el riesgo de SSRF si la UI es accesible desde fuera.
+
+### Almacenamiento y tamaño del volumen
+
+En Windows/macOS los volúmenes nombrados de Docker no tienen cuota fija. Opciones documentadas en `changedetection/docker-compose.yml`:
+
+- Bind mount: `DATASTORE_VOLUME=./data` en `.env`
+- Reducir capturas: `SCREENSHOT_MAX_HEIGHT` y límite de historial por watch en la UI
+
+## Variables de entorno
+
+Copia `changedetection/.env.example` a `changedetection/.env`. Nombres de variables (sin valores sensibles):
+
+| Variable | Descripción |
 |----------|-------------|
-| [how-to-submit-project.md](./how-to-submit-project.md) | Delivery rules, README requirements and demo format |
-| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | How to work in this repo, branch rules and commit conventions |
-| [AUTHORSHIP.md](./AUTHORSHIP.md) | How projects will remain open source and usable by Civio |
+| `BASE_URL` | URL pública que aparece en alertas |
+| `CHANGEDETECTION_PORT` | Mapeo de puerto del servicio changedetection.io |
+| `CONFIG_PANEL_PORT` | Mapeo de puerto del panel |
+| `TZ` | Zona horaria de las comprobaciones |
+| `ALLOW_IANA_RESTRICTED_ADDRESSES` | Permitir URLs en IPs privadas/reservadas |
+| `DATASTORE_VOLUME` | Ruta de volumen o bind mount para datos |
+| `SCREENSHOT_MAX_HEIGHT` | Altura máxima de capturas |
+| `CHANGEDETECTION_API_KEY` | API key estática (inyectada al arranque) |
+| `DEFAULT_CHECK_MINUTES` | Intervalo por defecto entre revisiones |
+| `SMTP_HOST` | Servidor SMTP |
+| `SMTP_PORT` | Puerto SMTP |
+| `SMTP_USER` | Usuario SMTP |
+| `SMTP_PASSWORD` | Contraseña SMTP |
+| `SMTP_SECURE` | `true` para TLS directo (p. ej. puerto 465) |
+| `NOTIFICATION_EMAIL_FROM` | Remitente de las notificaciones |
+
+Variables adicionales del panel (opcionales, con valores por defecto en Docker): `MIN_CHECK_MINUTES`, `MAX_CHECK_MINUTES`, `PORT`.
+
+## Estructura del repositorio (equipo)
+
+```
+changedetection/
+├── docker-compose.yml    # Stack: init, changedetection.io, panel, browser
+├── .env.example
+├── scripts/init-datastore.js
+└── panel/
+    ├── server.js         # API y sincronización con watches
+    ├── public/           # UI del panel
+    └── data/mappings.json
+```
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+  subgraph usuario [Usuario Civio]
+    P[Panel :3000]
+  end
+  subgraph docker [Docker Compose]
+    INIT[init-datastore]
+    CD[changedetection.io :5000]
+  end
+  BR[sockpuppetbrowser]
+  SMTP[(SMTP)]
+
+  P -->|REST API + mappings.json| CD
+  INIT -->|API key en datastore| CD
+  CD --> BR
+  CD -->|mailto / SMTP| SMTP
+```
+
+## Decisiones técnicas
+
+- **changedetection.io** en lugar de un scraper propio: motor maduro, diffs visuales, historial y API; el equipo se centra en el flujo Civio (URL → persona).
+- **Panel ligero en Express**: formulario en español, validación de URL/email e intervalo, y sincronización bidireccional panel ↔ watches (borrados huérfanos en ambos lados).
+- **API key fija en arranque** (`init-datastore.js`): despliegue reproducible sin configuración manual en la UI de changedetection.io.
+- **Fetch con WebDriver**: páginas con JavaScript o contenido dinámico (portales de administración).
+
+## Próximos pasos
+
+- Plantillas de URLs frecuentes (transparencia, contratación, BOE).
+- Agrupación por tema o investigación y varios emails por watch.
+- Despliegue en producción con HTTPS y secretos gestionados.
+- Integración con Slack o webhook además de email.
+
+## Trabajo en la rama del equipo
+
+Este proyecto vive en la rama **`team-morado`**. No hagas commit en `main` ni en ramas de otros equipos.
+
+```bash
+git checkout team-morado
+git push origin team-morado
+```
+
+Convención de commits recomendada: [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, `docs`, …). Detalle en [how-to-work-team-branch.md](./how-to-work-team-branch.md).
+
+## Entrega (hackathon)
+
+Antes del **sábado 30 de mayo · 19:00**:
+
+- [ ] Todo el código en `team-morado` y pusheado
+- [ ] Este README completo y el proyecto arranca con las instrucciones anteriores
+- [ ] Demo funcional (local o desplegada)
+
+Requisitos completos y formato de showcase: [how-to-submit-project.md](./how-to-submit-project.md).
+
+## Licencia y uso por Civio
+
+Código bajo **MIT License** ([LICENSE](./LICENSE)). Civio y terceros pueden usar, modificar y desplegar el proyecto. Ver [AUTHORSHIP.md](./AUTHORSHIP.md).
+
+## Contexto del reto
+
+- Discovery del reto: [challenge-discovery.md](./challenge-discovery.md)
+- Evento: [shipforgood.org](https://www.shipforgood.org/es)
 
 ---
 
-## Code of Conduct
-
-All attendees, speakers, sponsors and volunteers must accept our
-[Code of Conduct](https://softwarecrafters.barcelona/coc.html).
-The organization will enforce it throughout the event.
-We count on everyone's cooperation to ensure a safe environment.
-
----
-
-## Partners & Sponsors
-
-**Organized with:**
-
-- [Civio](https://civio.es/) — challenge owner and partner organization
-- [42 Barcelona](https://www.42barcelona.com/es/) — venue
-- [Software Crafters Barcelona](https://softwarecrafters.barcelona/) — community
-
-**Sponsors:** [Manfred](https://www.getmanfred.com/) ·
-[QualityClouds](https://qualityclouds.ai/) ·
-[Plain Concepts](https://www.plainconcepts.com/) ·
-[Next Digital](https://www.nextdigital.es/)
-
-**Supporting:** [Lovable](https://lovable.dev/) ·
-[Cursor](https://cursor.com/) ·
-[Falca](https://falca.com/)
-
----
-
-## FAQ
-
-[Ship for Good FAQ](https://www.shipforgood.org/es#faq)
+*Ship for Good · 1st Edition · Mayo 2026 · 42 Barcelona*
