@@ -1,85 +1,43 @@
-import type { Classification, PortalId } from "./types";
-import { PORTALS } from "./portals";
+import type { Classification, KnowledgeNode } from "./types";
+import { buildClassificationFromTopicId, isKnownTopicId } from "./classification";
+import { KNOWLEDGE_GRAPH } from "./knowledge-graph";
 
-/**
- * Normaliza una cadena de texto para la comparación: minúsculas + sin diacríticos.
- * Esto permite que "subvención" y "subvencion" sean equivalentes.
- */
-function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "");
+export { normalize, matchesKeyword } from "./match-keywords";
+import { normalize, matchesKeyword } from "./match-keywords";
+
+function nodeMatches(normalizedText: string, node: KnowledgeNode): boolean {
+  const sortedKeywords = [...node.keywords].sort(
+    (a, b) => normalize(b).length - normalize(a).length
+  );
+  return sortedKeywords.some((kw) =>
+    matchesKeyword(normalizedText, normalize(kw))
+  );
 }
 
 /**
- * Comprueba si alguna de las palabras clave (stems) aparece en el texto normalizado
- * como inicio de palabra (límite izquierdo de palabra \b).
- * Esto evita falsos positivos como "obra" dentro de "cobra".
- */
-function matchesAny(normalizedText: string, keywords: ReadonlyArray<string>): boolean {
-  return keywords.some((kw) => {
-    // \b asegura límite izquierdo; el stem puede estar en el interior de la palabra
-    // (p. ej. "licitaci" coincide con "licitación").
-    const pattern = new RegExp(`\\b${kw}`, "i");
-    return pattern.test(normalizedText);
-  });
-}
-
-/**
- * Listas de palabras clave por portal, en orden de prioridad (primera coincidencia gana).
- * Cada entrada es una raíz de palabra (stem parcial) anclada al inicio de palabra con \b.
- * Se definen como constantes para que sean fáciles de extender sin tocar la lógica.
- */
-const KEYWORD_RULES: ReadonlyArray<{ portal: PortalId; keywords: ReadonlyArray<string> }> = [
-  {
-    portal: "PLACE",
-    keywords: ["contrat", "licitaci", "obra", "adjudicaci", "pliego", "cpv", "suministro"],
-  },
-  {
-    portal: "BDNS",
-    keywords: ["subvenci", "ayuda", "beca", "subsidio"],
-  },
-  {
-    portal: "TRANSPARENCIA",
-    keywords: ["retribuci", "sueldo", "salario", "cobra", "nomina", "remuneraci"],
-  },
-  {
-    portal: "BOE",
-    keywords: ["declaraci", "bienes", "patrimonio"],
-  },
-  {
-    portal: "MEDIOAMBIENTAL",
-    keywords: ["medioambient", "ambiental", "aire", "contaminaci", "agua", "residuo", "emision"],
-  },
-];
-
-/**
- * Clasifica la consulta de un ciudadano en lenguaje natural y la enruta al portal
- * de información pública español correspondiente.
- *
- * El algoritmo es determinista y sin dependencias de red: ideal para MVP y para
- * ser sustituido por un clasificador LLM detrás del mismo contrato `Classification`.
+ * Clasificador determinista (keywords). Tests y respaldo sin API.
  */
 export function classify(query: string): Classification {
   const normalizedQuery = normalize(query);
 
-  const matchedPortalId: PortalId =
-    normalizedQuery.trim() === ""
-      ? "UNKNOWN"
-      : (KEYWORD_RULES.find(({ keywords }) =>
-          matchesAny(normalizedQuery, keywords)
-        )?.portal ?? "UNKNOWN");
+  if (!normalizedQuery.trim()) {
+    return buildClassificationFromTopicId(query, "unknown");
+  }
 
-  const info = PORTALS[matchedPortalId];
+  const node = KNOWLEDGE_GRAPH.find((n) => nodeMatches(normalizedQuery, n));
 
-  return {
-    portal: matchedPortalId,
-    portalName: info.portalName,
-    portalUrl: info.portalUrl,
-    explanation: info.explanation,
-    steps: info.steps,
-    ...(info.searchTip !== undefined && { searchTip: info.searchTip }),
-    ...(info.buildDeepLink !== undefined && { deepLink: info.buildDeepLink(query) }),
-  };
+  if (!node) {
+    return buildClassificationFromTopicId(query, "unknown");
+  }
+
+  if (!isKnownTopicId(node.id)) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        `[buscador] El nodo "${node.id}" está en keywords.json pero no en topics.ts; se usa unknown.`
+      );
+    }
+    return buildClassificationFromTopicId(query, "unknown");
+  }
+
+  return buildClassificationFromTopicId(query, node.id);
 }
