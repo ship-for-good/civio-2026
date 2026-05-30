@@ -14,6 +14,7 @@ import RequestsTable from './components/RequestsTable.jsx'
 import Toast from './components/Toast.jsx'
 import NewExpedienteModal from './components/NewExpedienteModal.jsx'
 import EditExpedienteModal from './components/EditExpedienteModal.jsx'
+import LoginPage from './components/LoginPage.jsx'
 
 const EMPTY_FILTERS: Filters = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
 
@@ -28,6 +29,9 @@ interface Sort {
 
 export default function App() {
   const { session } = useAuth()
+
+  if (session === undefined) return null
+  if (session === null) return <LoginPage />
   const [requests, setRequests] = useState<EnrichedRequest[]>(() => loadAndEnrich(CSV_RAW))
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
   const [sort, setSort] = useState<Sort>({ column: 'urgencyOrder', dir: 'asc' })
