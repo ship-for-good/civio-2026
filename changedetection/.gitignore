@@ -1,3 +1,4 @@
 .env
 data/
+changedetection-data/
 node_modules/

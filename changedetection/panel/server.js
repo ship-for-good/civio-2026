@@ -22,6 +22,61 @@ const DEFAULT_CHECK_MINUTES = Number(process.env.DEFAULT_CHECK_MINUTES || 30);
 const MIN_CHECK_MINUTES = Number(process.env.MIN_CHECK_MINUTES || 1);
 const MAX_CHECK_MINUTES = Number(process.env.MAX_CHECK_MINUTES || 10080);
 
+const DEFAULT_WATCH_OPTIONS = {
+  "fetch_backend": "html_webdriver",
+  "render_extract_text_by_js": true,
+  "trim_text_whitespace": true,
+  "notification_title": "Actualización: {{watch_title}}",
+  "notification_body":
+    "Esta url ha sido actualizada:\n{{watch_url}}\n\nCambios detectados:\n{{diff}}",
+};
+
+const DEFAULT_INCLUDE_FILTERS = [
+  ".titulo_resultados",
+  "#tablaVerticalResponsive",
+];
+
+function isIpAddress(hostname) {
+  const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/;
+  if (ipv4.test(hostname)) {
+    return hostname.split(".").every((octet) => {
+      const value = Number(octet);
+      return value >= 0 && value <= 255;
+    });
+  }
+  return hostname.includes(":");
+}
+
+function shouldApplyDefaultWatchFilters(urlString) {
+  let parsed;
+  try {
+    parsed = new URL(urlString);
+  } catch {
+    return false;
+  }
+
+  if (parsed.hostname === "transparencia.gob.es") {
+    return true;
+  }
+
+  const path = parsed.pathname.replace(/\/+$/, "") || "/";
+  const isLocalMirror =
+    parsed.protocol === "http:" &&
+    parsed.port === "8000" &&
+    isIpAddress(parsed.hostname) &&
+    (path === "/current/buscar.htm" ||
+      (path.startsWith("/current/") && /\.html?$/i.test(path)));
+
+  return isLocalMirror;
+}
+
+async function applyDefaultWatchFilters(watchUuid) {
+  return changedetectionRequest(`/watch/${watchUuid}`, {
+    method: "PUT",
+    body: JSON.stringify({ include_filters: DEFAULT_INCLUDE_FILTERS }),
+  });
+}
+
 app.use(express.json());
 app.use("/api", (_req, res, next) => {
   res.set("Cache-Control", "no-store");
@@ -87,7 +142,7 @@ function isValidEmail(value) {
 
 async function changedetectionRequest(route, options = {}) {
   const response = await fetch(`${CHANGEDETECTION_URL}/api/v1${route}`, {
-    ...options,
+    ...options, 
     headers: {
       "x-api-key": CHANGEDETECTION_API_KEY,
       "Content-Type": "application/json",
@@ -196,6 +251,7 @@ function formatIntervalLabel(minutes) {
 
 function buildWatchPayload({ url, email, title, checkIntervalMinutes }) {
   return {
+    ...DEFAULT_WATCH_OPTIONS,
     url,
     title: title || url,
     notification_urls: [buildNotificationUrl(email)],
@@ -363,6 +419,10 @@ app.post("/api/mappings", async (req, res) => {
         })
       ),
     });
+
+    if (shouldApplyDefaultWatchFilters(url)) {
+      await applyDefaultWatchFilters(watch.uuid);
+    }
 
     const mapping = buildMappingRecord({
       url,
