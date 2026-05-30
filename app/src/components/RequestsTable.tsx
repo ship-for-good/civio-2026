@@ -3,6 +3,7 @@ import { formatDateShort } from '../utils/dates.js'
 import type { EnrichedRequest } from '../utils/urgency.js'
 
 const STATE_BADGE_CLASS: Record<string, string> = {
+  'Solicitado': 'badge-solicitado',
   'En tramitación': 'badge-tramitacion',
   'Reclamada': 'badge-reclamada',
   'Contencioso': 'badge-contencioso',

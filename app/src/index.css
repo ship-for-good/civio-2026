@@ -459,6 +459,7 @@ td {
   white-space: nowrap;
 }
 
+.badge-solicitado  { background: #f0f0f5;                  color: #6b7280; }
 .badge-tramitacion { background: var(--civio-blue-muted); color: var(--civio-blue); }
 .badge-reclamada   { background: var(--warning-bg);       color: var(--civio-orange); }
 .badge-contencioso { background: var(--urgent-bg);        color: var(--civio-red); }

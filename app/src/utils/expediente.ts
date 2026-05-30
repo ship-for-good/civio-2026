@@ -1,6 +1,6 @@
 import type { RawRequest, EnrichedRequest } from './urgency.js'
 
-export const ESTADOS = ['En tramitación', 'Reclamada', 'Contencioso', 'Resuelta'] as const
+export const ESTADOS = ['Solicitado', 'En tramitación', 'Reclamada', 'Contencioso', 'Resuelta'] as const
 export type Estado = typeof ESTADOS[number]
 
 export interface ExpedienteRecord {

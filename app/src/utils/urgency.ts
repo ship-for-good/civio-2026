@@ -59,10 +59,11 @@ export function computeUrgency(req: RawRequest): Urgency {
     return { level: 'ok', label: `Vence: ${daysToDeadline}d`, order: 3 }
   }
 
-  if (estado === 'Reclamada') return { level: 'neutral', label: 'Reclamada', order: 4 }
-  if (estado === 'Contencioso') return { level: 'neutral', label: 'Judicial', order: 5 }
+  if (estado === 'Solicitado') return { level: 'neutral', label: 'Solicitado', order: 4 }
+  if (estado === 'Reclamada') return { level: 'neutral', label: 'Reclamada', order: 5 }
+  if (estado === 'Contencioso') return { level: 'neutral', label: 'Judicial', order: 6 }
 
-  return { level: 'neutral', label: estado || '—', order: 6 }
+  return { level: 'neutral', label: estado || '—', order: 7 }
 }
 
 export function getDailyDigestCategories(requests: EnrichedRequest[]) {
