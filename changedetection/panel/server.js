@@ -205,6 +205,70 @@ function buildWatchPayload({ url, email, title, checkIntervalMinutes }) {
   };
 }
 
+function extractWatchUuidSet(watchesResponse) {
+  if (!watchesResponse || typeof watchesResponse !== "object") {
+    return new Set();
+  }
+
+  const uuids = new Set();
+  for (const [key, value] of Object.entries(watchesResponse)) {
+    if (value && typeof value === "object" && value.uuid) {
+      uuids.add(value.uuid);
+    } else if (/^[0-9a-f-]{36}$/i.test(key)) {
+      uuids.add(key);
+    }
+  }
+  return uuids;
+}
+
+/**
+ * Keeps panel mappings and ChangeDetection watches in sync:
+ * - mapping removed / watch deleted in CD → drop mapping
+ * - mapping removed from panel data → delete orphan watch in CD
+ */
+async function syncMappingsWithChangeDetection() {
+  let mappings = readMappings();
+  let existingUuids;
+
+  try {
+    const watches = await changedetectionRequest("/watch");
+    existingUuids = extractWatchUuidSet(watches);
+  } catch (error) {
+    return { mappings, pruned: 0, watchesRemoved: 0, error: error.message };
+  }
+
+  const beforeCount = mappings.length;
+  mappings = mappings.filter(
+    (mapping) => !mapping.watchUuid || existingUuids.has(mapping.watchUuid)
+  );
+  const pruned = beforeCount - mappings.length;
+
+  const mappedUuids = new Set(
+    mappings.map((mapping) => mapping.watchUuid).filter(Boolean)
+  );
+
+  let watchesRemoved = 0;
+  for (const uuid of existingUuids) {
+    if (mappedUuids.has(uuid)) {
+      continue;
+    }
+    try {
+      await changedetectionRequest(`/watch/${uuid}`, { method: "DELETE" });
+      watchesRemoved += 1;
+    } catch (error) {
+      if (error.statusCode !== 404) {
+        throw error;
+      }
+    }
+  }
+
+  if (pruned > 0) {
+    writeMappings(mappings);
+  }
+
+  return { mappings, pruned, watchesRemoved };
+}
+
 async function enrichMapping(mapping) {
   if (!mapping.watchUuid) {
     return { ...mapping, watchStatus: null };
@@ -250,7 +314,7 @@ app.get("/api/status", async (_req, res) => {
 
 app.get("/api/mappings", async (_req, res) => {
   try {
-    const mappings = readMappings();
+    const { mappings } = await syncMappingsWithChangeDetection();
     const enriched = await Promise.all(mappings.map(enrichMapping));
     res.json(enriched);
   } catch (error) {
@@ -398,11 +462,11 @@ app.put("/api/mappings/:id", async (req, res) => {
 app.delete("/api/mappings/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const mappings = readMappings();
+    let mappings = readMappings();
     const index = mappings.findIndex((item) => item.id === id);
 
     if (index === -1) {
-      // Ya eliminado (p. ej. edición manual de mappings.json)
+      await syncMappingsWithChangeDetection();
       return res.status(204).send();
     }
 
