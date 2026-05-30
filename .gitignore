@@ -9,3 +9,5 @@ data/*.json
 
 # Go
 /vendor/
+
+.env
