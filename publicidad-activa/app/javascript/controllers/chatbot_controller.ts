@@ -1,4 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
+import { marked, Renderer } from "marked"
+
+const renderer = new Renderer()
+renderer.link = ({ href, title, text }: { href: string; title?: string | null; text: string }) =>
+  `<a href="${href}" target="_blank" rel="noopener noreferrer"${title ? ` title="${title}"` : ""}>${text}</a>`
+marked.use({ renderer })
 
 export default class extends Controller {
   static targets = [
@@ -128,12 +134,16 @@ export default class extends Controller {
       wrapper.appendChild(avatar)
     }
 
-    const bubble = document.createElement("p")
-    bubble.textContent = text
+    const bubble = document.createElement(role === "assistant" ? "div" : "p")
+    if (role === "assistant") {
+      bubble.innerHTML = marked.parse(text) as string
+    } else {
+      bubble.textContent = text
+    }
     bubble.className =
       role === "user"
         ? "rounded-2xl rounded-tr-none bg-sky-600 px-3 py-2 text-sm text-white leading-relaxed max-w-[80%]"
-        : "rounded-2xl rounded-tl-none bg-stone-100 px-3 py-2 text-sm text-stone-800 leading-relaxed max-w-[80%]"
+        : "chat-prose rounded-2xl rounded-tl-none bg-stone-100 px-3 py-2 text-sm text-stone-800 leading-relaxed max-w-[80%]"
     wrapper.appendChild(bubble)
 
     this.messagesTarget.appendChild(wrapper)
