@@ -88,6 +88,26 @@ class Organisms::Services::BuildOrganismNavigationTest < ActiveSupport::TestCase
     assert_equal 4, materias.first.count
   end
 
+  test "materias_for includes altos cargos when organism has buscador resources" do
+    create_resource!(
+      id: "mdef-altos-curriculos",
+      url: "https://transparencia.gob.es/servicios-buscador/buscar.htm?categoria=curriculos&ente=E00003301",
+      materia: "altos-cargos",
+      materia_label: "Altos cargos",
+      subtema: "curriculos",
+      subtema_label: "Currículos de altos cargos",
+      organismo_code: "mdef",
+      vigencia: "vigente"
+    )
+
+    materias = Organisms::Services::BuildOrganismNavigation.materias_for("mdef")
+
+    assert_equal 2, materias.size
+    altos = materias.find { |entry| entry.slug == "altos-cargos" }
+    assert_equal "Altos cargos", altos.label
+    assert_equal 1, altos.count
+  end
+
   test "subtemas_for returns vigente url and historico count" do
     subtemas = Organisms::Services::BuildOrganismNavigation.subtemas_for("mdef", "organizacion-empleo")
     rpt = subtemas.find { |entry| entry.slug == "relaciones-puestos-trabajo" }

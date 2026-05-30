@@ -21,6 +21,8 @@ module Resources
         crawl_data = @data || load_crawl_data
         expected = crawl_data.dig("stats", "uniqueUrls")
         parsed = FlattenCrawlTree.call(tree: crawl_data["tree"], expected_count: expected)
+        parsed.concat(ImportAltosCargosFromOrganisms.call(organisms: crawl_data["organisms"]))
+        parsed.uniq!(&:url)
 
         Resources::Models::Resource.transaction do
           Resources::Models::Resource.delete_all
