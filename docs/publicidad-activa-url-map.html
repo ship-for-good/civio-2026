@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa URLs — Publicitat activa</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #fafbfc;
+      --border: #e2e5ea;
+      --text: #1a1d23;
+      --text-muted: #5c6573;
+      --text-faint: #8b939e;
+      --accent: #1a56db;
+      --accent-soft: #ebf2ff;
+      --accent-hover: #1648b8;
+      --highlight: #fef3c7;
+      --match: #fde68a;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, "Cascadia Code", "SF Mono", monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem;
+      overflow-y: auto;
+      max-height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+    .sidebar h2 {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-faint);
+      margin-bottom: .75rem;
+    }
+    .main {
+      padding: 1.5rem 2rem 3rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-width: 0;
+    }
+    header h1 {
+      font-size: 1.35rem;
+      font-weight: 650;
+      letter-spacing: -.02em;
+    }
+    header .subtitle {
+      color: var(--text-muted);
+      font-size: .875rem;
+      margin-top: .25rem;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: .75rem;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .875rem 1rem;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: .125rem;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1rem;
+    }
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+      pointer-events: none;
+    }
+    #search {
+      width: 100%;
+      padding: .5rem .75rem .5rem 2.25rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: .875rem;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color .15s;
+    }
+    #search:focus { border-color: var(--accent); }
+    .btn {
+      padding: .5rem .875rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-2);
+      font-size: .8125rem;
+      font-family: var(--font);
+      cursor: pointer;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background .15s, border-color .15s;
+    }
+    .btn:hover { background: var(--bg); border-color: #cdd2da; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .materia-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+    .materia-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: .5rem .625rem;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-family: var(--font);
+      font-size: .8125rem;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      transition: background .12s;
+    }
+    .materia-btn:hover { background: var(--bg); }
+    .materia-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .materia-btn .count {
+      font-size: .7rem;
+      color: var(--text-faint);
+      background: var(--bg);
+      padding: .1rem .4rem;
+      border-radius: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .materia-btn.active .count {
+      background: rgba(26,86,219,.15);
+      color: var(--accent);
+    }
+    .tree-panel {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: auto;
+      min-height: 400px;
+      max-height: calc(100vh - 280px);
+    }
+    .tree-root { padding: .5rem 0; }
+    .tree-node { user-select: none; }
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .2rem .75rem .2rem 0;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 0 .5rem;
+      font-size: .8125rem;
+    }
+    .tree-row:hover { background: var(--bg); }
+    .tree-row.match { background: var(--match); }
+    .tree-row.focused { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .chevron {
+      width: 1.25rem;
+      height: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-faint);
+      transition: transform .15s;
+      border-radius: 3px;
+    }
+    .chevron:hover { background: var(--border); color: var(--text); }
+    .chevron.open { transform: rotate(90deg); }
+    .chevron.leaf { visibility: hidden; }
+    .node-name {
+      font-family: var(--mono);
+      font-size: .78rem;
+      word-break: break-all;
+    }
+    .node-count {
+      margin-left: auto;
+      font-size: .7rem;
+      color: var(--text-faint);
+      background: var(--bg);
+      padding: .05rem .4rem;
+      border-radius: 8px;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .tree-children { display: none; }
+    .tree-children.open { display: block; }
+    .path-row {
+      display: flex;
+      gap: .5rem;
+      align-items: stretch;
+    }
+    .path-bar {
+      flex: 1;
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .5rem .875rem;
+      word-break: break-all;
+      min-height: 2rem;
+      display: flex;
+      align-items: center;
+    }
+    .path-bar.empty { color: var(--text-faint); font-family: var(--font); font-style: italic; }
+    .path-bar a { color: var(--accent); text-decoration: none; }
+    .path-bar a:hover { text-decoration: underline; }
+    #btn-copy { align-self: center; }
+    #btn-copy.copied { background: #ecfdf5; border-color: #6ee7b7; color: #047857; }
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .legend {
+      font-size: .75rem;
+      color: var(--text-faint);
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+    .search-meta {
+      font-size: .75rem;
+      color: var(--text-muted);
+      padding: 0 .25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Matèries</h2>
+      <ul class="materia-list" id="materia-list"></ul>
+      <p class="legend" style="margin-top:1.5rem">
+        Clic a una matèria per saltar-hi. Cerca per nom de segment (p.ex. <code>mdef</code>, <code>historico</code>).
+      </p>
+    </aside>
+    <main class="main">
+      <header>
+        <h1>Mapa d&apos;URLs — Publicitat activa</h1>
+        <p class="subtitle">transparencia.gob.es/publicidad-activa</p>
+      </header>
+      <div class="stats" id="stats"></div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="search" id="search" placeholder="Cerca segment de path…" autocomplete="off">
+        </div>
+        <span class="search-meta" id="search-meta"></span>
+        <button class="btn" id="btn-expand">Expandir tot</button>
+        <button class="btn" id="btn-collapse">Col·lapsar tot</button>
+        <button class="btn btn-primary" id="btn-reset">Reset</button>
+      </div>
+      <div class="path-row">
+        <div class="path-bar empty" id="path-bar">Clic a un node per veure el path complet</div>
+        <button class="btn" id="btn-copy" disabled>Copiar URL</button>
+      </div>
+      <div class="tree-panel">
+        <div class="tree-root" id="tree-root"></div>
+      </div>
+    </main>
+  </div>
+  <script>
+    const DATA = {"stats":{"uniqueUrls":1249,"pagesCrawled":1167,"maxDepth":7,"avgLinks":465.9},"materias":[{"name":"organizacion-empleo","count":1117},{"name":"informacion-economico-presupuestaria","count":42},{"name":"altos-cargos","count":31},{"name":"tramites","count":25},{"name":"normativa-otras-disposiciones","count":19},{"name":"planificacion-estadistica","count":12}],"depths":[{"depth":1,"count":1},{"depth":2,"count":2},{"depth":3,"count":6},{"depth":4,"count":43},{"depth":5,"count":232},{"depth":6,"count":81},{"depth":7,"count":884}],"tree":{"name":"publicidad-activa","count":1249,"children":[{"name":"por-materias","count":1247,"children":[{"name":"organizacion-empleo","count":1117,"children":[{"name":"relaciones-puestos-trabajo","count":738,"children":[{"name":"historico","count":707,"children":[{"name":"rpt-enero-2026","count":32,"children":[{"name":"historico","count":1,"children":[]},{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-aipi","count":1,"children":[]},{"name":"rpt-airef","count":1,"children":[]},{"name":"rpt-cnmc","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-ctbg","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2025","count":32,"children":[{"name":"historico","count":1,"children":[]},{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-aipi","count":1,"children":[]},{"name":"rpt-airef","count":1,"children":[]},{"name":"rpt-cnmc","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-ctbg","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-diciembre-2024","count":29,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-airef","count":1,"children":[]},{"name":"rpt-cnmc","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-ctbg","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-junio-2020","count":27,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]},{"name":"rpt-vdsa","count":1,"children":[]},{"name":"rpt-vetd","count":1,"children":[]},{"name":"rpt-vpcm","count":1,"children":[]},{"name":"rpt-vted","count":1,"children":[]}]},{"name":"rpt-marzo-2025","count":27,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2020","count":27,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]},{"name":"rpt-vdsa","count":1,"children":[]},{"name":"rpt-vetd","count":1,"children":[]},{"name":"rpt-vpcm","count":1,"children":[]},{"name":"rpt-vted","count":1,"children":[]}]},{"name":"rpt--marzo-2023","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-diciembre-2021","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-diciembre-2022","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-junio-2021","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]},{"name":"rpt-vetd","count":1,"children":[]}]},{"name":"rpt-junio-2022","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-junio-2023","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-marzo-2021","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]},{"name":"rpt-vdsa","count":1,"children":[]},{"name":"rpt-vetd","count":1,"children":[]},{"name":"rpt-vpcm","count":1,"children":[]},{"name":"rpt-vted","count":1,"children":[]}]},{"name":"rpt-marzo-2022","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2021","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2022","count":26,"children":[{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-diciembre-2020","count":25,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]},{"name":"rpt-vdsa","count":1,"children":[]},{"name":"rpt-vetd","count":1,"children":[]},{"name":"rpt-vpcm","count":1,"children":[]},{"name":"rpt-vted","count":1,"children":[]}]},{"name":"rpt-marzo-2020","count":25,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]},{"name":"rpt-vdsa","count":1,"children":[]},{"name":"rpt-vetd","count":1,"children":[]},{"name":"rpt-vpcm","count":1,"children":[]},{"name":"rpt-vted","count":1,"children":[]}]},{"name":"rpt-junio-2024","count":24,"children":[{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2023","count":24,"children":[{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcin","count":1,"children":[]},{"name":"rpt-mcsm","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mdsa","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-metd","count":1,"children":[]},{"name":"rpt-mhfp","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpcm","count":1,"children":[]},{"name":"rpt-mpt","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtma","count":1,"children":[]},{"name":"rpt-muni","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-setiembre-2024","count":24,"children":[{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-diciembre-2018","count":23,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-apd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mece","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-ministeriossuprimidos","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpci","count":1,"children":[]},{"name":"rpt-mscb","count":1,"children":[]},{"name":"rpt-mtec","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtms","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-marzo-2019","count":23,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-apd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mece","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-ministeriossuprimidos","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpci","count":1,"children":[]},{"name":"rpt-mscb","count":1,"children":[]},{"name":"rpt-mtec","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtms","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2018","count":22,"children":[{"name":"rpt-apd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mece","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-ministeriossuprimidos","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpci","count":1,"children":[]},{"name":"rpt-mscb","count":1,"children":[]},{"name":"rpt-mtec","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtms","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-septiembre-2019","count":22,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-apd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mece","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpci","count":1,"children":[]},{"name":"rpt-mscb","count":1,"children":[]},{"name":"rpt-mtec","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtms","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-diciembre-2019","count":21,"children":[{"name":"rpt-apd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mece","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpci","count":1,"children":[]},{"name":"rpt-mscb","count":1,"children":[]},{"name":"rpt-mtec","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtms","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-junio-2019","count":20,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mcud","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mece","count":1,"children":[]},{"name":"rpt-mefp","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-mict","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpci","count":1,"children":[]},{"name":"rpt-mscb","count":1,"children":[]},{"name":"rpt-mtec","count":1,"children":[]},{"name":"rpt-mtfp","count":1,"children":[]},{"name":"rpt-mtms","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"rpt-abril-2018","count":18,"children":[{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-apd","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-maec","count":1,"children":[]},{"name":"rpt-mapama","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecd","count":1,"children":[]},{"name":"rpt-meyss","count":1,"children":[]},{"name":"rpt-mfom","count":1,"children":[]},{"name":"rpt-mineco","count":1,"children":[]},{"name":"rpt-minetad","count":1,"children":[]},{"name":"rpt-minhap","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mjus","count":1,"children":[]},{"name":"rpt-mpr","count":1,"children":[]},{"name":"rpt-msssi","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"mas-info-rpt","count":1,"children":[]}]},{"name":"mas-info-rpt","count":1,"children":[]},{"name":"rpt-aepd","count":1,"children":[]},{"name":"rpt-aipi","count":1,"children":[]},{"name":"rpt-airef","count":1,"children":[]},{"name":"rpt-cnmc","count":1,"children":[]},{"name":"rpt-csn","count":1,"children":[]},{"name":"rpt-ctbg","count":1,"children":[]},{"name":"rpt-mapa","count":1,"children":[]},{"name":"rpt-mauc","count":1,"children":[]},{"name":"rpt-mclt","count":1,"children":[]},{"name":"rpt-mcnu","count":1,"children":[]},{"name":"rpt-mdca","count":1,"children":[]},{"name":"rpt-mdef","count":1,"children":[]},{"name":"rpt-mecm","count":1,"children":[]},{"name":"rpt-mefd","count":1,"children":[]},{"name":"rpt-mhac","count":1,"children":[]},{"name":"rpt-migd","count":1,"children":[]},{"name":"rpt-mint","count":1,"children":[]},{"name":"rpt-mism","count":1,"children":[]},{"name":"rpt-mitu","count":1,"children":[]},{"name":"rpt-mjui","count":1,"children":[]},{"name":"rpt-mpjc","count":1,"children":[]},{"name":"rpt-msnd","count":1,"children":[]},{"name":"rpt-mtdf","count":1,"children":[]},{"name":"rpt-mted","count":1,"children":[]},{"name":"rpt-mtes","count":1,"children":[]},{"name":"rpt-mtmd","count":1,"children":[]},{"name":"rpt-mtrm","count":1,"children":[]},{"name":"rpt-mvau","count":1,"children":[]},{"name":"rpt-pg","count":1,"children":[]}]},{"name":"estructura","count":172,"children":[{"name":"historico","count":118,"children":[{"name":"xiv-legislatura-1","count":25,"children":[{"name":"estructura-mapa","count":1,"children":[]},{"name":"estructura-mauc","count":1,"children":[]},{"name":"estructura-mcin","count":1,"children":[]},{"name":"estructura-mcsm","count":1,"children":[]},{"name":"estructura-mcud","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mdsa","count":1,"children":[]},{"name":"estructura-mefp","count":1,"children":[]},{"name":"estructura-metd","count":1,"children":[]},{"name":"estructura-mhac","count":1,"children":[]},{"name":"estructura-mict","count":1,"children":[]},{"name":"estructura-migd","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mism","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpcm","count":1,"children":[]},{"name":"estructura-msnd","count":1,"children":[]},{"name":"estructura-mted","count":1,"children":[]},{"name":"estructura-mtes","count":1,"children":[]},{"name":"estructura-mtfp","count":1,"children":[]},{"name":"estructura-mtma","count":1,"children":[]},{"name":"estructura-muni","count":1,"children":[]},{"name":"estructura-pg","count":1,"children":[]},{"name":"estructurard139-2020","count":1,"children":[]}]},{"name":"xiv-legislatura-2","count":25,"children":[{"name":"estructura-mapa","count":1,"children":[]},{"name":"estructura-mauc","count":1,"children":[]},{"name":"estructura-mcin","count":1,"children":[]},{"name":"estructura-mcsm","count":1,"children":[]},{"name":"estructura-mcud","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mdsa","count":1,"children":[]},{"name":"estructura-mefp","count":1,"children":[]},{"name":"estructura-metd","count":1,"children":[]},{"name":"estructura-mhfp","count":1,"children":[]},{"name":"estructura-mict","count":1,"children":[]},{"name":"estructura-migd","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mism","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpcm","count":1,"children":[]},{"name":"estructura-mpt","count":1,"children":[]},{"name":"estructura-msnd","count":1,"children":[]},{"name":"estructura-mted","count":1,"children":[]},{"name":"estructura-mtes","count":1,"children":[]},{"name":"estructura-mtma","count":1,"children":[]},{"name":"estructura-muni","count":1,"children":[]},{"name":"estructura-pg","count":1,"children":[]},{"name":"estructurard139-2020","count":1,"children":[]}]},{"name":"xiii-legislatura","count":20,"children":[{"name":"estructura-mapa","count":1,"children":[]},{"name":"estructura-mauc","count":1,"children":[]},{"name":"estructura-mcnu","count":1,"children":[]},{"name":"estructura-mcud","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mece","count":1,"children":[]},{"name":"estructura-mefp","count":1,"children":[]},{"name":"estructura-mfom","count":1,"children":[]},{"name":"estructura-mhac","count":1,"children":[]},{"name":"estructura-mict","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpci","count":1,"children":[]},{"name":"estructura-mscb","count":1,"children":[]},{"name":"estructura-mtec","count":1,"children":[]},{"name":"estructura-mtfp","count":1,"children":[]},{"name":"estructura-mtms","count":1,"children":[]},{"name":"estructura-pg","count":1,"children":[]},{"name":"estructurard355-2018","count":1,"children":[]}]},{"name":"xii-legislatura","count":15,"children":[{"name":"estructura-maec","count":1,"children":[]},{"name":"estructura-magrama","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mecd","count":1,"children":[]},{"name":"estructura-meyss","count":1,"children":[]},{"name":"estructura-mfom","count":1,"children":[]},{"name":"estructura-mineco","count":1,"children":[]},{"name":"estructura-minetad","count":1,"children":[]},{"name":"estructura-minhap","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpat","count":1,"children":[]},{"name":"estructura-msssi","count":1,"children":[]},{"name":"estructurard415-2016","count":1,"children":[]}]},{"name":"x-legislatura","count":14,"children":[{"name":"estructura-maec","count":1,"children":[]},{"name":"estructura-magrama","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mecd","count":1,"children":[]},{"name":"estructura-meco","count":1,"children":[]},{"name":"estructura-meyss","count":1,"children":[]},{"name":"estructura-mfom","count":1,"children":[]},{"name":"estructura-minetur","count":1,"children":[]},{"name":"estructura-minhap","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpr","count":1,"children":[]},{"name":"estructura-msssi","count":1,"children":[]}]},{"name":"xi-legislatura","count":14,"children":[{"name":"estructura-maec","count":1,"children":[]},{"name":"estructura-magrama","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mecd","count":1,"children":[]},{"name":"estructura-meyss","count":1,"children":[]},{"name":"estructura-mfom","count":1,"children":[]},{"name":"estructura-mineco","count":1,"children":[]},{"name":"estructura-minetur","count":1,"children":[]},{"name":"estructura-minhap","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpr","count":1,"children":[]},{"name":"estructura-msssi","count":1,"children":[]}]},{"name":"x-legislatura-2014","count":1,"children":[]},{"name":"x-legislatura-2015","count":1,"children":[]},{"name":"x-legislatura-2016","count":1,"children":[]},{"name":"x-legislatura-2017","count":1,"children":[]}]},{"name":"estructura-aepd","count":1,"children":[]},{"name":"estructura-maec","count":1,"children":[]},{"name":"estructura-magrama","count":1,"children":[]},{"name":"estructura-mapa","count":1,"children":[]},{"name":"estructura-mauc","count":1,"children":[]},{"name":"estructura-mclt","count":1,"children":[]},{"name":"estructura-mcnu","count":1,"children":[]},{"name":"estructura-mcud","count":1,"children":[]},{"name":"estructura-mdca","count":1,"children":[]},{"name":"estructura-mdef","count":1,"children":[]},{"name":"estructura-mecd","count":1,"children":[]},{"name":"estructura-mece","count":1,"children":[]},{"name":"estructura-mecm","count":1,"children":[]},{"name":"estructura-mefd","count":1,"children":[]},{"name":"estructura-mefp","count":1,"children":[]},{"name":"estructura-meyss","count":1,"children":[]},{"name":"estructura-mfom","count":1,"children":[]},{"name":"estructura-mhac","count":1,"children":[]},{"name":"estructura-mict","count":1,"children":[]},{"name":"estructura-migd","count":1,"children":[]},{"name":"estructura-mineco","count":1,"children":[]},{"name":"estructura-minetad","count":1,"children":[]},{"name":"estructura-minhap","count":1,"children":[]},{"name":"estructura-mint","count":1,"children":[]},{"name":"estructura-mism","count":1,"children":[]},{"name":"estructura-mitu","count":1,"children":[]},{"name":"estructura-mjui","count":1,"children":[]},{"name":"estructura-mjus","count":1,"children":[]},{"name":"estructura-mpat","count":1,"children":[]},{"name":"estructura-mpci","count":1,"children":[]},{"name":"estructura-mpjc","count":1,"children":[]},{"name":"estructura-mscb","count":1,"children":[]},{"name":"estructura-msnd","count":1,"children":[]},{"name":"estructura-msssi","count":1,"children":[]},{"name":"estructura-mtdf","count":1,"children":[]},{"name":"estructura-mtec","count":1,"children":[]},{"name":"estructura-mted","count":1,"children":[]},{"name":"estructura-mtes","count":1,"children":[]},{"name":"estructura-mtfp","count":1,"children":[]},{"name":"estructura-mtmd","count":1,"children":[]},{"name":"estructura-mtms","count":1,"children":[]},{"name":"estructura-mtrm","count":1,"children":[]},{"name":"estructura-mvau","count":1,"children":[]},{"name":"estructura-pg","count":1,"children":[]},{"name":"estructurard139-2020","count":1,"children":[]},{"name":"estructurard355-2018","count":1,"children":[]},{"name":"historico0","count":1,"children":[]},{"name":"normativa-aplicacion-xv-legislatura","count":1,"children":[]},{"name":"organica-basica","count":1,"children":[]},{"name":"organizacionage","count":1,"children":[]},{"name":"sectorpublicoinstitucionalestatal","count":1,"children":[]},{"name":"servicio-exterior-estado","count":1,"children":[]},{"name":"servicioexteriorestado","count":1,"children":[]}]},{"name":"funciones","count":120,"children":[{"name":"historico","count":91,"children":[{"name":"xii-legislatura","count":33,"children":[{"name":"estructura-xleg2014","count":1,"children":[]},{"name":"estructura-xleg2015","count":1,"children":[]},{"name":"estructura-xleg2016","count":1,"children":[]},{"name":"estructurahistorico","count":1,"children":[]},{"name":"estructurard415-2016","count":1,"children":[]},{"name":"funciones-maec","count":1,"children":[]},{"name":"funciones-mapa","count":1,"children":[]},{"name":"funciones-mapama","count":1,"children":[]},{"name":"funciones-mauc","count":1,"children":[]},{"name":"funciones-mcnu","count":1,"children":[]},{"name":"funciones-mcud","count":1,"children":[]},{"name":"funciones-mdef","count":1,"children":[]},{"name":"funciones-mecd","count":1,"children":[]},{"name":"funciones-mece","count":1,"children":[]},{"name":"funciones-mefp","count":1,"children":[]},{"name":"funciones-meyss","count":1,"children":[]},{"name":"funciones-mfom","count":1,"children":[]},{"name":"funciones-mhac","count":1,"children":[]},{"name":"funciones-mict","count":1,"children":[]},{"name":"funciones-mineco","count":1,"children":[]},{"name":"funciones-minetad","count":1,"children":[]},{"name":"funciones-minhap","count":1,"children":[]},{"name":"funciones-mint","count":1,"children":[]},{"name":"funciones-mjus","count":1,"children":[]},{"name":"funciones-mpat","count":1,"children":[]},{"name":"funciones-mpci","count":1,"children":[]},{"name":"funciones-mscb","count":1,"children":[]},{"name":"funciones-msssi","count":1,"children":[]},{"name":"funciones-mtec","count":1,"children":[]},{"name":"funciones-mtfp","count":1,"children":[]},{"name":"funciones-mtms","count":1,"children":[]},{"name":"funciones-pg","count":1,"children":[]}]},{"name":"xiv-legislatura","count":33,"children":[{"name":"funciones-mapa","count":1,"children":[]},{"name":"funciones-mauc","count":1,"children":[]},{"name":"funciones-mcin","count":1,"children":[]},{"name":"funciones-mcnu","count":1,"children":[]},{"name":"funciones-mcsm","count":1,"children":[]},{"name":"funciones-mcud","count":1,"children":[]},{"name":"funciones-mdef","count":1,"children":[]},{"name":"funciones-mdsa","count":1,"children":[]},{"name":"funciones-mece","count":1,"children":[]},{"name":"funciones-mefp","count":1,"children":[]},{"name":"funciones-metd","count":1,"children":[]},{"name":"funciones-mfom","count":1,"children":[]},{"name":"funciones-mhac","count":1,"children":[]},{"name":"funciones-mhfp","count":1,"children":[]},{"name":"funciones-mict","count":1,"children":[]},{"name":"funciones-migd","count":1,"children":[]},{"name":"funciones-mint","count":1,"children":[]},{"name":"funciones-mism","count":1,"children":[]},{"name":"funciones-mjus","count":1,"children":[]},{"name":"funciones-mpci","count":1,"children":[]},{"name":"funciones-mpcm","count":1,"children":[]},{"name":"funciones-mpt","count":1,"children":[]},{"name":"funciones-mscb","count":1,"children":[]},{"name":"funciones-msnd","count":1,"children":[]},{"name":"funciones-mtec","count":1,"children":[]},{"name":"funciones-mted","count":1,"children":[]},{"name":"funciones-mtes","count":1,"children":[]},{"name":"funciones-mtfp","count":1,"children":[]},{"name":"funciones-mtma","count":1,"children":[]},{"name":"funciones-mtms","count":1,"children":[]},{"name":"funciones-muni","count":1,"children":[]},{"name":"funciones-pg","count":1,"children":[]}]},{"name":"xiii-legislatura","count":19,"children":[{"name":"funciones-mapa","count":1,"children":[]},{"name":"funciones-mauc","count":1,"children":[]},{"name":"funciones-mcnu","count":1,"children":[]},{"name":"funciones-mcud","count":1,"children":[]},{"name":"funciones-mdef","count":1,"children":[]},{"name":"funciones-mece","count":1,"children":[]},{"name":"funciones-mefp","count":1,"children":[]},{"name":"funciones-mfom","count":1,"children":[]},{"name":"funciones-mhac","count":1,"children":[]},{"name":"funciones-mict","count":1,"children":[]},{"name":"funciones-mint","count":1,"children":[]},{"name":"funciones-mjus","count":1,"children":[]},{"name":"funciones-mpci","count":1,"children":[]},{"name":"funciones-mscb","count":1,"children":[]},{"name":"funciones-mtec","count":1,"children":[]},{"name":"funciones-mtfp","count":1,"children":[]},{"name":"funciones-mtms","count":1,"children":[]},{"name":"funciones-pg","count":1,"children":[]}]},{"name":"funciones-2017","count":1,"children":[]},{"name":"funciones-enero-2020","count":1,"children":[]},{"name":"funciones-junio-2018","count":1,"children":[]},{"name":"x-legislatura","count":1,"children":[]},{"name":"xi-legislatura","count":1,"children":[]}]},{"name":"Funciones-Historico","count":1,"children":[]},{"name":"funciones-historico","count":1,"children":[]},{"name":"funciones-mapa","count":1,"children":[]},{"name":"funciones-mauc","count":1,"children":[]},{"name":"funciones-mclt","count":1,"children":[]},{"name":"funciones-mcnu","count":1,"children":[]},{"name":"funciones-mdca","count":1,"children":[]},{"name":"funciones-mdef","count":1,"children":[]},{"name":"funciones-mecm","count":1,"children":[]},{"name":"funciones-mefd","count":1,"children":[]},{"name":"funciones-mhac","count":1,"children":[]},{"name":"funciones-migd","count":1,"children":[]},{"name":"funciones-mint","count":1,"children":[]},{"name":"funciones-mism","count":1,"children":[]},{"name":"funciones-mitu","count":1,"children":[]},{"name":"funciones-mjui","count":1,"children":[]},{"name":"funciones-mpjc","count":1,"children":[]},{"name":"funciones-msnd","count":1,"children":[]},{"name":"funciones-mtdf","count":1,"children":[]},{"name":"funciones-mted","count":1,"children":[]},{"name":"funciones-mtes","count":1,"children":[]},{"name":"funciones-mtmd","count":1,"children":[]},{"name":"funciones-mtrm","count":1,"children":[]},{"name":"funciones-mvau","count":1,"children":[]},{"name":"funciones-pg","count":1,"children":[]},{"name":"historico0","count":1,"children":[]},{"name":"organizacion-administracion-general-estado","count":1,"children":[]},{"name":"organizacion-territorial-administracion-general-estado","count":1,"children":[]}]},{"name":"normativa","count":51,"children":[{"name":"historico","count":18,"children":[{"name":"normativa-aplicacionxiiilegislatura","count":18,"children":[{"name":"normativa-mapa","count":1,"children":[]},{"name":"normativa-mauc","count":1,"children":[]},{"name":"normativa-mcnu","count":1,"children":[]},{"name":"normativa-mcud","count":1,"children":[]},{"name":"normativa-mdef","count":1,"children":[]},{"name":"normativa-mece","count":1,"children":[]},{"name":"normativa-mefp","count":1,"children":[]},{"name":"normativa-mfom","count":1,"children":[]},{"name":"normativa-mhac","count":1,"children":[]},{"name":"normativa-mict","count":1,"children":[]},{"name":"normativa-mint","count":1,"children":[]},{"name":"normativa-mjus","count":1,"children":[]},{"name":"normativa-mpci","count":1,"children":[]},{"name":"normativa-mscb","count":1,"children":[]},{"name":"normativa-mtec","count":1,"children":[]},{"name":"normativa-mtfp","count":1,"children":[]},{"name":"normativa-mtms","count":1,"children":[]},{"name":"normativa-pg","count":1,"children":[]}]}]},{"name":"normativa-aepd","count":1,"children":[]},{"name":"normativa-aipi","count":1,"children":[]},{"name":"normativa-airef","count":1,"children":[]},{"name":"normativa-cnmc","count":1,"children":[]},{"name":"normativa-cnmv","count":1,"children":[]},{"name":"normativa-csn","count":1,"children":[]},{"name":"normativa-ctbg","count":1,"children":[]},{"name":"normativa-mapa","count":1,"children":[]},{"name":"normativa-mauc","count":1,"children":[]},{"name":"normativa-mclt","count":1,"children":[]},{"name":"normativa-mcnu","count":1,"children":[]},{"name":"normativa-mcnu.htmltiva-mcnu","count":1,"children":[]},{"name":"normativa-mdca","count":1,"children":[]},{"name":"normativa-mdef","count":1,"children":[]},{"name":"normativa-mecm","count":1,"children":[]},{"name":"normativa-mefd","count":1,"children":[]},{"name":"normativa-mhac","count":1,"children":[]},{"name":"normativa-migd","count":1,"children":[]},{"name":"normativa-mint","count":1,"children":[]},{"name":"normativa-mism","count":1,"children":[]},{"name":"normativa-mitu","count":1,"children":[]},{"name":"normativa-mjui","count":1,"children":[]},{"name":"normativa-mpjc","count":1,"children":[]},{"name":"normativa-msnd","count":1,"children":[]},{"name":"normativa-mtdf","count":1,"children":[]},{"name":"normativa-mted","count":1,"children":[]},{"name":"normativa-mtes","count":1,"children":[]},{"name":"normativa-mtmd","count":1,"children":[]},{"name":"normativa-mtrm","count":1,"children":[]},{"name":"normativa-mvau","count":1,"children":[]},{"name":"normativa-pg","count":1,"children":[]},{"name":"normativageneral","count":1,"children":[]}]},{"name":"registro-actividades-tratamiento","count":30,"children":[{"name":"rat-aepd","count":1,"children":[]},{"name":"rat-airef","count":1,"children":[]},{"name":"rat-cnmc","count":1,"children":[]},{"name":"rat-cnmv","count":1,"children":[]},{"name":"rat-csn","count":1,"children":[]},{"name":"rat-ctbg","count":1,"children":[]},{"name":"rat-mapa","count":1,"children":[]},{"name":"rat-mauc","count":1,"children":[]},{"name":"rat-mclt","count":1,"children":[]},{"name":"rat-mcnu","count":1,"children":[]},{"name":"rat-mdca","count":1,"children":[]},{"name":"rat-mdef","count":1,"children":[]},{"name":"rat-mecm","count":1,"children":[]},{"name":"rat-mefd","count":1,"children":[]},{"name":"rat-mhac","count":1,"children":[]},{"name":"rat-migd","count":1,"children":[]},{"name":"rat-mint","count":1,"children":[]},{"name":"rat-mism","count":1,"children":[]},{"name":"rat-mitu","count":1,"children":[]},{"name":"rat-mjui","count":1,"children":[]},{"name":"rat-mpjc","count":1,"children":[]},{"name":"rat-msnd","count":1,"children":[]},{"name":"rat-mtdf","count":1,"children":[]},{"name":"rat-mted","count":1,"children":[]},{"name":"rat-mtes","count":1,"children":[]},{"name":"rat-mtmd","count":1,"children":[]},{"name":"rat-mtrm","count":1,"children":[]},{"name":"rat-mvau","count":1,"children":[]},{"name":"rat-pg","count":1,"children":[]}]},{"name":"compatibilidad-empleados","count":3,"children":[{"name":"actividad-privada","count":1,"children":[]},{"name":"actividad-publica","count":1,"children":[]}]},{"name":"codigo-conducta","count":1,"children":[]},{"name":"sector-publico-institucional","count":1,"children":[]}]},{"name":"informacion-economico-presupuestaria","count":42,"children":[{"name":"presupuestos-generales-estado","count":14,"children":[{"name":"pge-gastos","count":10,"children":[{"name":"gastos-ministerios-2014","count":1,"children":[]},{"name":"gastos-ministerios-2015","count":1,"children":[]},{"name":"gastos-ministerios-2016","count":1,"children":[]},{"name":"gastos-ministerios-2017","count":1,"children":[]},{"name":"gastos-ministerios-2018","count":1,"children":[]},{"name":"gastos-ministerios-2019","count":1,"children":[]},{"name":"gastos-ministerios-2020","count":1,"children":[]},{"name":"gastos-ministerios-2021","count":1,"children":[]},{"name":"gastos-ministerios-2022","count":1,"children":[]}]},{"name":"pge-ingresos","count":3,"children":[{"name":"ingresos-2023","count":1,"children":[]},{"name":"ingresos-2024","count":1,"children":[]}]}]},{"name":"cuentas-anuales-auditoria","count":12,"children":[{"name":"cuentas-anuales-auditoria-historico","count":11,"children":[{"name":"ejercicio-2013","count":1,"children":[]},{"name":"ejercicio-2014","count":1,"children":[]},{"name":"ejercicio-2015","count":1,"children":[]},{"name":"ejercicio-2016","count":1,"children":[]},{"name":"ejercicio-2017","count":1,"children":[]},{"name":"ejercicio-2018","count":1,"children":[]},{"name":"ejercicio-2019","count":1,"children":[]},{"name":"ejercicio-2020","count":1,"children":[]},{"name":"ejercicio-2021","count":1,"children":[]},{"name":"ejercicio-2022","count":1,"children":[]}]}]},{"name":"bienes-inmuebles","count":9,"children":[{"name":"seguimientobi","count":2,"children":[{"name":"seguimientobi20190528","count":1,"children":[]}]},{"name":"seguimientobi20190528","count":1,"children":[]},{"name":"seguimientobi20191111","count":1,"children":[]},{"name":"seguimientobi20191111bis","count":1,"children":[]},{"name":"seguimientobi20200518","count":1,"children":[]},{"name":"seguimientobi20200525","count":1,"children":[]},{"name":"seguimientobi20201117","count":1,"children":[]}]},{"name":"ejecucion","count":2,"children":[{"name":"ejecucion-presupuestaria2020","count":1,"children":[]}]},{"name":"estabilidad","count":2,"children":[{"name":"estabilidad-presupuestaria2020","count":1,"children":[]}]},{"name":"informes-fiscalizacion","count":1,"children":[]},{"name":"rendicion-cuentas","count":1,"children":[]}]},{"name":"altos-cargos","count":31,"children":[{"name":"actividad-privada-cese","count":15,"children":[{"name":"aac-graficos","count":1,"children":[]},{"name":"seguimiento0","count":1,"children":[]},{"name":"seguimiento20190429","count":1,"children":[]},{"name":"seguimiento20190603","count":1,"children":[]},{"name":"seguimiento20190717","count":1,"children":[]},{"name":"seguimiento20190920","count":1,"children":[]},{"name":"seguimiento20191112","count":1,"children":[]},{"name":"seguimiento20200121","count":1,"children":[]},{"name":"seguimiento20200420","count":1,"children":[]},{"name":"seguimiento20200529","count":1,"children":[]},{"name":"seguimiento20200723","count":1,"children":[]},{"name":"seguimiento20200922","count":1,"children":[]},{"name":"seguimiento2020306","count":1,"children":[]},{"name":"seguimiento20211101","count":1,"children":[]}]},{"name":"indemnizaciones-abandono","count":7,"children":[{"name":"seguimiento","count":1,"children":[]},{"name":"seguimiento01-06-2020","count":1,"children":[]},{"name":"seguimiento01062020","count":1,"children":[]},{"name":"seguimiento11-06-2019","count":1,"children":[]},{"name":"seguimiento11062019","count":1,"children":[]},{"name":"seguimiento23122020","count":1,"children":[]}]},{"name":"retribuciones","count":2,"children":[{"name":"retribuciones_anteriores","count":1,"children":[]}]},{"name":"agendaAACC","count":1,"children":[]},{"name":"condicion-alto-cargo","count":1,"children":[]},{"name":"curriculos","count":1,"children":[]},{"name":"declaraciones-bienes-derechos","count":1,"children":[]},{"name":"obligaciones-age","count":1,"children":[]},{"name":"principios","count":1,"children":[]}]},{"name":"tramites","count":25,"children":[{"name":"subvenciones-partidos-politicos","count":11,"children":[{"name":"historico","count":9,"children":[{"name":"elecciones-grales-2015-envios","count":1,"children":[]},{"name":"elecciones-grales-2015-resultados","count":1,"children":[]},{"name":"elecciones-grales-2016-envios","count":1,"children":[]},{"name":"elecciones-grales-2016-resultados","count":1,"children":[]},{"name":"elecciones-locales-2015-envios","count":1,"children":[]},{"name":"elecciones-locales-2015-resultados","count":1,"children":[]},{"name":"elecciones-pe-2014-envios","count":1,"children":[]},{"name":"elecciones-pe-2014-resultados","count":1,"children":[]}]},{"name":"normativa","count":1,"children":[]}]},{"name":"acuerdos-marco","count":4,"children":[{"name":"actualizados","count":1,"children":[]},{"name":"borrados","count":1,"children":[]},{"name":"contratos-marco-old","count":1,"children":[]}]},{"name":"contratos-estadisticas","count":2,"children":[{"name":"estadisticascontratospyme","count":1,"children":[]}]},{"name":"convenios-encomiendas","count":2,"children":[{"name":"exclusiones","count":1,"children":[]}]},{"name":"encargos-medios-propios","count":2,"children":[{"name":"gestion","count":1,"children":[]}]},{"name":"contratos","count":1,"children":[]},{"name":"pes","count":1,"children":[]},{"name":"subvenciones","count":1,"children":[]}]},{"name":"normativa-otras-disposiciones","count":19,"children":[{"name":"plan-anual","count":8,"children":[{"name":"plan-anual-2018","count":1,"children":[]},{"name":"plan-anual-2020","count":1,"children":[]},{"name":"plan-anual-2021","count":1,"children":[]},{"name":"plan-anual-2022","count":1,"children":[]},{"name":"plan-anual-2023","count":1,"children":[]},{"name":"plan-anual-2024","count":1,"children":[]},{"name":"plan-anual-2025","count":1,"children":[]}]},{"name":"informacion-publica","count":5,"children":[{"name":"proyectosnonormativos-mtdfp","count":2,"children":[{"name":"documento-consenso-administracion-abierta","count":1,"children":[]}]},{"name":"proyectosnonormativos","count":1,"children":[]},{"name":"proyectosnonormativos-mint","count":1,"children":[]}]},{"name":"normas-tramitacion","count":2,"children":[{"name":"mtrm","count":1,"children":[]}]},{"name":"directrices-instrucciones-acuerdos-circulares","count":1,"children":[]},{"name":"normas-tramitacion-finalizada","count":1,"children":[]},{"name":"participacion-publica","count":1,"children":[]}]},{"name":"planificacion-estadistica","count":12,"children":[{"name":"cartas-servicios","count":6,"children":[{"name":"mtfp","count":3,"children":[{"name":"cia","count":1,"children":[]},{"name":"sgbizkaia","count":1,"children":[]}]},{"name":"seguimiento","count":2,"children":[{"name":"seguimiento20191015","count":1,"children":[]}]}]},{"name":"planes-programas","count":2,"children":[{"name":"csn","count":1,"children":[]}]},{"name":"calidadaapp","count":1,"children":[]},{"name":"informacion-estadistica","count":1,"children":[]},{"name":"planes_informes_publicidad_comunicacion_institucional","count":1,"children":[]}]}]},{"name":"paley","count":1,"children":[]}]}};
+
+    const state = {
+      expanded: new Set(),
+      filter: "",
+      materia: null,
+      focusedPath: null,
+    };
+
+    function pathKey(segments) { return segments.join("/"); }
+
+    function renderStats() {
+      const s = DATA.stats;
+      document.getElementById("stats").innerHTML = [
+        ["URLs úniques", s.uniqueUrls.toLocaleString("ca")],
+        ["Pàgines crawlades", s.pagesCrawled.toLocaleString("ca")],
+        ["Profunditat màx.", s.maxDepth],
+        ["Enllaços/pàgina", s.avgLinks],
+      ].map(([label, val]) =>
+        `<div class="stat"><div class="stat-value">${val}</div><div class="stat-label">${label}</div></div>`
+      ).join("");
+    }
+
+    function renderMaterias() {
+      const ul = document.getElementById("materia-list");
+      const all = `<li><button class="materia-btn active" data-materia="">Totes</button></li>`;
+      const items = DATA.materias.map(m =>
+        `<li><button class="materia-btn" data-materia="${m.name}"><span>${m.name}</span><span class="count">${m.count}</span></button></li>`
+      ).join("");
+      ul.innerHTML = all + items;
+      ul.addEventListener("click", e => {
+        const btn = e.target.closest(".materia-btn");
+        if (!btn) return;
+        ul.querySelectorAll(".materia-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.materia = btn.dataset.materia || null;
+        autoExpandForFilter();
+        renderTree();
+        if (state.materia) scrollToMateria(state.materia);
+      });
+    }
+
+    function scrollToMateria(name) {
+      const path = `publicidad-activa/por-materias/${name}`;
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`.tree-row[data-path="${path}"]`);
+        if (el) {
+          el.scrollIntoView({ block: "center", behavior: "smooth" });
+          state.focusedPath = path;
+          showPath(path.split("/"));
+          renderTree();
+        }
+      });
+    }
+
+    function nodeMatches(node, segments, query) {
+      if (!query) return true;
+      const q = query.toLowerCase();
+      if (node.name && node.name.toLowerCase().includes(q)) return true;
+      return segments.some(s => s.toLowerCase().includes(q));
+    }
+
+    function subtreeHasMatch(node, segments, query) {
+      if (!query) return true;
+      if (nodeMatches(node, segments, query)) return true;
+      return (node.children || []).some(c =>
+        subtreeHasMatch(c, [...segments, c.name], query)
+      );
+    }
+
+    function materiaMatches(segments) {
+      if (!state.materia) return true;
+      return segments.includes(state.materia);
+    }
+
+    function defaultExpandedDepth(segments) {
+      if (state.filter || state.materia) return segments.length;
+      return segments.length <= 3;
+    }
+
+    function isExpanded(segments) {
+      const key = pathKey(segments);
+      if (state.expanded.has(key)) return true;
+      if (state.expanded.has("!" + key)) return false;
+      return defaultExpandedDepth(segments) <= segments.length && segments.length < 4;
+    }
+
+    function setExpanded(segments, open) {
+      const key = pathKey(segments);
+      state.expanded.add(open ? key : "!" + key);
+      if (open) state.expanded.delete("!" + key);
+      else state.expanded.delete(key);
+    }
+
+    function renderNode(node, segments, depth) {
+      const segs = node.name ? [...segments, node.name] : segments;
+      const hasChildren = node.children && node.children.length > 0;
+      const query = state.filter.trim();
+      if (node.name && !subtreeHasMatch(node, segs, query)) return "";
+      if (node.name && state.materia && !materiaMatches(segs) && !segs.includes(state.materia)) {
+        const childHtml = hasChildren
+          ? node.children.map(c => renderNode(c, segs, depth + 1)).join("")
+          : "";
+        if (!childHtml.trim()) return "";
+      }
+
+      const expanded = hasChildren && isExpanded(segs);
+      const isMatch = node.name && query && node.name.toLowerCase().includes(query.toLowerCase());
+      const focused = state.focusedPath === pathKey(segs);
+      const indent = depth * 1.1;
+
+      let html = `<div class="tree-node" data-path="${pathKey(segs)}">`;
+      if (node.name) {
+        html += `<div class="tree-row${isMatch ? " match" : ""}${focused ? " focused" : ""}" style="padding-left:${indent + 0.75}rem" data-path="${pathKey(segs)}">`;
+        html += `<span class="chevron ${hasChildren ? (expanded ? "open" : "") : "leaf"}" data-action="toggle" data-path="${pathKey(segs)}">▶</span>`;
+        html += `<span class="node-name">${escapeHtml(node.name)}</span>`;
+        if (node.count > 1) html += `<span class="node-count">${node.count}</span>`;
+        html += `</div>`;
+      }
+      if (hasChildren) {
+        html += `<div class="tree-children${expanded ? " open" : ""}">`;
+        html += node.children.map(c => renderNode(c, segs, depth + (node.name ? 1 : 0))).join("");
+        html += `</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function renderTree() {
+      const root = document.getElementById("tree-root");
+      const html = renderNode(DATA.tree, [], 0);
+      root.innerHTML = html || `<div class="empty-state">Cap resultat per a la cerca.</div>`;
+      const q = state.filter.trim();
+      const meta = document.getElementById("search-meta");
+      if (q) {
+        const matches = root.querySelectorAll(".match").length;
+        meta.textContent = matches ? `${matches} coincidència${matches > 1 ? "s" : ""}` : "Sense coincidències";
+      } else meta.textContent = "";
+    }
+
+    function autoExpandForFilter() {
+      state.expanded.clear();
+      const q = state.filter.trim().toLowerCase();
+      if (!q && !state.materia) return;
+
+      function walk(node, segments) {
+        const segs = node.name ? [...segments, node.name] : segments;
+        let expand = false;
+        if (node.name && q && node.name.toLowerCase().includes(q)) expand = true;
+        if (state.materia && segs.includes(state.materia)) expand = true;
+        (node.children || []).forEach(c => {
+          if (walk(c, segs)) expand = true;
+        });
+        if (expand && node.name) setExpanded(segs, true);
+        return expand;
+      }
+      walk(DATA.tree, []);
+    }
+
+    function expandAll() {
+      function walk(node, segments) {
+        const segs = node.name ? [...segments, node.name] : segments;
+        if (node.name && node.children && node.children.length) setExpanded(segs, true);
+        (node.children || []).forEach(c => walk(c, segs));
+      }
+      walk(DATA.tree, []);
+      renderTree();
+    }
+
+    function collapseAll() {
+      state.expanded.clear();
+      function walk(node, segments) {
+        const segs = node.name ? [...segments, node.name] : segments;
+        if (node.name) setExpanded(segs, false);
+        (node.children || []).forEach(c => walk(c, segs));
+      }
+      walk(DATA.tree, []);
+      renderTree();
+    }
+
+    let currentUrl = "";
+
+    function showPath(segments) {
+      const bar = document.getElementById("path-bar");
+      const btn = document.getElementById("btn-copy");
+      currentUrl = "https://transparencia.gob.es/" + segments.join("/");
+      bar.innerHTML = `<a href="${currentUrl}" target="_blank" rel="noopener">${escapeHtml(currentUrl)}</a>`;
+      bar.classList.remove("empty");
+      btn.disabled = false;
+      btn.classList.remove("copied");
+      btn.textContent = "Copiar URL";
+    }
+
+    document.getElementById("btn-copy").addEventListener("click", async () => {
+      if (!currentUrl) return;
+      try {
+        await navigator.clipboard.writeText(currentUrl);
+        const btn = document.getElementById("btn-copy");
+        btn.textContent = "Copiat!";
+        btn.classList.add("copied");
+      } catch (_) {
+        prompt("Copia la URL:", currentUrl);
+      }
+    });
+
+    document.getElementById("tree-root").addEventListener("click", e => {
+      const row = e.target.closest(".tree-row");
+      const chevron = e.target.closest("[data-action=toggle]");
+      const path = (chevron || row)?.dataset?.path;
+      if (!path) return;
+      const segments = path.split("/");
+
+      if (chevron) {
+        e.stopPropagation();
+        const node = findNode(segments);
+        if (node && node.children && node.children.length) {
+          setExpanded(segments, !isExpanded(segments));
+          renderTree();
+        }
+      }
+      if (row) {
+        state.focusedPath = path;
+        showPath(segments);
+        renderTree();
+      }
+    });
+
+    function findNode(segments) {
+      let node = DATA.tree;
+      for (const seg of segments) {
+        if (!node.children) return null;
+        node = node.children.find(c => c.name === seg);
+        if (!node) return null;
+      }
+      return node;
+    }
+
+    let searchTimer;
+    document.getElementById("search").addEventListener("input", e => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        state.filter = e.target.value;
+        autoExpandForFilter();
+        renderTree();
+      }, 200);
+    });
+
+    document.getElementById("btn-expand").addEventListener("click", expandAll);
+    document.getElementById("btn-collapse").addEventListener("click", collapseAll);
+    document.getElementById("btn-reset").addEventListener("click", () => {
+      state.filter = "";
+      state.materia = null;
+      state.expanded.clear();
+      state.focusedPath = null;
+      document.getElementById("search").value = "";
+      document.querySelectorAll(".materia-btn").forEach((b, i) => {
+        b.classList.toggle("active", i === 0);
+      });
+      currentUrl = "";
+      document.getElementById("path-bar").textContent = "Clic a un node per veure el path complet";
+      document.getElementById("path-bar").classList.add("empty");
+      document.getElementById("btn-copy").disabled = true;
+      document.getElementById("btn-copy").classList.remove("copied");
+      document.getElementById("btn-copy").textContent = "Copiar URL";
+      renderTree();
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "/" && document.activeElement !== document.getElementById("search")) {
+        e.preventDefault();
+        document.getElementById("search").focus();
+      }
+    });
+
+    renderStats();
+    renderMaterias();
+    renderTree();
+  </script>
+</body>
+</html>

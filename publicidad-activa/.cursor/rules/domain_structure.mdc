@@ -1,0 +1,68 @@
+---
+description: How domains are organized — models, services, and optional subfolders
+globs: "app/domains/**/*.rb"
+alwaysApply: false
+---
+
+# Domain structure and organization
+
+All business logic and every model live under **domains** in `app/domains/`. Each domain is a directory named after a business capability. There is no `Domains::` wrapper: constants are `<Domain>::Models::*` and `<Domain>::Services::*` (e.g. `Resources::Models::Resource`, `Search::Services::SearchResources`). Controllers in `app/controllers/` only call into domains and render responses (HTML/Turbo or JSON when needed).
+
+## Domains for Publicidad Activa
+
+Start with these; add subdomains only when a concept is large enough to split:
+
+- **resources** – Indexed crawl URLs: `Resource` (materia, subtema, tipo, organismo, vigencia, periodo, depth, url). Services: import/flatten from `docs/publicidad-activa-url-map.html`, parse slugs (`rpt-mdef`, `estructura-mdef`), detect `vigente` vs `historico`, “última versión” per organismo.
+- **organisms** – Ministerio/organismo catalog (`organismoCode`, human labels, `portalTransparencia`). Seed from crawl slugs + curated `data/organismos.json`.
+- **curation** – Civio knowledge: `hosting`, `fuentePrimaria`, `civioTip` keyed by materia/subtema (`data/fuentes-civio.json`). Merge onto resources for display—not generated copy.
+- **search** – `searchResources(query, filters)`: text, materia, subtema, organismo, vigencia, tipo; synonym map (`defensa` → `mdef`). Shared by HTML UI and any chat/embed.
+
+Concepts that belong only to one parent (e.g. periodo parsing for RPT) stay inside **resources**, not a new top-level domain.
+
+## Models inside a domain
+
+- Path: `app/domains/<domain_name>/models/<model_name>.rb`.
+- Module and class: `<DomainName>::Models::<ModelName>` (e.g. `Resources::Models::Resource`).
+- Set the table name explicitly: `self.table_name = "table_name"`.
+- Inherit from `ApplicationRecord` (`app/models/application_record.rb`).
+- Cross-domain associations use `class_name` with the full constant (e.g. `belongs_to :organism, class_name: "Organisms::Models::Organism", optional: true`).
+
+## Services
+
+- Path: `app/domains/<domain_name>/services/<service_name>.rb`.
+- Module and class: `<DomainName>::Services::<ServiceName>` (e.g. `Resources::Services::ImportFromCrawl`, `Search::Services::SearchResources`).
+- One public entry point per service (e.g. `#call`). Pass inputs as keyword arguments. Return a result object (Struct or value object) so the controller can render without branching on internals.
+- Do not depend on `params` or request context; receive all needed data as arguments from the controller.
+- Use domain models via their full constants.
+
+## Optional domain subfolders
+
+Create only when the domain needs them:
+
+- **queries/** – `<Domain>::Queries::<QueryClass>`
+- **policies/** – `<Domain>::Policies::<PolicyClass>`
+- **jobs/** – `<Domain>::Jobs::<JobClass>` (e.g. re-import crawl)
+- **events/** – `<Domain>::Events::<EventClass>`
+- **value_objects/** – `<Domain>::ValueObjects::<ValueClass>` (e.g. parsed URL path segments)
+- **repositories/** – `<Domain>::Repositories::<RepoClass>`
+- **serializers/** – `<Domain>::Serializers::<SerializerClass>` (JSON/API or Turbo Stream payloads)
+- **workflows/** – `<Domain>::Workflows::<WorkflowClass>`
+
+Naming: directory snake_case (e.g. `job_offers` → here use `resources`, `organisms`), module PascalCase (`Resources`, `ImportFromCrawl`).
+
+## Dependencies between domains
+
+- **search** may read **resources** models and **curation** data; **resources** may reference **organisms** by code.
+- Avoid circular dependencies. Shared crawl parsing belongs in **resources**, not duplicated in search.
+- Models belong to one domain. Cross-domain associations use `class_name` (and `foreign_key` when needed).
+
+## What belongs where
+
+- **Domain model**: Persistence, associations, attribute validations, and low-cost logic only about that record (e.g. `historico?` from path segments).
+- **Domain service**: Import pipelines, facet aggregation, synonym expansion, merging curation JSON, multi-record rules.
+- **Controller**: Parse params, call domain services/models, render views or JSON. No business logic.
+- **Rake/lib tasks**: One-off or repeatable import from repo-root crawl file; thin wrappers that call domain services.
+
+## Static data (MVP)
+
+Curated JSON can live under `publicidad-activa/data/` (`organismos.json`, `fuentes-civio.json`) until promoted to DB tables. Import services should be the single path from JSON/crawl → `Resource` rows.

@@ -1,0 +1,23 @@
+---
+description: ALWAYS follow these rules on every request in publicidad-activa
+globs:
+alwaysApply: true
+---
+- Work on whatever steps I tell you to work and only work on those steps at once
+- After completing the step wait for further instructions
+- TRY TO KEEP THE SOLUTION AS SIMPLE AS POSSIBLE
+- Add tests when they cover real behavior (services, import, search); skip trivial specs
+- Don't add comments in the code unless explaining non-obvious domain or crawl logic
+- Extract common code to services and repositories. Reuse existing code when possible. Create scopes when needed.
+
+## Project context
+
+- This app lives at `publicidad-activa/` inside the monorepo **civio-2026** (Git root is the repo root, not this folder).
+- Product spec: `docs/publicidad-activa-mvp.md` at repo root. Team backlog: `docs/team-backlog.md`.
+- Crawl source: `docs/publicidad-activa-url-map.html` (~1.249 URLs).
+- UI copy and labels in **Spanish**. Do not generate journalistic or legal text (Civio IA policy).
+- MVP is a **discovery hub** (inventory, search, links to official URLs)—not mirroring ministerial content.
+
+### Error fixing
+- ALWAYS prefer to fix things than to do a patch or a workaround
+- If you encounter errors, pick one, then start by writing three reasoning paragraphs analyzing what the error might be. Do not jump to conclusions. When you have reasoning ready, move to the fix.

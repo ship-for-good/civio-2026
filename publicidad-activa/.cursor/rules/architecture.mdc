@@ -1,0 +1,99 @@
+---
+description: Rails full-stack architecture, domains, frontend, and data practices
+globs: "app/**/*.{rb,erb,js,ts}", "config/**/*.rb", "db/**/*", "lib/**/*.rb", "data/**/*", "spec/**/*.rb", "test/**/*.rb"
+alwaysApply: false
+---
+
+# Architecture (Rails 8 + SQLite + Hotwire)
+
+Full-stack Rails app for the **Portal Publicidad Activa** MVP: inventario buscable sobre el crawl del portal nacional (Capa 1), con enlaces oficiales y curación Civio—not a replacement for transparencia.gob.es.
+
+**Stack:** Rails 8 · SQLite · TypeScript · Tailwind CSS 4 · Turbo · Stimulus  
+**Spec:** `../docs/publicidad-activa-mvp.md` (paths relative to monorepo root)
+
+## App layout
+
+- **app/controllers/** – HTTP only: params → domain services/models → render.
+- **app/views/** – ERB templates; Spanish UI; human labels next to slugs (`rpt-mdef` → «Defensa · RPT»).
+- **app/javascript/** – `application.ts`, Stimulus controllers in `controllers/*.ts`, built to `app/assets/builds/`.
+- **app/assets/stylesheets/** – Tailwind entry (`application.tailwind.css`).
+- **app/models/application_record.rb** – Base for all domain models. No other files in `app/models/`.
+- **app/domains/** – Business domains (see `domain_structure.mdc`): `resources`, `organisms`, `curation`, `search`.
+- **lib/** – Import helpers, rake task bodies that delegate to domain services.
+- **data/** – Curated JSON (`organismos.json`, `fuentes-civio.json`); generated index optional until DB import exists.
+
+## Target routes (MVP)
+
+Align controllers with product routes (names may vary):
+
+| Path | Purpose |
+|------|---------|
+| `/` | Home: stats, six materias, entry to search |
+| `/explorar` | Global search + facets (default **vigente**; histórico behind toggle) |
+| `/explorar/:materia`, `/explorar/:materia/:subtema` | Browse by taxonomy + counts |
+| `/organismos`, `/organismos/:code` | List + ficha (resources + portal ministerio link) |
+| `/mapa-urls` | Technical tree (port or link to `docs/publicidad-activa-url-map.html`) |
+
+Use Turbo Frames/Streams where they simplify filters and search without a separate SPA.
+
+## Controllers
+
+- Thin actions: strong params, one service call, render or redirect.
+- No business logic, no N+1-heavy querying in controllers—push to services/queries with `includes`.
+- Prefer server-rendered HTML for MVP; JSON only for explicit APIs (chat widget, etc.).
+
+## Domain models and services
+
+Same rules as API-style domains:
+
+- Models in `app/domains/<name>/models/`, flat: validations, associations, scopes, cheap predicates.
+- Workflows, import, search, and cross-entity rules in **services** (or queries).
+- `# frozen_string_literal: true` in every Ruby file.
+- `self.table_name` set explicitly on each model.
+- Transactions in services when import or updates touch multiple tables.
+
+## SQLite
+
+- Schema changes via `db/migrate/`. Keep migrations reversible when possible.
+- Index foreign keys and columns used in `WHERE`, `ORDER`, and facet counts.
+- Use appropriate types (`text` for URLs, `integer` for enums, ISO date strings or integers for periodo ordering as needed).
+- Solid Cache / Solid Queue / Solid Cable use separate schema files under `db/`—do not mix app domain tables into those files.
+
+## Data pipeline
+
+1. Source: `docs/publicidad-activa-url-map.html` (embedded `DATA` tree).
+2. Flatten to resource records (url, materia, subtema, organismoCode, vigencia, periodo, depth, …).
+3. Load via `Resources::Services::ImportFromCrawl` (or rake invoking it)—single canonical path into DB.
+4. Enrich display with `curation` + `organisms` data at read time or during import.
+
+Team contract: one search implementation (`Search::Services::SearchResources`) used by UI and any chat integration.
+
+## Frontend (TypeScript + Stimulus + Tailwind)
+
+- Stimulus controllers: one concern per controller (`search_controller.ts`, `filters_controller.ts`); register in `controllers/index.ts`.
+- Prefer progressive enhancement: works without JS where possible; Stimulus for facets, toggles, debounced search.
+- Tailwind utility classes in views; avoid custom CSS unless necessary.
+- Run `bin/dev` for Rails + JS/CSS watchers; builds output to `app/assets/builds/`.
+
+## Ruby quality
+
+- Keyword arguments for multi-arg public APIs.
+- Enums for fixed sets (`vigencia`, `hosting` when stored).
+- Model validations for single-record invariants; service validation for import/search rules.
+- Request/system tests for critical flows; unit tests for services and import edge cases.
+
+## Out of scope for this app (do not expand into)
+
+- Mirroring PDF/HTML from ministerios.
+- Crawling all autonomic portals (Capa 2) in MVP.
+- Portal de Contratación deep search (CPV, expedientes).
+- OPP-2 / derecho de acceso flows.
+- AI-generated journalistic or legal text.
+
+## Summary
+
+- **Controllers + views**: Spanish UX, thin wiring, official outbound links.
+- **Domains**: `resources`, `organisms`, `curation`, `search`—all non-trivial logic here.
+- **SQLite + migrations**: indexed schema for ~1.2k+ resources and facets.
+- **Import**: crawl at repo root → services → DB; curated JSON in `data/`.
+- **Frontend**: Turbo + Stimulus + Tailwind; TypeScript in `app/javascript/`.

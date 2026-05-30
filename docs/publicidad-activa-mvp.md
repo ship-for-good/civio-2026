@@ -1,7 +1,7 @@
 # Portal Publicidad Activa — Plan MVP
 
 **Proyecto:** Civio · Ship for Good 2026  
-**Fuente de datos:** crawl de [transparencia.gob.es/publicidad-activa](https://transparencia.gob.es/publicidad-activa) · `publicidad-activa-url-map.html`  
+**Fuente de datos:** crawl de [transparencia.gob.es/publicidad-activa](https://transparencia.gob.es/publicidad-activa) · [`publicidad-activa-url-map.html`](./publicidad-activa-url-map.html)  
 **Contexto:** [challenge-discovery.md](../challenge-discovery.md) (Bloque 1 — OPP-1a, OPP-1b)
 
 ---
@@ -379,7 +379,7 @@ Fuera de alcance del MVP centrado en AGE. Posible **roadmap**: misma arquitectur
 
 ## 13. Referencias
 
-- Crawl interactivo: `publicidad-activa-url-map.html`
+- Crawl interactivo: [`publicidad-activa-url-map.html`](./publicidad-activa-url-map.html)
 - Discovery: `challenge-discovery.md`
 - App: `dashboard/` (Next.js)
 - Política IA Civio: https://civio.es/nosotros/uso-IA
