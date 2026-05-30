@@ -2,7 +2,44 @@ import { daysFromToday } from './dates.js'
 
 export const CLAIM_WINDOW_DAYS = 30
 
-export function computeUrgency(req) {
+export type UrgencyLevel = 'critical' | 'warning' | 'ok' | 'neutral'
+
+export interface Urgency {
+  level: UrgencyLevel
+  label: string
+  order: number
+}
+
+export interface RawRequest {
+  Id: string
+  Ámbito: string
+  Fecha: string
+  Estado: string
+  Asunto: string
+  Ministerio: string
+  'Inicio tramitación': string
+  'Art 20.1 (volumen)': string
+  'Vencimiento normal': string
+  'Vencimiento 20.1': string
+  Vencimiento: string
+  Resolución: string
+  Notificación: string
+  'Días para respuesta': string
+  'Días para reclamar por silencio administrativo': string
+  'Días para reclamar resolución': string
+  Notas: string
+  Autor: string
+  Reclamación: string
+}
+
+export interface EnrichedRequest extends RawRequest {
+  urgencyLevel: UrgencyLevel
+  urgencyLabel: string
+  urgencyOrder: number
+  daysUntilDeadline: number | null
+}
+
+export function computeUrgency(req: RawRequest): Urgency {
   const estado = req['Estado']
   const vencimiento = req['Vencimiento']
   const daysToDeadline = daysFromToday(vencimiento)
@@ -27,7 +64,7 @@ export function computeUrgency(req) {
   return { level: 'neutral', label: estado || '—', order: 6 }
 }
 
-export function getDailyDigestCategories(requests) {
+export function getDailyDigestCategories(requests: EnrichedRequest[]) {
   const silencio = requests.filter(r => {
     if (r['Estado'] !== 'En tramitación') return false
     const days = daysFromToday(r['Vencimiento'])
@@ -38,7 +75,7 @@ export function getDailyDigestCategories(requests) {
   return { silencio, reclamadas, contencioso }
 }
 
-export function enrichRequests(rawRequests) {
+export function enrichRequests(rawRequests: RawRequest[]): EnrichedRequest[] {
   return rawRequests.map(r => {
     const urgency = computeUrgency(r)
     return {
