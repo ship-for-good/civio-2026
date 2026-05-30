@@ -78,6 +78,8 @@ Local: http://localhost:8080/
 
 Visita **http://localhost:8080/** y prueba las consultas sugeridas o escribe la tuya.
 
+**Guía de ejemplos:** [docs/ejemplos-busqueda.md](./docs/ejemplos-busqueda.md) — 5 preguntas detalladas que cubren los estados verde, ámbar y rojo.
+
 ### 5. Detener el servidor
 
 En la terminal donde corre el proceso, pulsa **Ctrl + C**.
