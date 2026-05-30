@@ -140,8 +140,12 @@ Escribe instrucciones claras y sencillas (2-4 frases) sobre qué debe buscar
 o en qué enlace debe clicar dentro de esa página para acercarse a la respuesta.
 Devuelve la respuesta en Markdown con este formato:
 - Empieza con un emoji relevante.
-- Usa **negritas** para los términos clave.
-- Añade una lista de pasos con el prefijo "– " (guion largo).
+- Sin texto introductorio largo.
+- Máximo 3 pasos.
+- Cada paso en una sola línea corta.
+- Cada paso debe empezar con "– " (guion largo).
+- Usa **negritas** para términos clave.
+- No repitas lo que ya dice el message; el hint debe complementar.
 No uses jerga técnica ni institucional.`, question, lastNodeTitle, lastNodeDescription, lastNodeURL)
 }
 
@@ -158,7 +162,7 @@ Descripción: %s
 
 Responde EXACTAMENTE en dos líneas:
 VEREDICTO: SI o NO  (esta línea sin Markdown)
-MENSAJE: empieza con un emoji y usa Markdown con **negritas** para términos clave; si VEREDICTO es NO, explica brevemente por qué no encaja.`, question, nodeTitle, nodeDescription)
+MENSAJE: empieza con un emoji y usa Markdown con **negritas** para términos clave; si VEREDICTO es NO, explica por qué no encaja en máximo 2 frases, directo al punto y sin listas.`, question, nodeTitle, nodeDescription)
 }
 
 func parseVerification(text string) (bool, string, error) {
