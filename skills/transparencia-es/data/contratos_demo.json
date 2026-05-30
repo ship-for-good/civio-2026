@@ -1,10 +1,14 @@
 {
   "_meta": {
-    "dataset_tipo": "muestra_demo",
-    "descripcion": "Conjunto de MUESTRA con la estructura real de los datos abiertos de PLACSP (CODICE 2.07). Sirve para construir y demostrar el chatbot sin depender de la red. NO son adjudicaciones reales: los importes y adjudicatarios son de ejemplo y los nombres de empresa son genéricos a propósito.",
-    "como_regenerar_con_datos_reales": "python scripts/etl_placsp.py --periodo AAAAMM --organo \"Barcelona\" --cpv 4521 --out data/contratos_demo.json",
+    "naturaleza": "muestra_demo",
+    "es_demo": true,
+    "aviso_ui": "⚠️ Datos de DEMOSTRACIÓN. Reproducen la estructura real de los datos abiertos de PLACSP (CODICE 2.07), pero los importes y las empresas son de ejemplo (no son adjudicaciones reales). Para ver datos reales, regenera el dataset con scripts/etl_placsp.py.",
+    "fecha_cache": "2025-02-14",
+    "fuente": "muestra incluida en la skill (no es una extracción real)",
     "fuente_oficial": "https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_643/licitacionesPerfilesContratanteCompleto3_AAAAMM.zip",
-    "nota_enlaces": "url_expediente apunta al buscador oficial de licitaciones de PLACSP; al regenerar con el ETL, cada contrato enlaza a su expediente concreto.",
+    "como_regenerar_con_datos_reales": "python scripts/etl_placsp.py --periodo 202504 --organo \"Barcelona\" --cpv 4521 --out data/contratos_demo.json  (en una máquina con internet; ver references/contratos.md)",
+    "nota_enlaces": "url_expediente apunta al buscador oficial de licitaciones de PLACSP; al regenerar con el ETL real, cada contrato enlaza a su expediente concreto.",
+    "contrato_de_datos": "Campos que la web puede leer en _meta: naturaleza, es_demo (bool), aviso_ui (string|null), fecha_cache. Regla: si aviso_ui es null => datos reales cacheados => NO mostrar banner de demo.",
     "n": 10
   },
   "contratos": [

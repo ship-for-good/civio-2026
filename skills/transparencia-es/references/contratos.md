@@ -72,6 +72,47 @@ Dentro de cada `<entry>` ATOM, el bloque CODICE expone (nombres simplificados):
 (El mapeo exacto puede variar según versión de CODICE; `scripts/etl_placsp.py` es tolerante a
 ausencias y namespaces.)
 
+## Datos reales vs demo — cómo cachear los reales (llave en mano)
+
+El repo incluye `data/contratos_demo.json` marcado como **demo** (`_meta.es_demo = true`): tiene la
+estructura real de PLACSP pero importes y empresas son de ejemplo. Sirve para construir la web sin
+red. Para los casos que se enseñan en la UX conviene **datos reales cacheados**.
+
+**Importante:** la descarga del feed oficial **no funciona desde un sandbox con la red restringida**
+(el host `contrataciondelsectorpublico.gob.es` suele estar fuera de la allowlist). Ejecuta el ETL en
+una **máquina con internet** (tu portátil), commitea el JSON resultante y súbelo.
+
+```bash
+cd skills/transparencia-es
+
+# (A) Un mes, filtrando órgano + obras educativas (CPV 4521*)
+python scripts/etl_placsp.py --periodo 202504 --organo "Barcelona" --cpv 4521 \
+    --out data/contratos_demo.json
+
+# (B) Varios meses encadenados (más probabilidad de pillar obras de colegios, que son poco
+#     frecuentes en un solo mes). El ETL deduplica por expediente.
+python scripts/etl_placsp.py --periodo 202409,202410,202411,202412,202501 \
+    --organo "Barcelona" --cpv 4521 --out data/contratos_demo.json
+
+# (C) Si ya descargaste el ZIP a mano (red bloqueada en CI, etc.)
+python scripts/etl_placsp.py --source ./licitacionesPerfilesContratanteCompleto3_202504.zip \
+    --organo "Barcelona" --cpv 4521 --out data/contratos_demo.json
+```
+
+Al regenerar con el ETL, el `_meta` pasa a `es_demo: false` y `aviso_ui: null` **con el mismo nombre
+de fichero**: la web detecta que son reales y **oculta el banner de demo automáticamente** (no hay que
+tocar el frontend). Verifica luego que un par de `url_expediente` abren el expediente correcto.
+
+**Consejos para que el caso estrella tenga datos ricos:**
+- Las obras de colegios (`45214210`) son esporádicas; usa el **prefijo `4521`** (todo edificio
+  educativo) o **varios meses** (opción B). Si aun así sale poco, sube a `45` (toda obra) y filtra
+  luego, o elige un órgano con más volumen mensual.
+- Los importes pueden ser de **licitación o adjudicación**; dilo en la explicación cuando lo sepas.
+- Fuente de respaldo si PLACSP no cuadra para Barcelona: **Open Data BCN**
+  (`opendata-ajuntament.barcelona.cat`, sección *Contractació*, adjudicaciones de los últimos 5 años,
+  descargable) y la **PSCP** de la Generalitat (`contractaciopublica.gencat.cat`). Son oficiales;
+  normalízalas al mismo esquema y deja `url_expediente` apuntando a su portal.
+
 ## Cómo ayudar al ciudadano (patrón de respuesta)
 
 1. **Reformula** la pregunta a `organo` + `cpv` (+ `anio`). Explica brevemente qué CPV usas y

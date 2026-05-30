@@ -192,7 +192,8 @@ def matches(rec: dict, organo: str | None, cpv: str | None, anio: str | None) ->
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--periodo", help="AAAAMM (por defecto: mes anterior)")
+    ap.add_argument("--periodo", help="AAAAMM, o varios separados por comas "
+                                      "(p.ej. 202501,202502,202503). Por defecto: mes anterior")
     ap.add_argument("--source", help="URL o ruta local (.zip/.atom). Si se omite, "
                                      "se construye la URL oficial con --periodo")
     ap.add_argument("--organo", help="Filtro: subcadena del nombre del órgano")
@@ -202,27 +203,51 @@ def main(argv=None):
     ap.add_argument("--out", default="-", help="Fichero de salida JSON ('-' = stdout)")
     args = ap.parse_args(argv)
 
-    if not args.source:
-        periodo = args.periodo
-        if not periodo:
+    # Construir la lista de fuentes a procesar.
+    #   --source ruta/URL            -> una sola fuente (fichero local o URL concreta)
+    #   --periodo 202501,202502,...  -> uno o varios meses del feed oficial
+    #   (por defecto: mes anterior)
+    if args.source:
+        sources = [args.source]
+    else:
+        periodos = [p.strip() for p in (args.periodo or "").split(",") if p.strip()]
+        if not periodos:
             today = dt.date.today().replace(day=1)
             prev = today - dt.timedelta(days=1)
-            periodo = f"{prev.year}{prev.month:02d}"
-        args.source = ZIP_URL.format(periodo=periodo)
+            periodos = [f"{prev.year}{prev.month:02d}"]
+        sources = [ZIP_URL.format(periodo=p) for p in periodos]
 
     registros = []
-    for rec in iter_entries(args.source):
-        if matches(rec, args.organo, args.cpv, args.anio):
+    vistos = set()  # dedupe entre meses (un mismo expediente puede repetirse)
+    for src in sources:
+        for rec in iter_entries(src):
+            if not matches(rec, args.organo, args.cpv, args.anio):
+                continue
+            clave = rec.get("expediente") or rec.get("url_expediente")
+            if clave and clave in vistos:
+                continue
+            if clave:
+                vistos.add(clave)
             registros.append(rec)
             if args.max and len(registros) >= args.max:
                 break
+        if args.max and len(registros) >= args.max:
+            break
 
     payload = {
         "_meta": {
-            "dataset_tipo": "extraccion_real",
-            "fuente": args.source,
+            # Mismo contrato de datos que contratos_demo.json -> drop-in para la web.
+            # aviso_ui = null  =>  datos reales cacheados  =>  la UI NO muestra banner de demo.
+            "naturaleza": "real_cacheado",
+            "es_demo": False,
+            "aviso_ui": None,
+            "fecha_cache": dt.date.today().isoformat(),
+            "fuente": "Datos abiertos PLACSP (sindicación ATOM, CODICE 2.07)",
+            "fuente_oficial": sources if len(sources) > 1 else sources[0],
             "generado": dt.datetime.now().isoformat(timespec="seconds"),
             "filtros": {"organo": args.organo, "cpv": args.cpv, "anio": args.anio},
+            "contrato_de_datos": "Campos que la web puede leer en _meta: naturaleza, "
+                                 "es_demo (bool), aviso_ui (string|null), fecha_cache.",
             "n": len(registros),
             "nota": "Datos abiertos de PLACSP normalizados. Los importes pueden ser de "
                     "licitación o adjudicación. Excluye contratos menores.",

@@ -63,11 +63,19 @@ en profundidad. Para otras materias, orienta con `references/mapa-fuentes.md`.
   El dataset se materializa con `scripts/etl_placsp.py` y se consulta filtrando por
   `organo`/`cpv`. En el producto web, la edge function filtra el mismo JSON en Storage.
 
-> Procedencia de los datos: si trabajas con el dataset de muestra incluido
-> (`data/contratos_demo.json`, marcado como `muestra_demo`), **sé transparente**: indica
-> que son datos de ejemplo con la estructura real de PLACSP y que la versión en vivo se
-> regenera con `etl_placsp.py` desde el feed oficial. Los enlaces siempre llevan al portal
-> oficial.
+> **Declara siempre la procedencia** (lo dice el `_meta` del dataset / el campo `fuente` de la
+> herramienta):
+> - Si `es_demo` es `true` (o `aviso_ui` no es `null`): avisa de que son **datos de DEMOSTRACIÓN**
+>   con la estructura real de PLACSP, y que la versión real se regenera con `etl_placsp.py`.
+> - Si `es_demo` es `false`: son **datos reales cacheados**; menciona la fecha (`fecha_cache`):
+>   *"datos oficiales de PLACSP, actualizados a {fecha_cache}"*. No hace falta hablar de demo.
+>
+> En ambos casos los enlaces llevan **siempre** al portal oficial.
+
+> **Latencia (avisa antes de esperar).** Las consultas normales son instantáneas porque filtran un
+> JSON ya cacheado. Si vas a lanzar una operación lenta (p.ej. descargar el ZIP mensual con el ETL),
+> **dilo primero** ("voy a descargar el fichero de PLACSP, puede tardar…") y prefiere el caché. Para
+> el detalle (streaming, estados de la web, jobs de fondo) ver `references/rendimiento-y-feedback.md`.
 
 ## Ficheros de referencia (cárgalos según necesites)
 
@@ -75,4 +83,5 @@ en profundidad. Para otras materias, orienta con `references/mapa-fuentes.md`.
 - `references/glosario-cpv.md` — qué es el CPV + tabla de CPV ciudadanos frecuentes.
 - `references/tipos-contrato.md` — obra / servicio / suministro / contrato menor / concesión.
 - `references/mapa-fuentes.md` — qué información vive en qué portal (todas las materias).
+- `references/rendimiento-y-feedback.md` — latencia: caché offline, streaming y estados de la web.
 - `references/roadmap-verticales.md` — cómo extender la skill (subvenciones, BOE, retribuciones).

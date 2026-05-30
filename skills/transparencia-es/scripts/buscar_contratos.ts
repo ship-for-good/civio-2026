@@ -29,10 +29,27 @@ export interface BuscarArgs {
   anio?: string;
 }
 
+// Procedencia del dataset (la _meta del JSON). La UI la usa para decidir si
+// muestra el aviso de demo: si es_demo===true / aviso_ui!=null => banner.
+export interface Fuente {
+  naturaleza: string | null;
+  es_demo: boolean;
+  aviso_ui: string | null;
+  fecha_cache: string | null;
+  fuente_oficial: string | string[] | null;
+}
+
+// Forma del JSON en Storage: { _meta, contratos: [...] }
+export interface Dataset {
+  _meta?: Partial<Fuente> & Record<string, unknown>;
+  contratos: Contrato[];
+}
+
 export interface BuscarResult {
   contratos: Contrato[];
   n: number;
   total_importe: number;
+  fuente: Fuente;
 }
 
 function matches(rec: Contrato, { organo, cpv, anio }: BuscarArgs): boolean {
@@ -45,15 +62,32 @@ function matches(rec: Contrato, { organo, cpv, anio }: BuscarArgs): boolean {
 }
 
 /**
- * Filtra el dataset de contratos. `dataset` es el array `contratos` del JSON
- * (cárgalo desde Supabase Storage una vez y cachéalo en la edge function).
+ * Filtra el dataset de contratos. `dataset` es el JSON completo cargado desde
+ * Supabase Storage (con `_meta` y `contratos`); cárgalo una vez y cachéalo en
+ * la edge function. Acepta también el array `contratos` suelto por comodidad.
  */
-export function buscarContratos(dataset: Contrato[], args: BuscarArgs): BuscarResult {
-  const hits = dataset.filter((rec) => matches(rec, args));
+export function buscarContratos(
+  dataset: Dataset | Contrato[],
+  args: BuscarArgs,
+): BuscarResult {
+  const contratos = Array.isArray(dataset) ? dataset : dataset.contratos;
+  const meta = Array.isArray(dataset) ? {} : (dataset._meta ?? {});
+  const hits = contratos.filter((rec) => matches(rec, args));
   const total = Math.round(
     hits.reduce((acc, r) => acc + (r.importe ?? 0), 0) * 100,
   ) / 100;
-  return { contratos: hits, n: hits.length, total_importe: total };
+  return {
+    contratos: hits,
+    n: hits.length,
+    total_importe: total,
+    fuente: {
+      naturaleza: (meta.naturaleza as string) ?? null,
+      es_demo: (meta.es_demo as boolean) ?? true,
+      aviso_ui: (meta.aviso_ui as string) ?? null,
+      fecha_cache: (meta.fecha_cache as string) ?? null,
+      fuente_oficial: (meta.fuente_oficial as string | string[]) ?? null,
+    },
+  };
 }
 
 // Definición de la TOOL para Lovable AI / Gemini (function calling):

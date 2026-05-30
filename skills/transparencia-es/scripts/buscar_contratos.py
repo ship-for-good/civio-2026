@@ -45,13 +45,22 @@ def buscar(dataset_path, organo=None, cpv=None, anio=None):
     with open(dataset_path, encoding="utf-8") as fh:
         data = json.load(fh)
     contratos = data.get("contratos", data if isinstance(data, list) else [])
+    meta = data.get("_meta", {})
     hits = [r for r in contratos if matches(r, organo, cpv, anio)]
     total = round(sum(r.get("importe") or 0 for r in hits), 2)
     return {
         "contratos": hits,
         "n": len(hits),
         "total_importe": total,
-        "_fuente": data.get("_meta", {}),
+        # Procedencia para que la UI decida si muestra el aviso de demo:
+        # si es_demo es True / aviso_ui no es null => banner; si no => datos reales.
+        "fuente": {
+            "naturaleza": meta.get("naturaleza"),
+            "es_demo": meta.get("es_demo", True),
+            "aviso_ui": meta.get("aviso_ui"),
+            "fecha_cache": meta.get("fecha_cache"),
+            "fuente_oficial": meta.get("fuente_oficial"),
+        },
     }
 
 
