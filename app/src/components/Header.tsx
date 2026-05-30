@@ -13,7 +13,13 @@ export default function Header({ onNewExpediente }: HeaderProps) {
 
   return (
     <header>
-      <h1>CivioDoc</h1>
+      <h1 className="civio-logo">
+        CivioDoc
+        <span className="civio-dots" aria-hidden="true">
+          <span className="civio-dot civio-dot--green" />
+          <span className="civio-dot civio-dot--yellow" />
+        </span>
+      </h1>
       <button
         type="button"
         className="new-expediente-btn"

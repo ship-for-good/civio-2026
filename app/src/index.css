@@ -85,6 +85,29 @@ header h1 {
   margin-right: 8px;
 }
 
+header h1.civio-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.civio-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.civio-dot {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.civio-dot--green  { background: #6cf0b0; }
+.civio-dot--yellow { background: #ffe566; }
+
 header .today-badge {
   margin-left: auto;
   background: rgba(255, 255, 255, 0.1);
