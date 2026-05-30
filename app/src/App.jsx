@@ -108,9 +108,6 @@ export default function App() {
     return 0
   })
 
-  if (session === undefined) return null
-  if (!session) return <LoginPage />
-
   return (
     <div
       onDragEnter={handleDragEnter}
