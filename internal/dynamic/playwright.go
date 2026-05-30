@@ -3,6 +3,7 @@ package dynamic
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/playwright-community/playwright-go"
@@ -71,6 +72,14 @@ func (s *Scraper) FetchRenderedHTML(ctx context.Context, url string) (string, er
 
 	// Wait for main content or tables typical of AEM dynamic pages.
 	selectors := []string{s.cfg.WaitSelector, "table", ".table-dintel", ".cmp-text"}
+	if strings.Contains(url, "transparencia.sede.gob.es") {
+		selectors = append([]string{
+			"a[href*='/procedimiento']",
+			"dnt-section",
+			"form",
+			"main",
+		}, selectors...)
+	}
 	for _, sel := range selectors {
 		if sel == "" {
 			continue

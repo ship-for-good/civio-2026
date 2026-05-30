@@ -10,6 +10,7 @@ import (
 	"github.com/civio/civio-2026/internal/graph"
 	"github.com/civio/civio-2026/internal/models"
 	"github.com/civio/civio-2026/internal/parser"
+	"github.com/civio/civio-2026/internal/sedefollow"
 )
 
 type Config struct {
@@ -24,9 +25,7 @@ type Crawler struct {
 	fetcher      *Fetcher
 	store        *graph.Store
 	cfg          Config
-	sedeResolved map[string]sedeChainResult
-	sedeMu       sync.Mutex
-	sedePages    int
+	sedeFollower *sedefollow.Follower
 }
 
 func New(store *graph.Store, cfg Config) *Crawler {
@@ -40,11 +39,14 @@ func New(store *graph.Store, cfg Config) *Crawler {
 		cfg.MaxPages = 10000
 	}
 
+	fetcher := NewFetcher(cfg.RateLimit)
 	return &Crawler{
-		fetcher:      NewFetcher(cfg.RateLimit),
-		store:        store,
-		cfg:          cfg,
-		sedeResolved: make(map[string]sedeChainResult),
+		fetcher: fetcher,
+		store:   store,
+		cfg:     cfg,
+		sedeFollower: sedefollow.NewFollower(store, &httpSedeFetcher{
+			fetcher: fetcher,
+		}, cfg.MaxPages),
 	}
 }
 

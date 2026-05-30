@@ -61,6 +61,8 @@ docker compose run --rm crawler stats --db /data/graph.db
 | `--timeout` | `45` | Timeout por página (s) |
 | `--skip-unchanged` | `true` | Skip si `dynamic_hash` igual |
 | `--force` | `false` | Re-scrape forzado |
+| `--follow-sede` | `true` | Sigue cadenas sede con HTML renderizado y extiende nodos incompletos |
+| `--max-sede-pages` | `10000` | Tope de páginas sede en el pase Playwright |
 
 ### `export`
 

@@ -1,17 +1,15 @@
 package crawler
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"net/http"
 	"time"
 
 	"github.com/civio/civio-2026/internal/models"
+	"github.com/civio/civio-2026/internal/sedefollow"
 )
 
 func HashBody(body []byte) string {
-	sum := sha256.Sum256(body)
-	return hex.EncodeToString(sum[:])
+	return sedefollow.HashBody(body)
 }
 
 func ParseHTTPDate(value string) (time.Time, bool) {

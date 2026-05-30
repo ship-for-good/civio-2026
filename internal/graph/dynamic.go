@@ -107,3 +107,59 @@ func parseDynamicContent(raw sql.NullString) *models.DynamicContent {
 	}
 	return &c
 }
+
+func (s *Store) ListTransparenciaLeavesForSede() ([]DynamicNodeRow, error) {
+	rows, err := s.db.Query(`
+SELECT id, url, title, page_type, COALESCE(dynamic_hash, '')
+FROM nodes
+WHERE page_type IN ('leaf_static', 'leaf_dynamic')
+  AND url LIKE 'https://transparencia.gob.es%'
+ORDER BY depth, path
+`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanDynamicNodeRows(rows)
+}
+
+func (s *Store) ListIncompleteSedeNodes() ([]DynamicNodeRow, error) {
+	rows, err := s.db.Query(`
+SELECT n.id, n.url, n.title, n.page_type, COALESCE(n.dynamic_hash, '')
+FROM nodes n
+WHERE n.url LIKE 'https://transparencia.sede.gob.es%'
+  AND n.page_type = 'navigation'
+  AND NOT EXISTS (
+    SELECT 1 FROM edges e
+    JOIN nodes c ON c.id = e.to_id
+    WHERE e.from_id = n.id
+      AND (
+        instr(lower(c.url), 'formulario') > 0
+        OR instr(lower(c.url), 'tramitar') > 0
+        OR instr(lower(c.url), 'solicitud') > 0
+      )
+  )
+ORDER BY n.depth, n.path
+`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanDynamicNodeRows(rows)
+}
+
+func scanDynamicNodeRows(rows *sql.Rows) ([]DynamicNodeRow, error) {
+	var nodes []DynamicNodeRow
+	for rows.Next() {
+		var n DynamicNodeRow
+		var pageType string
+		if err := rows.Scan(&n.ID, &n.URL, &n.Title, &pageType, &n.DynamicHash); err != nil {
+			return nil, err
+		}
+		n.PageType = models.PageType(pageType)
+		nodes = append(nodes, n)
+	}
+	return nodes, rows.Err()
+}

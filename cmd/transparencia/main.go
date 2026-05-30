@@ -168,6 +168,8 @@ func scrapeDynamicCmd(dbPath *string) *cobra.Command {
 		force         bool
 		headless      bool
 		timeoutSec    int
+		followSede    bool
+		maxSedePages  int
 	)
 
 	cmd := &cobra.Command{
@@ -196,6 +198,8 @@ Requires Playwright browsers. Use the crawler-playwright Docker service:
 				SkipUnchanged: skipUnchanged && !force,
 				Headless:      headless,
 				TimeoutSec:    timeoutSec,
+				FollowSede:    followSede,
+				MaxSedePages:  maxSedePages,
 			})
 			if err != nil {
 				return err
@@ -203,6 +207,10 @@ Requires Playwright browsers. Use the crawler-playwright Docker service:
 
 			fmt.Printf("Dynamic scrape: %d processed, %d skipped, %d errors\n",
 				result.Processed, result.Skipped, result.Errors)
+			if followSede {
+				fmt.Printf("Sede follow: %d leaves, %d extended, %d sede pages, %d errors\n",
+					result.SedeLeaves, result.SedeExtended, result.SedePages, result.SedeErrors)
+			}
 			return nil
 		},
 	}
@@ -214,6 +222,8 @@ Requires Playwright browsers. Use the crawler-playwright Docker service:
 	cmd.Flags().BoolVar(&force, "force", false, "Re-scrape even if content hash matches")
 	cmd.Flags().BoolVar(&headless, "headless", true, "Run browser headless")
 	cmd.Flags().IntVar(&timeoutSec, "timeout", 45, "Page load timeout in seconds")
+	cmd.Flags().BoolVar(&followSede, "follow-sede", true, "Follow transparencia.sede.gob.es links using rendered HTML and extend incomplete chains")
+	cmd.Flags().IntVar(&maxSedePages, "max-sede-pages", 10000, "Maximum sede pages to fetch during follow-sede pass")
 
 	return cmd
 }
