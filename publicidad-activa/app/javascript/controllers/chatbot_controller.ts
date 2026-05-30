@@ -93,6 +93,7 @@ export default class extends Controller {
   }
 
   private async sendQuestion(question: string): Promise<void> {
+    this.faqAreaTarget.classList.add("hidden")
     this.appendMessage("user", question)
     this.setLoading(true)
 
