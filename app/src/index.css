@@ -16,9 +16,9 @@
   --border:  #eaeaea;
 
   /* ── Text ── */
-  --text:           #111111;
-  --text-secondary: #666666;
-  --text-tertiary:  #999999;
+  --text:           #000000;
+  --text-secondary: #222222;
+  --text-tertiary:  #444444;
 
   /* ── Status colors ── */
   --civio-red:       #cd2b31;
@@ -411,11 +411,11 @@ tbody tr {
 tbody tr:hover { background: var(--civio-blue-muted); }
 tbody tr:last-child { border-bottom: none; }
 
-/* Urgency left-border stripes */
-tbody tr.urgency-critical { border-left: 3px solid var(--civio-red); }
-tbody tr.urgency-warning  { border-left: 3px solid var(--civio-orange); }
-tbody tr.urgency-ok       { border-left: 3px solid var(--status-green); }
-tbody tr.urgency-neutral  { border-left: 3px solid var(--neutral-border); }
+/* Urgency left-border stripes + row backgrounds */
+tbody tr.urgency-critical { border-left: 4px solid var(--civio-red);    background: #ffd6d8; }
+tbody tr.urgency-warning  { border-left: 4px solid var(--civio-orange); background: #fdedc8; }
+tbody tr.urgency-ok       { border-left: 4px solid var(--status-green); background: #c8eece; }
+tbody tr.urgency-neutral  { border-left: 4px solid var(--neutral-border); background: #f4f4f4; }
 
 td {
   padding: 10px 12px;

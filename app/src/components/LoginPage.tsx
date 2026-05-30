@@ -8,6 +8,7 @@ export default function LoginPage() {
   const { signInWithPassword, signUp } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
   const [mode, setMode] = useState<Mode>('login')
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -29,7 +30,7 @@ export default function LoginPage() {
         setStatus('error')
       }
     } else {
-      const { error } = await signUp(email, password)
+      const { error } = await signUp(email, password, name.trim() || undefined)
       if (error) {
         setErrorMsg(error.message)
         setStatus('error')
@@ -43,6 +44,7 @@ export default function LoginPage() {
     setMode(m => m === 'login' ? 'signup' : 'login')
     setStatus('idle')
     setErrorMsg('')
+    setName('')
   }
 
   const buttonLabel = status === 'loading' ? 'Cargando…' : mode === 'login' ? 'Entrar' : 'Crear cuenta'
@@ -67,6 +69,21 @@ export default function LoginPage() {
         ) : (
           <>
             <form onSubmit={handleSubmit} className="login-form">
+              {mode === 'signup' && (
+                <>
+                  <label htmlFor="name" className="login-label">Nombre</label>
+                  <input
+                    id="name"
+                    type="text"
+                    required
+                    placeholder="Tu nombre"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={status === 'loading'}
+                    className="login-input"
+                  />
+                </>
+              )}
               <label htmlFor="email" className="login-label">Correo electrónico</label>
               <input
                 id="email"
@@ -94,7 +111,7 @@ export default function LoginPage() {
               )}
               <button
                 type="submit"
-                disabled={status === 'loading' || !email || !password}
+                disabled={status === 'loading' || !email || !password || (mode === 'signup' && !name.trim())}
                 className="login-btn"
               >
                 {buttonLabel}

@@ -28,7 +28,7 @@ interface Sort {
 }
 
 export default function App() {
-  const { session } = useAuth()
+  const { session, displayName } = useAuth()
 
   if (session === undefined) return null
   if (session === null) return <LoginPage />
@@ -131,7 +131,7 @@ export default function App() {
   }, [requests, showToast])
 
   const handleCreateExpediente = useCallback(async (input: ExpedienteInput, files: File[]) => {
-    const raw = buildExpediente(input, toISODate(TODAY), { autor: session?.user?.email })
+    const raw = buildExpediente(input, toISODate(TODAY), { autor: displayName })
     const attachments = files.length
       ? await uploadAttachments(files, raw['Id'])
       : []

@@ -149,7 +149,7 @@ function TableRow({ r, isHighlighted, setRef, onEdit }: TableRowProps) {
       </td>
       <td style={daysStyle}>{daysText}</td>
       <td>{formatDateShort(r['Fecha'])}</td>
-      <td style={{ fontSize: '11px', color: '#888' }}>{r['Reclamación'] || '—'}</td>
+      <td style={{ fontSize: '11px' }}>{r['Reclamación'] || '—'}</td>
       <td className="notas-cell" title={notas}>
         {notas.length > 60 ? notas.substring(0, 60) + '…' : notas}
       </td>
