@@ -35,7 +35,7 @@
         "nómina",
         "dieta"
       ],
-      "source_url": "https://transparencia.gob.es/transparencia/publicidad-activa/organizacion-empleo/retribuciones",
+      "source_url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones",
       "type": "interno",
       "is_special_section": false
     },
@@ -93,7 +93,7 @@
         "rey",
         "familia real"
       ],
-      "source_url": "https://www.casareal.es/ES/transparencia/Paginas/transparencia.aspx",
+      "source_url": "https://www.casareal.es/ES/Paginas/home.aspx",
       "type": "externo",
       "is_special_section": true
     },
