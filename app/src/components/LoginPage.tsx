@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
+type Mode = 'login' | 'signup'
+type Status = 'idle' | 'loading' | 'error' | 'confirm'
+
 export default function LoginPage() {
   const { signInWithPassword, signUp } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [mode, setMode] = useState('login') // login | signup
-  const [status, setStatus] = useState('idle') // idle | loading | error | confirm
+  const [mode, setMode] = useState<Mode>('login')
+  const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('loading')
     setErrorMsg('')
@@ -25,7 +28,6 @@ export default function LoginPage() {
         )
         setStatus('error')
       }
-      // On success, onAuthStateChange updates the session and App.jsx re-renders
     } else {
       const { error } = await signUp(email, password)
       if (error) {
