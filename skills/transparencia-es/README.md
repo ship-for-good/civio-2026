@@ -58,9 +58,9 @@ docker run -it --rm -v $PWD:/usr/src/app python bash
 
 ## Ejemplos de preguntas que resuelve
 
-- *"¿Cuánto se ha gastado el Ayuntamiento de Barcelona en obras de colegios?"*
-- *"¿Qué empresa ganó la limpieza de los colegios y por cuánto?"*
-- *"¿Dónde encuentro los contratos de mi ayuntamiento?"* (orienta a PLACSP y explica cómo buscar)
+- *"¿Cuánto se ha gastado el Ayuntamiento de Barcelona en obras de colegios en 2025?"*
+- *"¿Qué empresa ganó la limpieza de los colegios y por cuánto en Barcelona en 2025?"*
+- *"Contratos del Ministerio de Sanidad en 2024"*
 
 ## Principios (política de IA de Civio)
 
