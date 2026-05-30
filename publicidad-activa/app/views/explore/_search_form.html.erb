@@ -19,15 +19,17 @@
       <%= submit_tag "Buscar →", class: "shrink-0 rounded-full bg-sky-600 px-5 sm:px-6 py-2.5 text-sm font-medium text-white hover:bg-sky-700 cursor-pointer transition-colors" %>
     </div>
 
-    <div class="flex flex-wrap gap-2">
-      <% ExploreHelper::VIGENCIA_OPTIONS.each do |option_label, value| %>
-        <% active = explore_vigencia_value == value %>
-        <%= link_to explore_path(explore_filter_params.merge("vigencia" => value)),
-          class: explore_vigencia_pill_classes(active) do %>
-          <%= option_label %>
-          <span class="<%= explore_vigencia_count_classes(active) %>"><%= number_with_delimiter(@result.vigencia_counts[value]) %></span>
+    <% if explore_show_vigencia_filters? %>
+      <div class="flex flex-wrap gap-2">
+        <% ExploreHelper::VIGENCIA_OPTIONS.each do |option_label, value| %>
+          <% active = explore_vigencia_value == value %>
+          <%= link_to explore_path(explore_filter_params.merge("vigencia" => value)),
+            class: explore_vigencia_pill_classes(active) do %>
+            <%= option_label %>
+            <span class="<%= explore_vigencia_count_classes(active) %>"><%= number_with_delimiter(@result.vigencia_counts[value]) %></span>
+          <% end %>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
   </div>
 <% end %>

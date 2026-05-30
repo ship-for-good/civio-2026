@@ -31,13 +31,20 @@ module ExploreHelper
     active ? "#{base} text-white/70" : "#{base} text-stone-400"
   end
 
-  def explore_search_active?
+  def explore_query_present?
     params[:q].present? ||
       params[:organismo].present? ||
       params[:materia].present? ||
       params[:subtema].present? ||
-      params[:tipo].present? ||
-      explore_vigencia_value != "vigente"
+      params[:tipo].present?
+  end
+
+  def explore_search_active?
+    explore_query_present? || explore_vigencia_value != "vigente"
+  end
+
+  def explore_show_vigencia_filters?
+    explore_query_present? && @result.vigencia_counts["all"].positive?
   end
 
   def explore_filter_params
