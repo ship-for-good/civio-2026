@@ -1,7 +1,13 @@
-import { getDailyDigestCategories, CLAIM_WINDOW_DAYS } from '../utils/urgency.js'
+import { getDailyDigestCategories, CLAIM_WINDOW_DAYS, type EnrichedRequest } from '../utils/urgency.js'
 import { daysFromToday, TODAY, formatDate } from '../utils/dates.js'
 
-export default function DigestSection({ requests, onHighlight, showToast }) {
+interface DigestSectionProps {
+  requests: EnrichedRequest[]
+  onHighlight: (id: string) => void
+  showToast: (msg: string) => void
+}
+
+export default function DigestSection({ requests, onHighlight, showToast }: DigestSectionProps) {
   const { silencio, reclamadas, contencioso } = getDailyDigestCategories(requests)
 
   function copyDigest() {
@@ -19,7 +25,7 @@ export default function DigestSection({ requests, onHighlight, showToast }) {
     } else {
       silencio.forEach(r => {
         const days = daysFromToday(r['Vencimiento'])
-        const claimDays = CLAIM_WINDOW_DAYS + days
+        const claimDays = CLAIM_WINDOW_DAYS + (days ?? 0)
         text += `   • [${r['Id']}] ${r['Asunto']} (${r['Autor']})\n`
         text += `     Venc: ${formatDate(r['Vencimiento'])} | ${claimDays}d para reclamar\n`
       })
@@ -66,7 +72,7 @@ export default function DigestSection({ requests, onHighlight, showToast }) {
           items={silencio}
           metaFn={r => {
             const days = daysFromToday(r['Vencimiento'])
-            return `${CLAIM_WINDOW_DAYS + days}d para reclamar`
+            return `${CLAIM_WINDOW_DAYS + (days ?? 0)}d para reclamar`
           }}
           badgeClass="critical"
           onHighlight={onHighlight}
@@ -96,7 +102,18 @@ export default function DigestSection({ requests, onHighlight, showToast }) {
   )
 }
 
-function DigestCard({ cssClass, emoji, title, subtitle, items, metaFn, badgeClass, onHighlight }) {
+interface DigestCardProps {
+  cssClass: string
+  emoji: string
+  title: string
+  subtitle: string
+  items: EnrichedRequest[]
+  metaFn: (r: EnrichedRequest) => string
+  badgeClass: string
+  onHighlight: (id: string) => void
+}
+
+function DigestCard({ cssClass, emoji, title, subtitle, items, metaFn, badgeClass, onHighlight }: DigestCardProps) {
   return (
     <div className={`digest-card ${cssClass}`}>
       <div className="card-header">
