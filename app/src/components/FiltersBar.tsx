@@ -1,8 +1,19 @@
 import { useMemo } from 'react'
+import type { EnrichedRequest } from '../utils/urgency.js'
 
 const EMPTY_FILTERS = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
 
-export default function FiltersBar({ requests, filters, onFilterChange, filteredCount, totalCount }) {
+export type Filters = typeof EMPTY_FILTERS
+
+interface FiltersBarProps {
+  requests: EnrichedRequest[]
+  filters: Filters
+  onFilterChange: (filters: Filters | ((prev: Filters) => Filters)) => void
+  filteredCount: number
+  totalCount: number
+}
+
+export default function FiltersBar({ requests, filters, onFilterChange, filteredCount, totalCount }: FiltersBarProps) {
   const estados = useMemo(() =>
     [...new Set(requests.map(r => r['Estado']).filter(Boolean))].sort(),
     [requests]
@@ -16,7 +27,7 @@ export default function FiltersBar({ requests, filters, onFilterChange, filtered
     [requests]
   )
 
-  function update(key, value) {
+  function update(key: keyof Filters, value: string) {
     onFilterChange(prev => ({ ...prev, [key]: value }))
   }
 
