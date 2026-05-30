@@ -29,10 +29,10 @@ Align controllers with product routes (names may vary):
 | Path | Purpose |
 |------|---------|
 | `/` | Home: stats, six materias, entry to search |
-| `/explorar` | Global search + facets (default **vigente**; histórico behind toggle) |
-| `/explorar/:materia`, `/explorar/:materia/:subtema` | Browse by taxonomy + counts |
-| `/organismos`, `/organismos/:code` | List + ficha (resources + portal ministerio link) |
-| `/mapa-urls` | Technical tree (port or link to `docs/publicidad-activa-url-map.html`) |
+| `/explore` | Global search + facets (default **vigente**; histórico behind toggle) |
+| `/explore/:materia`, `/explore/:materia/:subtema` | Browse by taxonomy + counts |
+| `/organisms`, `/organisms/:code` | List + ficha (resources + portal ministerio link) |
+| `/url-map` | Technical tree (port or link to `docs/publicidad-activa-url-map.html`) |
 
 Use Turbo Frames/Streams where they simplify filters and search without a separate SPA.
 

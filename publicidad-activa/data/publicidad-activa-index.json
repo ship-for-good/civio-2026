@@ -1,0 +1,93 @@
+{
+  "generatedAt": "2026-05-30T11:22:12Z",
+  "stats": {
+    "total": 4,
+    "expected": 4,
+    "materias": [
+      {
+        "name": "publicidad-activa",
+        "count": 1
+      },
+      {
+        "name": "por-materias",
+        "count": 1
+      },
+      {
+        "name": "altos-cargos",
+        "count": 2
+      }
+    ]
+  },
+  "resources": [
+    {
+      "id": "80d76c8113fa7a15",
+      "url": "https://transparencia.gob.es/publicidad-activa",
+      "materia": "publicidad-activa",
+      "materiaLabel": "Publicidad activa",
+      "subtema": "portada",
+      "subtemaLabel": "Portada",
+      "tipo": null,
+      "organismoCode": null,
+      "vigencia": "vigente",
+      "periodo": null,
+      "pathSegments": [
+        "publicidad-activa"
+      ],
+      "depth": 1
+    },
+    {
+      "id": "8a0cd8fffcafcf48",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias",
+      "materia": "por-materias",
+      "materiaLabel": "Por materias",
+      "subtema": "portada",
+      "subtemaLabel": "Portada",
+      "tipo": null,
+      "organismoCode": null,
+      "vigencia": "vigente",
+      "periodo": null,
+      "pathSegments": [
+        "publicidad-activa",
+        "por-materias"
+      ],
+      "depth": 2
+    },
+    {
+      "id": "bb480cb855d6bf8c",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos",
+      "materia": "altos-cargos",
+      "materiaLabel": "Altos cargos",
+      "subtema": "portada",
+      "subtemaLabel": "Portada",
+      "tipo": null,
+      "organismoCode": null,
+      "vigencia": "vigente",
+      "periodo": null,
+      "pathSegments": [
+        "publicidad-activa",
+        "por-materias",
+        "altos-cargos"
+      ],
+      "depth": 3
+    },
+    {
+      "id": "f09610663e7a177b",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones",
+      "materia": "altos-cargos",
+      "materiaLabel": "Altos cargos",
+      "subtema": "retribuciones",
+      "subtemaLabel": "Retribuciones de altos cargos",
+      "tipo": null,
+      "organismoCode": null,
+      "vigencia": "vigente",
+      "periodo": null,
+      "pathSegments": [
+        "publicidad-activa",
+        "por-materias",
+        "altos-cargos",
+        "retribuciones"
+      ],
+      "depth": 4
+    }
+  ]
+}

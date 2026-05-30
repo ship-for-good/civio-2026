@@ -1,0 +1,19 @@
+<% content_for :title, "Inicio — Publicidad Activa" %>
+
+<h1 class="text-2xl font-semibold mb-2">¿Qué hay en Publicidad activa?</h1>
+<p class="text-gray-600 mb-6">
+  Inventario sobre el portal nacional de transparencia.gob.es — enlaces oficiales, sin espejar contenido.
+</p>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+  <div class="bg-white border border-gray-200 rounded-lg p-4">
+    <p class="text-3xl font-bold"><%= @total_resources %></p>
+    <p class="text-sm text-gray-600">recursos indexados</p>
+  </div>
+  <div class="bg-white border border-gray-200 rounded-lg p-4">
+    <p class="text-3xl font-bold"><%= @materia_counts.size %></p>
+    <p class="text-sm text-gray-600">materias</p>
+  </div>
+</div>
+
+<%= link_to "Explorar recursos", explore_path, class: "inline-block bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800" %>

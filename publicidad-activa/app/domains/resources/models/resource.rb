@@ -14,13 +14,13 @@ module Resources
       validates :depth, numericality: { only_integer: true, greater_than: 0 }
       validates :path_segments, presence: true
 
-      scope :vigentes, -> { where(vigencia: "vigente") }
-      scope :historicos, -> { where(vigencia: "historico") }
-      scope :by_materia, ->(materia) { where(materia: materia) }
-      scope :by_subtema, ->(subtema) { where(subtema: subtema) }
-      scope :by_organismo, ->(code) { where(organismo_code: code) }
+      scope :current, -> { where(vigencia: "vigente") }
+      scope :historical, -> { where(vigencia: "historico") }
+      scope :by_topic, ->(materia) { where(materia: materia) }
+      scope :by_subtopic, ->(subtema) { where(subtema: subtema) }
+      scope :by_organism, ->(code) { where(organismo_code: code) }
 
-      def historico?
+      def historical?
         vigencia == "historico"
       end
     end

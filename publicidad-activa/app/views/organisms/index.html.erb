@@ -1,0 +1,11 @@
+<% content_for :title, "Organismos — Publicidad Activa" %>
+
+<h1 class="text-2xl font-semibold mb-4">Organismos</h1>
+
+<ul class="space-y-2">
+  <% @organisms.each do |code, count| %>
+    <li>
+      <%= link_to "#{code.upcase} (#{count})", organism_path(code), class: "text-blue-700 hover:underline" %>
+    </li>
+  <% end %>
+</ul>

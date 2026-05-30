@@ -1,0 +1,19 @@
+{
+  "stats": { "uniqueUrls": 4 },
+  "tree": {
+    "name": "publicidad-activa",
+    "children": [
+      {
+        "name": "por-materias",
+        "children": [
+          {
+            "name": "altos-cargos",
+            "children": [
+              { "name": "retribuciones", "children": [] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

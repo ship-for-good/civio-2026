@@ -1,0 +1,15 @@
+<% content_for :title, "#{@code.upcase} — Organismos" %>
+
+<h1 class="text-2xl font-semibold mb-4">Organismo: <%= @code.upcase %></h1>
+
+<ul class="space-y-3">
+  <% @resources.each do |resource| %>
+    <li class="bg-white border border-gray-200 rounded-lg p-4">
+      <p class="font-medium"><%= resource.subtema_label %><%= " · #{resource.tipo&.upcase}" if resource.tipo %></p>
+      <p class="text-xs text-gray-500"><%= resource.vigencia %></p>
+      <%= link_to "Abrir en transparencia.gob.es", resource.url, target: "_blank", rel: "noopener", class: "text-sm text-blue-700 hover:underline mt-2 inline-block" %>
+    </li>
+  <% end %>
+</ul>
+
+<p class="mt-6"><%= link_to "← Organismos", organisms_path, class: "text-blue-700 hover:underline" %></p>
