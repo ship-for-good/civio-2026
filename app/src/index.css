@@ -408,7 +408,11 @@ tbody tr {
   cursor: pointer;
 }
 
-tbody tr:hover { background: var(--civio-blue-muted); }
+tbody tr:hover,
+tbody tr.urgency-critical:hover,
+tbody tr.urgency-warning:hover,
+tbody tr.urgency-ok:hover,
+tbody tr.urgency-neutral:hover { background: var(--civio-blue-muted); }
 tbody tr:last-child { border-bottom: none; }
 
 /* Urgency left-border stripes + row backgrounds */
