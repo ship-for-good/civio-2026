@@ -154,11 +154,15 @@ func TestChat_verifySecondResultAccepted(t *testing.T) {
 }
 
 func TestChat_verifyRejected_returnsNotFound(t *testing.T) {
+	parent1 := int64(1)
+	parent2 := int64(2)
 	nodes := []graph.ExportNode{
-		{ID: 1, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones"},
+		{ID: 1, Title: "Portal", URL: "https://example.com/portal", Description: "inicio"},
+		{ID: 2, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones", ParentID: &parent1},
+		{ID: 3, Title: "Licitaciones", URL: "https://example.com/licitaciones", Description: "ofertas", ParentID: &parent2},
 	}
 	h := testHandlerWithVerifier(testGraph(nodes), func(string) ([]string, error) {
-		return []string{"contratos"}, nil
+		return []string{"contratos", "licitaciones"}, nil
 	}, func(string, string, string) (bool, string, error) {
 		return false, "Esta página trata sobre contratos, no sobre retribuciones.", nil
 	}, func(string, string, string, string) (string, error) {
@@ -180,8 +184,14 @@ func TestChat_verifyRejected_returnsNotFound(t *testing.T) {
 	if !strings.Contains(resp.Message, derechoAccesoURL) {
 		t.Errorf("message = %q, want derecho de acceso URL", resp.Message)
 	}
-	if resp.URL != derechoAccesoURL {
-		t.Errorf("url = %q, want %q", resp.URL, derechoAccesoURL)
+	if resp.URL != nodes[2].URL {
+		t.Errorf("url = %q, want last verified node url %q", resp.URL, nodes[2].URL)
+	}
+	if len(resp.Path) == 0 {
+		t.Fatal("path is empty, want breadcrumb for last verified node")
+	}
+	if resp.Path[len(resp.Path)-1].URL != nodes[2].URL {
+		t.Errorf("last path URL = %q, want %q", resp.Path[len(resp.Path)-1].URL, nodes[2].URL)
 	}
 	if resp.Hint == "" {
 		t.Error("hint is empty, want guidance text")

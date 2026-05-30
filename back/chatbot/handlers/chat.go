@@ -107,17 +107,23 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(results) > 0 {
-		last := results[len(results)-1].Node
-		hint := h.navigationHint(req.Question, last)
-		writeNotFound(w, notFoundMessage(explanation), hint)
+		hint := h.navigationHint(req.Question, node)
+		url := derechoAccesoURL
+		path := []pathStep{}
+		if node != nil {
+			url = node.URL
+			path = pathSteps(graph.BuildPath(node.ID, h.Graph.NodeByID))
+		}
+		writeNotFound(w, notFoundMessage(explanation), hint, url, path)
 		return
 	}
 
-	writeNotFound(w, msgNotFound, "")
+	writeNotFound(w, msgNotFound, "", derechoAccesoURL, []pathStep{})
 }
 
 // firstVerifiedResult tries up to the top 3 search results in order. It returns the
-// first node that passes verification, or false with the last rejection explanation.
+// first node that passes verification, or false with the last rejection explanation
+// and the last node that was verified.
 func (h *Handler) firstVerifiedResult(question string, results []graph.SearchResult) (*graph.ExportNode, string, bool) {
 	limit := len(results)
 	if limit > 3 {
@@ -125,11 +131,13 @@ func (h *Handler) firstVerifiedResult(question string, results []graph.SearchRes
 	}
 
 	var lastExplanation string
+	var lastNode *graph.ExportNode
 	for i := 0; i < limit; i++ {
 		node := results[i].Node
 		if node == nil {
 			continue
 		}
+		lastNode = node
 		matched, explanation, err := h.verifyResult(question, node.Title, node.Description)
 		if err != nil {
 			return node, "", true
@@ -139,7 +147,7 @@ func (h *Handler) firstVerifiedResult(question string, results []graph.SearchRes
 		}
 		lastExplanation = explanation
 	}
-	return nil, lastExplanation, false
+	return lastNode, lastExplanation, false
 }
 
 func notFoundMessage(explanation string) string {
@@ -161,13 +169,13 @@ func (h *Handler) navigationHint(question string, node *graph.ExportNode) string
 	return strings.TrimSpace(hint)
 }
 
-func writeNotFound(w http.ResponseWriter, message, hint string) {
+func writeNotFound(w http.ResponseWriter, message, hint, url string, path []pathStep) {
 	writeJSON(w, http.StatusOK, chatResponse{
 		Found:       false,
 		Message:     message,
 		Hint:        hint,
-		URL:         derechoAccesoURL,
-		Path:        []pathStep{},
+		URL:         url,
+		Path:        path,
 		MatchedNode: nil,
 	})
 }

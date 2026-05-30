@@ -1,0 +1,254 @@
+============================================================
+CONSULTA 1: Encuentra informacion directa
+============================================================
+Request:
+{
+  "question": "¿Dónde puedo ver la agenda institucional del ministro?"
+}
+
+Response:
+{
+  "found": true,
+  "message": "✅ Sí, esa información está disponible en el **Portal de Transparencia**.",
+  "hint": "",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/agendaAACC",
+  "path": [
+    {
+      "title": "Publicidad Activa",
+      "url": "https://transparencia.gob.es/publicidad-activa"
+    },
+    {
+      "title": "Publicidad activa por Materias",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias"
+    },
+    {
+      "title": "Publicidad activa por Materias: Altos Cargos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos"
+    },
+    {
+      "title": "Agenda de Altos Cargos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/agendaAACC"
+    }
+  ],
+  "matched_node": {
+    "title": "Agenda de Altos Cargos",
+    "description": "La agenda institucional es la recopilación, organizada cronológicamente, de las principales actividades públicas que mantienen en el ejercicio de su función las personas que tienen la condición de alto cargo. La información se irá actualizando regularmente. Consulte las agendas: Presidente del Gobierno Gobierno Fuente de los datos Presidencia del Gobierno Periodicidad de la publicación Diaria Criterio de ordenación Prelación en el Ministerio Formato --- En la agenda se recogen las principales actividades públicas, organizadas cronológicamente, que mantienen en el ejercicio de su función el Pr…",
+    "page_type": "leaf_static"
+  }
+}
+
+============================================================
+CONSULTA 2: Varios saltos hasta hoja
+============================================================
+Request:
+{
+  "question": "¿Cómo consulto las subvenciones concedidas por ministerios?"
+}
+
+Response:
+{
+  "found": false,
+  "message": "❌ Esta página trata específicamente sobre subvenciones a partidos políticos y gastos electorales de 2015, no sobre las subvenciones concedidas por ministerios en general que solicita el ciudadano.\n\n– Si no aparece la información, puedes solicitarla mediante el **derecho de acceso** en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica",
+  "hint": "💰 Para consultar las **subvenciones concedidas por ministerios**, necesitas salir de esta página, ya que esta solo muestra información sobre **partidos políticos**.\n\n– Busca en el menú principal del portal la sección de **\"Subvenciones y ayudas\"** o **\"Por materias\"**\n– Selecciona **\"Ministerios\"** o el ministerio específico que te interesa\n– Busca la opción **\"Bases de datos de subvenciones\"** o **\"Subvenciones concedidas\"** para ver un listado completo y filtrable por año, cantidad y beneficiario",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/tramites/subvenciones-partidos-politicos/historico/elecciones-grales-2015-resultados",
+  "path": [
+    {
+      "title": "Publicidad Activa",
+      "url": "https://transparencia.gob.es/publicidad-activa"
+    },
+    {
+      "title": "Publicidad activa por Materias",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias"
+    },
+    {
+      "title": "Publicidad activa por Materias: Contratos, Convenios y Subvenciones",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/tramites"
+    },
+    {
+      "title": "Subvenciones a partidos políticos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/tramites/subvenciones-partidos-politicos"
+    },
+    {
+      "title": "Histórico de subvenciones a partidos políticos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/tramites/subvenciones-partidos-politicos/historico"
+    },
+    {
+      "title": "Subvenciones a partidos políticos. Gastos electorales. Elecciones generales. Año 2015. Por resultados",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/tramites/subvenciones-partidos-politicos/historico/elecciones-grales-2015-resultados"
+    }
+  ],
+  "matched_node": null
+}
+
+============================================================
+CONSULTA 3: Caso altos cargos
+============================================================
+Request:
+{
+  "question": "¿Dónde puedo ver las retribuciones de los altos cargos?"
+}
+
+Response:
+{
+  "found": true,
+  "message": "✅ Sí, esa información está disponible en el **Portal de Transparencia**.",
+  "hint": "",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/obligaciones-age",
+  "path": [
+    {
+      "title": "Publicidad Activa",
+      "url": "https://transparencia.gob.es/publicidad-activa"
+    },
+    {
+      "title": "Publicidad activa por Materias",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias"
+    },
+    {
+      "title": "Publicidad activa por Materias: Altos Cargos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos"
+    },
+    {
+      "title": "Obligaciones de las personas que desempeñan altos cargos de la Administración General del Estado",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/obligaciones-age"
+    }
+  ],
+  "matched_node": {
+    "title": "Obligaciones de las personas que desempeñan altos cargos de la Administración General del Estado",
+    "description": "Obligaciones de las personas que desempeñan altos cargos de la Administración General del Estado — sección dentro de Publicidad activa categorizada según la Ley 19/2013, de 9 de diciembre en Publicidad Activa del Portal de Transparencia.",
+    "page_type": "leaf_static"
+  }
+}
+
+============================================================
+CONSULTA 4: Presupuestos con año especifico
+============================================================
+Request:
+{
+  "question": "¿Dónde está el presupuesto de 2023 del Ministerio de Sanidad?"
+}
+
+Response:
+{
+  "found": false,
+  "message": "❌ La página encontrada es de 2020, pero el ciudadano pregunta por los presupuestos de 2023. Además, no especifica información del Ministerio de Sanidad en particular, solo presupuestos generales del Estado.\n\n– Si no aparece la información, puedes solicitarla mediante el **derecho de acceso** en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica",
+  "hint": "📊 **Para encontrar el presupuesto de 2023 del Ministerio de Sanidad:**\n\n– En la página actual, busca un **menú o enlace que te permita cambiar el año** de 2020 a 2023 (normalmente aparece como un selector o filtro).\n\n– Una vez cambies a 2023, localiza el **Ministerio de Sanidad** en la lista de ministerios que aparecerá.\n\n– Si no encuentras estas opciones, ve al **menú principal del Portal de Transparencia** y busca la sección **\"Presupuestos\"** o **\"Información económica\"** para navegar directamente a los presupuestos de 2023.",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria/presupuestos-generales-estado/pge-gastos/gastos-ministerios-2020",
+  "path": [
+    {
+      "title": "Publicidad Activa",
+      "url": "https://transparencia.gob.es/publicidad-activa"
+    },
+    {
+      "title": "Publicidad activa por Materias",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias"
+    },
+    {
+      "title": "Publicidad activa por Materias: Información Económico-Presupuestaria",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria"
+    },
+    {
+      "title": "Presupuestos Generales del Estado",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria/presupuestos-generales-estado"
+    },
+    {
+      "title": "Presupuestos Generales del Estado. Gastos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria/presupuestos-generales-estado/pge-gastos"
+    },
+    {
+      "title": "Presupuestos Generales del Estado. Gastos. Año 2020",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria/presupuestos-generales-estado/pge-gastos/gastos-ministerios-2020"
+    }
+  ],
+  "matched_node": null
+}
+
+============================================================
+CONSULTA 5: No existe, derecho de acceso
+============================================================
+Request:
+{
+  "question": "¿Dónde se publica el inventario de naves espaciales del gobierno?"
+}
+
+Response:
+{
+  "found": false,
+  "message": "🔍 La página encontrada trata sobre la Presidencia del Gobierno y su estructura administrativa, pero no contiene información sobre inventarios de naves espaciales, que no es una función típica del gobierno español ni se publica en transparencia pública.\n\n– Si no aparece la información, puedes solicitarla mediante el **derecho de acceso** en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica",
+  "hint": "🛸 **Búsqueda de inventarios de bienes del gobierno**\n\nLamentablemente, el **inventario de naves espaciales** no es un documento que se publique en el Portal de Transparencia, ya que el gobierno español no dispone de naves espaciales propias.\n\nSin embargo, si busca **inventarios de bienes públicos** en general, puede:\n\n– Acceda a la sección **\"Bienes y patrimonio\"** del Portal de Transparencia\n– Busque el organismo específico que le interesa (ministerios, organismos públicos, etc.)\n– Consulte sus **informes de inventario de bienes muebles e inmuebles**\n\nSi tiene dudas sobre qué información específica necesita, puede escribir directamente al portal o contactar con el organismo público concreto que le interesa.",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/funciones/historico/xiv-legislatura/funciones-pg",
+  "path": [
+    {
+      "title": "Publicidad Activa",
+      "url": "https://transparencia.gob.es/publicidad-activa"
+    },
+    {
+      "title": "Publicidad activa por Materias",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias"
+    },
+    {
+      "title": "Publicidad activa por Materias: Organización y Empleo Público",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo"
+    },
+    {
+      "title": "Funciones",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/funciones"
+    },
+    {
+      "title": "Histórico de funciones",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/funciones/historico"
+    },
+    {
+      "title": "Funciones XIV Legislatura",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/funciones/historico/xiv-legislatura"
+    },
+    {
+      "title": "Presidencia del Gobierno",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/funciones/historico/xiv-legislatura/funciones-pg"
+    }
+  ],
+  "matched_node": null
+}
+
+============================================================
+CONSULTA 6: Consulta ambigua para verificacion LLM
+============================================================
+Request:
+{
+  "question": "Necesito datos economicos de cargos publicos"
+}
+
+Response:
+{
+  "found": true,
+  "message": "✅ Sí, esa información está disponible en el **Portal de Transparencia**.",
+  "hint": "",
+  "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones/retribuciones_anteriores",
+  "path": [
+    {
+      "title": "Publicidad Activa",
+      "url": "https://transparencia.gob.es/publicidad-activa"
+    },
+    {
+      "title": "Publicidad activa por Materias",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias"
+    },
+    {
+      "title": "Publicidad activa por Materias: Altos Cargos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos"
+    },
+    {
+      "title": "Retribuciones de altos cargos",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones"
+    },
+    {
+      "title": "Retribuciones de altos cargos. Años anteriores",
+      "url": "https://transparencia.gob.es/publicidad-activa/por-materias/altos-cargos/retribuciones/retribuciones_anteriores"
+    }
+  ],
+  "matched_node": {
+    "title": "Retribuciones de altos cargos. Años anteriores",
+    "description": "Retribuciones años anteriores — sección dentro de Retribuciones de altos cargos en Publicidad Activa del Portal de Transparencia.",
+    "page_type": "buscador_entry"
+  }
+}
+
