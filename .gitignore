@@ -1,0 +1,80 @@
+# ───────────────────────────────────────────────────────────────
+# civio-2026 — .gitignore raíz
+# Cubre: secretos, Python (skill/ETL), Node/Vite (web Lovable), OS, editores
+# ───────────────────────────────────────────────────────────────
+
+# === Secretos y entorno (NUNCA subir) ===
+.env
+.env.*
+!.env.example
+*.local
+secrets/
+*.pem
+*.key
+
+# === Python (skills/, ETL) ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Datos generados por el ETL (el demo SÍ se versiona; el real no)
+skills/transparencia-es/data/contratos.json
+*.zip
+*.atom
+
+# === Node / Vite / React (web Lovable) ===
+node_modules/
+web/node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+.cache/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Supabase local (Lovable Cloud)
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# === Sistemas operativos ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# === Editores / IDEs ===
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.history/
+
+# === Logs y temporales ===
+*.log
+logs/
+tmp/
+.tmp/
