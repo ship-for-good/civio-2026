@@ -1,156 +1,230 @@
-# Ship for Good · 1st Edition
+# Team Verde — Transparencia Graph Crawler
 
-## Team Verde — Transparencia Graph Crawler
+**Ship for Good 2026 · [Civio](https://civio.es/) · OPP-1a**
 
-**Problema:** El portal de transparencia es un directorio de enlaces difícil de navegar; el conocimiento de dónde buscar es tácito (OPP-1a).
+## Problema
 
-**Solución:** Crawler en Go que construye el grafo de Publicidad Activa en local (SQLite + JSON exportable).
+El [Portal de Transparencia](https://transparencia.gob.es/publicidad-activa) es un directorio jerárquico de enlaces difícil de explorar: el conocimiento de dónde buscar cada tipo de información es **tácito** (solo lo tiene quien conoce la administración). Civio y los ciudadanos pierden tiempo navegando 8 niveles de profundidad sin saber qué hay en cada sección.
 
-**Documentación:** [TRANSPARENCIA-CRAWLER.md](./TRANSPARENCIA-CRAWLER.md)
+## Solución
 
-**Stack:** Go, SQLite, Docker
-
----
-
-think · build · help
-
-**May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/)**
-
-**Official website:** [shipforgood.org/es](https://www.shipforgood.org/es)
-
-A hackathon with purpose: helping social organizations and benefiting society
-through technology. No smoke. No prizes. Just impact.
+Crawler en Go que descubre automáticamente el **grafo de Publicidad Activa**, enriquece cada nodo con descripción, timestamps, contenidos hijos y (opcionalmente) datos extraídos con Playwright, y exporta **JSON** listo para una UI de exploración.
 
 ---
 
-## The Challenge
+## Prerrequisitos
 
-In this first edition we work with **[Civio](https://civio.es/)**, an independent
-foundation that fights institutional opacity and uses journalism, technology and
-open data to give citizens access to information.
+| Requisito | Versión |
+|-----------|---------|
+| **Docker** + **Docker Compose** | Recomendado (forma principal de ejecutar) |
+| **Go** | 1.23+ (solo desarrollo local) |
+| **Git** | Para clonar el repo |
 
-The challenges we work on are theirs. The impact belongs to all of us.
-
----
-
-## Challenge Discovery
-
-More info: [challenge-discovery.md](./challenge-discovery.md)
-
-## Lovable Tokens
-
-More info: [lovable-tokens.md](./lovable-tokens.md)
-
-## Cursor Tokens
-
-More info: [cursor-tokens.md](./cursor-tokens.md)
-
-## Schedule
-
-### Friday, May 29th
-
-| Time | Activity |
-|------|----------|
-| 17:45 | Check-in |
-| 18:00 | Opening and discovery |
-| 21:00 | Closing |
-
-### Saturday, May 30th
-
-| Time | Activity |
-|------|----------|
-| 09:30 | Check-in starts |
-| 10:00 | Opening |
-| 10:30 | Optional talk - AI augmented development |
-| 15:00 | Optional talk - Debate "The ethics of Artificial Intelligence" with Civio |
-| 21:00 | Closing |
+No se requieren API keys ni credenciales: todo el contenido es público.
 
 ---
 
-## Slack Channels
-
-- announcements: https://ship-for-good.slack.com/archives/C0B1GNT77QB
-- q&a (questions for the hackathon organizers): https://ship-for-good.slack.com/archives/C0B1M3UCQS2
-- ask-civio (ask the people at Civil about the problem): https://ship-for-good.slack.com/archives/C0B6YE9GYSG
-- tech-support (questions and help on technical topics): https://ship-for-good.slack.com/archives/C0B6RERAELV
-
----
-
-## Wi-Fi
-
-Use the 42 Barcelona network:
-
-- UID: `42barcelona`
-- PASS: `bienvenido42BCN`
-
----
-
-## Team Branches
-
-Each team works on their own dedicated branch:
-
-| Team | Branch |
-|------|--------|
-| Delfos | `team-delfos` |
-| IT_Power | `team-it-power` |
-| Team Aina | `team-aina` |
-| Team Azul | `team-azul` |
-| Team Verde | `team-verde` |
-| Team Rojo | `team-rojo` |
-| Team Amarillo | `team-amarillo` |
-| Team Naranja | `team-naranja` |
-| Team Morado | `team-morado` |
-| Team Rosa | `team-rosa` |
-| Team Turquesa | `team-turquesa` |
-
-To get started:
+## Instalación
 
 ```bash
-git clone https://github.com/ship-for-good/civio-2026 
+git clone https://github.com/ship-for-good/civio-2026
 cd civio-2026
-git checkout team-your-team-name
+git checkout team-verde
+
+# Build imágenes Docker
+docker compose build
+```
+
+Desarrollo local (opcional):
+
+```bash
+go mod download
+go test ./...
+go build -o bin/transparencia ./cmd/transparencia
 ```
 
 ---
 
-## Repository Docs
+## Variables de entorno
 
-| Document | Description |
-|----------|-------------|
-| [how-to-submit-project.md](./how-to-submit-project.md) | Delivery rules, README requirements and demo format |
-| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | How to work in this repo, branch rules and commit conventions |
-| [AUTHORSHIP.md](./AUTHORSHIP.md) | How projects will remain open source and usable by Civio |
+| Variable | Descripción | Obligatoria |
+|----------|-------------|-------------|
+| `DB_PATH` | Ruta SQLite en contenedor (referencia; la CLI usa `--db`) | No |
 
----
-
-## Code of Conduct
-
-All attendees, speakers, sponsors and volunteers must accept our
-[Code of Conduct](https://softwarecrafters.barcelona/coc.html).
-The organization will enforce it throughout the event.
-We count on everyone's cooperation to ensure a safe environment.
+No hay variables sensibles. La ruta de la base de datos se pasa por flag `--db` (default: `data/graph.db`).
 
 ---
 
-## Partners & Sponsors
+## Uso rápido (demo)
 
-**Organized with:**
+```bash
+# 1. Crawl estático del árbol (~510 nodos, ~3 min)
+docker compose run --rm crawler crawl --db /data/graph.db --rate 3 --force
 
-- [Civio](https://civio.es/) — challenge owner and partner organization
-- [42 Barcelona](https://www.42barcelona.com/es/) — venue
-- [Software Crafters Barcelona](https://softwarecrafters.barcelona/) — community
+# 2. Scrape dinámico con Playwright (~39 nodos, ~3 min, 5 workers)
+docker compose run --rm crawler-playwright scrape-dynamic \
+  --db /data/graph.db \
+  --types leaf_dynamic,buscador_entry \
+  --workers 5 --force
 
-**Sponsors:** [Manfred](https://www.getmanfred.com/) ·
-[QualityClouds](https://qualityclouds.ai/) ·
-[Plain Concepts](https://www.plainconcepts.com/) ·
-[Next Digital](https://www.nextdigital.es/)
+# 3. Export JSON para front
+docker compose run --rm crawler export --db /data/graph.db --out /data/graph.json
 
-**Supporting:** [Lovable](https://lovable.dev/) ·
-[Cursor](https://cursor.com/) ·
-[Falca](https://falca.com/)
+# 4. Ver estadísticas
+docker compose run --rm crawler stats --db /data/graph.db
+```
+
+**Salida:** `./data/graph.db` (SQLite) y `./data/graph.json` (~1,2 MB, 510 nodos, 550 aristas).
+
+Servir el JSON en local para el equipo de front:
+
+```bash
+cd data && python3 -m http.server 8080
+# → http://localhost:8080/graph.json
+```
 
 ---
 
-## FAQ
+## Tecnologías principales
 
-[Ship for Good FAQ](https://www.shipforgood.org/es#faq)
+| Capa | Stack |
+|------|-------|
+| Lenguaje | **Go 1.23** |
+| CLI | Cobra |
+| HTTP / parsing | net/http, goquery |
+| Base de datos | SQLite (`modernc.org/sqlite`, sin CGO) |
+| Scraping dinámico | Playwright (`playwright-go`) + Chromium |
+| Contenedores | Docker multi-stage (Alpine + Playwright Noble) |
+
+---
+
+## Arquitectura
+
+```
+transparencia.gob.es
+        │
+        ▼
+┌───────────────────┐     ┌────────────────────────┐
+│  crawler (HTTP)   │     │ crawler-playwright     │
+│  BFS + sidebar    │     │ scrape-dynamic         │
+│  goquery          │     │ Chromium + goroutines  │
+└─────────┬─────────┘     └───────────┬────────────┘
+          │                             │
+          └──────────┬──────────────────┘
+                     ▼
+              ┌─────────────┐
+              │  graph.db   │  SQLite (nodes, edges, crawl_runs)
+              └──────┬──────┘
+                     │ export
+                     ▼
+              ┌─────────────┐
+              │ graph.json  │  → UI / front (pendiente)
+              └─────────────┘
+```
+
+**Dos fases desacopladas:**
+
+1. **Crawl HTTP** — ~90% del árbol es HTML estático (sidebar AEM). BFS con dedup por URL, rate limit y skip incremental (`ETag` / `Last-Modified` / hash).
+2. **Scrape dinámico** — nodos `leaf_dynamic` y `buscador_entry` renderizados con Playwright; extracción de tablas, texto e iframes; 5 workers en paralelo.
+
+Documentación técnica detallada: **[TRANSPARENCIA-CRAWLER.md](./TRANSPARENCIA-CRAWLER.md)**
+
+---
+
+## Decisiones técnicas clave
+
+| Decisión | Motivo |
+|----------|--------|
+| **Go + SQLite** | Binario único, sin CGO, persistencia local embebida, fácil de contenerizar |
+| **Sidebar AEM como fuente del grafo** | Cada página incluye el árbol completo de navegación en HTML estático |
+| **Dos imágenes Docker** | Crawl HTTP ligero (~15 MB) vs Playwright pesado (~1,5 GB) solo cuando hace falta |
+| **Goroutines en scrape-dynamic** | ~4,5× más rápido (39 páginas: 17 min → 3,5 min con 5 workers) |
+| **JSON como contrato con front** | UI desacoplada; consume `graph.json` sin depender del crawler |
+| **Skip incremental** | Re-crawls baratos comparando `ETag`, `Last-Modified` y `html_hash` |
+
+---
+
+## Modelo de datos (resumen)
+
+Cada **nodo** incluye: `url`, `title`, `description`, `page_type`, `depth`, timestamps (`content_updated_at`, `http_last_modified`, `scraped_at`), `child_contents` (temas hijos) y opcionalmente `dynamic_content` (tablas/texto Playwright).
+
+Tipos de página: `navigation`, `leaf_static`, `leaf_dynamic`, `buscador_entry`, `external`.
+
+Ver esquema completo y ejemplos JSON en [TRANSPARENCIA-CRAWLER.md](./TRANSPARENCIA-CRAWLER.md).
+
+---
+
+## Comandos CLI
+
+| Comando | Servicio Docker | Descripción |
+|---------|-----------------|-------------|
+| `crawl` | `crawler` | BFS del árbol de Publicidad Activa |
+| `stats` | `crawler` | Estadísticas del grafo |
+| `export` | `crawler` | Exporta `graph.json` |
+| `enrich` | `crawler` | Recalcula `child_contents` en nodos padre |
+| `scrape-dynamic` | `crawler-playwright` | Playwright para páginas dinámicas |
+
+Flags relevantes: `--db`, `--rate`, `--force`, `--skip-unchanged`, `--workers` (scrape-dynamic), `--types`.
+
+---
+
+## Roadmap
+
+| Fase | Estado | Descripción |
+|------|--------|-------------|
+| Grafo de navegación + JSON | **Hecho** | ~510 nodos, descripciones, child_contents |
+| Scrape dinámico Playwright | **Hecho** | 39 nodos, tablas/texto, workers paralelos |
+| UI de exploración | Pendiente | Consumir `graph.json` |
+| Scrape buscador SSR | Pendiente | `servicios-buscador/buscar.htm?pag=N` (~900k registros) |
+| Scrape iframes del buscador | Pendiente | Contenido real de `buscador_entry` |
+| Detección de cambios (OPP-1b) | Pendiente | Diff por `html_hash` / timestamps |
+
+---
+
+## Demo en vivo
+
+1. `docker compose run --rm crawler stats --db /data/graph.db` — mostrar 510 nodos.
+2. Abrir `data/graph.json` — nodo con `description`, `child_contents`, `dynamic_content`.
+3. (Opcional) Re-ejecutar `scrape-dynamic --limit 3` en una página concreta.
+
+El proyecto **ejecuta y produce datos reales** del portal de transparencia; no es mockup.
+
+---
+
+## Estructura del repo
+
+```
+cmd/transparencia/          # CLI (crawl, export, scrape-dynamic, …)
+internal/crawler/           # BFS HTTP, fetcher, clasificador
+internal/dynamic/           # Playwright + extracción
+internal/graph/             # SQLite, export JSON
+internal/parser/            # Sidebar AEM, URLs, descripciones
+internal/models/            # Tipos de dominio
+data/                       # graph.db, graph.json (gitignored)
+Dockerfile                  # Imagen ligera HTTP
+Dockerfile.playwright       # Imagen con Chromium
+docker-compose.yml
+TRANSPARENCIA-CRAWLER.md    # Documentación técnica extendida
+```
+
+---
+
+# Ship for Good · Información del evento
+
+**May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/) · [shipforgood.org/es](https://www.shipforgood.org/es)**
+
+| Documento | Descripción |
+|-----------|-------------|
+| [challenge-discovery.md](./challenge-discovery.md) | Contexto Civio y oportunidades OPP-1a/1b, OPP-2 |
+| [how-to-submit-project.md](./how-to-submit-project.md) | Reglas de entrega del hackathon |
+| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | Trabajo en rama `team-verde` |
+| [AUTHORSHIP.md](./AUTHORSHIP.md) | Licencia MIT, reuso por Civio |
+
+**Rama del equipo:** `team-verde`
+
+```bash
+git clone https://github.com/ship-for-good/civio-2026
+cd civio-2026 && git checkout team-verde
+```
+
+**Slack:** [announcements](https://ship-for-good.slack.com/archives/C0B1GNT77QB) · [ask-civio](https://ship-for-good.slack.com/archives/C0B6YE9GYSG) · [tech-support](https://ship-for-good.slack.com/archives/C0B6RERAELV)

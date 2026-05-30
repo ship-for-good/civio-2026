@@ -21,9 +21,12 @@ type Config struct {
 }
 
 type Crawler struct {
-	fetcher *Fetcher
-	store   *graph.Store
-	cfg     Config
+	fetcher      *Fetcher
+	store        *graph.Store
+	cfg          Config
+	sedeResolved map[string]sedeChainResult
+	sedeMu       sync.Mutex
+	sedePages    int
 }
 
 func New(store *graph.Store, cfg Config) *Crawler {
@@ -38,9 +41,10 @@ func New(store *graph.Store, cfg Config) *Crawler {
 	}
 
 	return &Crawler{
-		fetcher: NewFetcher(cfg.RateLimit),
-		store:   store,
-		cfg:     cfg,
+		fetcher:      NewFetcher(cfg.RateLimit),
+		store:        store,
+		cfg:          cfg,
+		sedeResolved: make(map[string]sedeChainResult),
 	}
 }
 
@@ -120,7 +124,7 @@ func RunBFS(ctx context.Context, store *graph.Store, cfg Config) error {
 			continue
 		}
 
-		newURLs, err := c.ingestPage(result, htmlHash)
+		newURLs, err := c.ingestPage(ctx, result, htmlHash)
 		if err != nil {
 			mu.Lock()
 			errors++
@@ -163,7 +167,7 @@ func collectNavURLs(html []byte) []string {
 	return urls
 }
 
-func (c *Crawler) ingestPage(result *FetchResult, htmlHash string) ([]string, error) {
+func (c *Crawler) ingestPage(ctx context.Context, result *FetchResult, htmlHash string) ([]string, error) {
 	pageURL := result.URL
 	html := result.Body
 
@@ -244,6 +248,8 @@ func (c *Crawler) ingestPage(result *FetchResult, htmlHash string) ([]string, er
 	for _, link := range allLinks {
 		toVisit = append(toVisit, link.URL)
 	}
+
+	c.followSedeLinks(ctx, nodeID, title, html, pageType)
 
 	return toVisit, nil
 }

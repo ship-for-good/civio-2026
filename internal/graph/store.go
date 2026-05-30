@@ -196,10 +196,11 @@ func (s *Store) scanNode(row *sql.Row) (*models.Node, error) {
 	var dynamicHash sql.NullString
 	var dynamicScrapedAt sql.NullString
 	var scrapedAt sql.NullString
+	var htmlHash sql.NullString
 
 	err := row.Scan(
 		&n.ID, &n.URL, &n.Path, &n.Title, &n.Description, &n.Depth, &pageType, &parentID,
-		&n.HTMLHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &childContents,
+		&htmlHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &childContents,
 		&dynamicContent, &dynamicHash, &dynamicScrapedAt, &scrapedAt,
 	)
 	if err == sql.ErrNoRows {
@@ -217,6 +218,9 @@ func (s *Store) scanNode(row *sql.Row) (*models.Node, error) {
 	n.HTTPLastModified = parseTime(httpLastModified)
 	if httpEtag.Valid {
 		n.HTTPEtag = httpEtag.String
+	}
+	if htmlHash.Valid {
+		n.HTMLHash = htmlHash.String
 	}
 	if childContents.Valid {
 		n.ChildContents = parseChildContents(childContents.String)
@@ -338,9 +342,10 @@ FROM nodes ORDER BY depth, path
 		var dynamicHash sql.NullString
 		var dynamicScrapedAt sql.NullString
 		var scrapedAt sql.NullString
+		var htmlHash sql.NullString
 		if err := rows.Scan(
 			&n.ID, &n.URL, &n.Path, &n.Title, &n.Description, &n.Depth, &pageType, &parentID,
-			&n.HTMLHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &childContents,
+			&htmlHash, &contentUpdatedAt, &httpLastModified, &httpEtag, &childContents,
 			&dynamicContent, &dynamicHash, &dynamicScrapedAt, &scrapedAt,
 		); err != nil {
 			return nil, err
@@ -353,6 +358,9 @@ FROM nodes ORDER BY depth, path
 		n.HTTPLastModified = parseTime(httpLastModified)
 		if httpEtag.Valid {
 			n.HTTPEtag = httpEtag.String
+		}
+		if htmlHash.Valid {
+			n.HTMLHash = htmlHash.String
 		}
 		if childContents.Valid {
 			n.ChildContents = parseChildContents(childContents.String)
