@@ -15,7 +15,7 @@
     <li class="bg-white border border-gray-200 rounded-lg p-4">
       <p class="font-medium"><%= resource.subtema_label %> · <%= resource.materia_label %></p>
       <% if resource.organismo_code.present? %>
-        <p class="text-sm text-gray-600"><%= resource.organismo_code.upcase %> · <%= resource.tipo&.upcase %></p>
+        <p class="text-sm text-gray-600"><%= organism_label(resource.organismo_code) %> · <%= resource.tipo&.upcase %></p>
       <% end %>
       <p class="text-xs text-gray-500 mt-1"><%= resource.vigencia %><%= " · #{resource.periodo}" if resource.periodo.present? %></p>
       <%= link_to "Abrir en transparencia.gob.es", resource.url, target: "_blank", rel: "noopener", class: "text-sm text-blue-700 hover:underline mt-2 inline-block" %>

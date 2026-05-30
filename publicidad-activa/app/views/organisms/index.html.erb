@@ -3,9 +3,12 @@
 <h1 class="text-2xl font-semibold mb-4">Organismos</h1>
 
 <ul class="space-y-2">
-  <% @organisms.each do |code, count| %>
+  <% @organisms.each do |organism| %>
     <li>
-      <%= link_to "#{code.upcase} (#{count})", organism_path(code), class: "text-blue-700 hover:underline" %>
+      <%= link_to organism_path(organism[:code]), class: "text-blue-700 hover:underline" do %>
+        <%= organism[:label] %>
+        <span class="text-gray-500">(<%= organism[:count] %>)</span>
+      <% end %>
     </li>
   <% end %>
 </ul>

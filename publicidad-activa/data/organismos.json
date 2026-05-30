@@ -1,62 +1,233 @@
 {
-  "pg": {
-    "label": "Presidencia del Gobierno",
-    "description": "Moncloa, Vicepresidencias y gabinete.",
-    "icon": "building"
+  "aepd": {
+    "label": "Agencia Española de Protección de Datos"
   },
-  "mhac": {
-    "label": "Ministerio de Hacienda",
-    "description": "Presupuestos, tributos y financiación territorial.",
-    "icon": "coins"
+  "aipi": {
+    "label": "Agencia Española de Propiedad Industrial"
   },
-  "mjus": {
-    "label": "Ministerio de Justicia",
-    "description": "Normativa, registros y administración de justicia.",
-    "icon": "scale"
+  "airef": {
+    "label": "Autoridad Independiente de Responsabilidad Fiscal"
   },
-  "mint": {
-    "label": "Ministerio del Interior",
-    "description": "Seguridad, Guardia Civil, Policía Nacional y prisiones.",
-    "icon": "shield"
+  "apd": {
+    "label": "Agencia de Protección de Datos"
   },
-  "mdef": {
-    "label": "Ministerio de Defensa",
-    "description": "Fuerzas Armadas, industria de defensa y cooperación internacional.",
-    "icon": "star"
+  "cnmc": {
+    "label": "Comisión Nacional de los Mercados y la Competencia"
   },
-  "msssi": {
-    "label": "Ministerio de Sanidad",
-    "description": "Salud pública, sanidad exterior y política farmacéutica.",
-    "icon": "heart"
+  "cnmv": {
+    "label": "Comisión Nacional del Mercado de Valores"
   },
-  "mecd": {
-    "label": "Educación y FP",
-    "description": "Educación, formación profesional y universidades.",
-    "icon": "book"
+  "csn": {
+    "label": "Consejo de Seguridad Nuclear"
   },
-  "mefp": {
-    "label": "Trabajo y Economía Social",
-    "description": "Empleo, relaciones laborales y economía social.",
-    "icon": "users"
+  "ctbg": {
+    "label": "Comisión del Mercado de Tabacos y Grupo"
+  },
+  "maec": {
+    "label": "Asuntos Exteriores y UE",
+    "description": "Diplomacia, Unión Europea y cooperación internacional.",
+    "icon": "flag"
+  },
+  "magrama": {
+    "label": "Ministerio de Agricultura, Alimentación y Medio Ambiente"
   },
   "mapa": {
     "label": "Agricultura, Pesca y Alimentación",
     "description": "Política agrícola, pesca y cadena alimentaria.",
     "icon": "leaf"
   },
-  "minetad": {
-    "label": "Transición Ecológica",
-    "description": "Medio ambiente, energía y cambio climático.",
-    "icon": "globe"
+  "mapama": {
+    "label": "Ministerio de Agricultura, Alimentación y Medio Ambiente"
+  },
+  "mauc": {
+    "label": "Ministerio de Administraciones Públicas"
+  },
+  "mcin": {
+    "label": "Ministerio de Ciencia e Innovación"
+  },
+  "mclt": {
+    "label": "Ministerio de Cultura"
+  },
+  "mcnu": {
+    "label": "Ministerio de Ciencia e Innovación"
+  },
+  "mcsm": {
+    "label": "Ministerio de Sanidad, Consumo y Bienestar Social"
+  },
+  "mcud": {
+    "label": "Ministerio de Cultura y Deporte"
+  },
+  "mdca": {
+    "label": "Ministerio de Cultura y Deporte"
+  },
+  "mdef": {
+    "label": "Ministerio de Defensa",
+    "description": "Fuerzas Armadas, industria de defensa y cooperación internacional.",
+    "icon": "star"
+  },
+  "mdsa": {
+    "label": "Ministerio de Sanidad"
+  },
+  "mecd": {
+    "label": "Educación y FP",
+    "description": "Educación, formación profesional y universidades.",
+    "icon": "book"
+  },
+  "mece": {
+    "label": "Ministerio de Economía y Competitividad"
+  },
+  "mecm": {
+    "label": "Ministerio de Consumo"
+  },
+  "meco": {
+    "label": "Ministerio de Economía y Competitividad"
+  },
+  "mefd": {
+    "label": "Ministerio de Educación y Formación Profesional"
+  },
+  "mefp": {
+    "label": "Trabajo y Economía Social",
+    "description": "Empleo, relaciones laborales y economía social.",
+    "icon": "users"
+  },
+  "metd": {
+    "label": "Ministerio de Industria, Comercio y Turismo"
+  },
+  "meyss": {
+    "label": "Ministerio de Empleo y Seguridad Social"
   },
   "mfom": {
     "label": "Transportes y Movilidad",
     "description": "Infraestructuras, movilidad y vivienda.",
     "icon": "train"
   },
-  "maec": {
-    "label": "Asuntos Exteriores y UE",
-    "description": "Diplomacia, Unión Europea y cooperación internacional.",
-    "icon": "flag"
+  "mhac": {
+    "label": "Ministerio de Hacienda",
+    "description": "Presupuestos, tributos y financiación territorial.",
+    "icon": "coins"
+  },
+  "mhfp": {
+    "label": "Ministerio de Hacienda y Función Pública"
+  },
+  "mict": {
+    "label": "Ministerio de Industria, Comercio y Turismo"
+  },
+  "migd": {
+    "label": "Ministerio de Igualdad"
+  },
+  "mineco": {
+    "label": "Ministerio de Economía"
+  },
+  "minetad": {
+    "label": "Transición Ecológica",
+    "description": "Medio ambiente, energía y cambio climático.",
+    "icon": "globe"
+  },
+  "minetur": {
+    "label": "Ministerio de Industria, Energía y Turismo"
+  },
+  "minhap": {
+    "label": "Ministerio de Hacienda y Administraciones Públicas"
+  },
+  "ministeriossuprimidos": {
+    "label": "Ministerios suprimidos"
+  },
+  "mint": {
+    "label": "Ministerio del Interior",
+    "description": "Seguridad, Guardia Civil, Policía Nacional y prisiones.",
+    "icon": "shield"
+  },
+  "mism": {
+    "label": "Ministerio de Inclusión, Seguridad Social y Migraciones"
+  },
+  "mitu": {
+    "label": "Ministerio de Industria y Turismo"
+  },
+  "mjui": {
+    "label": "Ministerio de Justicia e Interior"
+  },
+  "mjus": {
+    "label": "Ministerio de Justicia",
+    "description": "Normativa, registros y administración de justicia.",
+    "icon": "scale"
+  },
+  "mpat": {
+    "label": "Ministerio de Patrimonio"
+  },
+  "mpci": {
+    "label": "Ministerio de la Presidencia, Relaciones con las Cortes y Memoria Democrática"
+  },
+  "mpcm": {
+    "label": "Ministerio de la Presidencia"
+  },
+  "mpjc": {
+    "label": "Ministerio de la Presidencia, Justicia y Relaciones con las Cortes"
+  },
+  "mpr": {
+    "label": "Ministerio de la Presidencia"
+  },
+  "mpt": {
+    "label": "Ministerio de Política Territorial y Función Pública"
+  },
+  "mscb": {
+    "label": "Ministerio de Sanidad, Consumo y Bienestar Social"
+  },
+  "msnd": {
+    "label": "Ministerio de Sanidad"
+  },
+  "msssi": {
+    "label": "Ministerio de Sanidad",
+    "description": "Salud pública, sanidad exterior y política farmacéutica.",
+    "icon": "heart"
+  },
+  "mtdf": {
+    "label": "Ministerio de Transformación Digital y de la Función Pública"
+  },
+  "mtec": {
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+  },
+  "mted": {
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+  },
+  "mtes": {
+    "label": "Ministerio para la Transición Ecológica y el Reto Demográfico"
+  },
+  "mtfp": {
+    "label": "Ministerio de Trabajo y Previsión Social"
+  },
+  "mtma": {
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+  },
+  "mtmd": {
+    "label": "Ministerio de Transición Demográfica"
+  },
+  "mtms": {
+    "label": "Ministerio de Transportes, Movilidad y Agenda Urbana"
+  },
+  "mtrm": {
+    "label": "Ministerio de Transportes y Movilidad"
+  },
+  "muni": {
+    "label": "Ministerio de Universidades"
+  },
+  "mvau": {
+    "label": "Ministerio de Vivienda y Agenda Urbana"
+  },
+  "pg": {
+    "label": "Presidencia del Gobierno",
+    "description": "Moncloa, Vicepresidencias y gabinete.",
+    "icon": "building"
+  },
+  "vdsa": {
+    "label": "Vicepresidencia del Gobierno"
+  },
+  "vetd": {
+    "label": "Vicepresidencia de Transición Ecológica"
+  },
+  "vpcm": {
+    "label": "Vicepresidencia del Gobierno"
+  },
+  "vted": {
+    "label": "Vicepresidencia de Transición Ecológica y Demográfica"
   }
 }
