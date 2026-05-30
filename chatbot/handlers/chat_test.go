@@ -22,8 +22,15 @@ func testGraph(nodes []graph.ExportNode) *graph.Graph {
 }
 
 func testHandler(g *graph.Graph, keywords KeywordExtractor) *Handler {
+	return testHandlerWithVerifier(g, keywords, func(string, string, string) (bool, string, error) {
+		return true, "", nil
+	})
+}
+
+func testHandlerWithVerifier(g *graph.Graph, keywords KeywordExtractor, verify ResultVerifier) *Handler {
 	h := New(g)
 	h.extractKeywords = keywords
+	h.verifyResult = verify
 	return h
 }
 
@@ -80,19 +87,10 @@ func TestChat_foundResult(t *testing.T) {
 	}
 }
 
-func TestChat_notFound_returnsDerechoAcceso(t *testing.T) {
-	parent2 := int64(2)
+func TestChat_notFound_returnsFixedDerechoAcceso(t *testing.T) {
 	nodes := []graph.ExportNode{
 		{ID: 1, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones"},
-		{ID: 2, Title: "Derecho de acceso", URL: "https://transparencia.gob.es/derecho-acceso"},
-		{
-			ID:       3,
-			Title:    "Solicite información pública",
-			URL:      "https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica",
-			ParentID: &parent2,
-		},
 	}
-	wantURL := nodes[2].URL
 	h := testHandler(testGraph(nodes), func(string) ([]string, error) {
 		return []string{"meteorología", "clima"}, nil
 	})
@@ -106,11 +104,47 @@ func TestChat_notFound_returnsDerechoAcceso(t *testing.T) {
 	if resp.Found {
 		t.Fatal("found = true, want false")
 	}
-	if resp.URL != wantURL {
-		t.Errorf("url = %q, want derecho de acceso node %q", resp.URL, wantURL)
+	if resp.URL != derechoAccesoURL {
+		t.Errorf("url = %q, want %q", resp.URL, derechoAccesoURL)
+	}
+	if !strings.Contains(resp.Message, derechoAccesoURL) {
+		t.Errorf("message = %q, want URL in message", resp.Message)
+	}
+	if len(resp.Path) != 0 {
+		t.Errorf("path = %+v, want empty", resp.Path)
 	}
 	if resp.MatchedNode != nil {
 		t.Errorf("matched_node = %+v, want null", resp.MatchedNode)
+	}
+}
+
+func TestChat_verifyRejected_returnsNotFound(t *testing.T) {
+	nodes := []graph.ExportNode{
+		{ID: 1, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones"},
+	}
+	h := testHandlerWithVerifier(testGraph(nodes), func(string) ([]string, error) {
+		return []string{"contratos"}, nil
+	}, func(string, string, string) (bool, string, error) {
+		return false, "Esta página trata sobre contratos, no sobre retribuciones.", nil
+	})
+
+	rec := postChat(t, h, `{"question":"¿Cuáles son las retribuciones de los altos cargos?"}`)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200; body: %s", rec.Code, rec.Body.String())
+	}
+
+	resp := decodeChatResponse(t, rec)
+	if resp.Found {
+		t.Fatal("found = true, want false after verification rejection")
+	}
+	if !strings.Contains(resp.Message, "retribuciones") {
+		t.Errorf("message = %q, want LLM explanation", resp.Message)
+	}
+	if !strings.Contains(resp.Message, derechoAccesoURL) {
+		t.Errorf("message = %q, want derecho de acceso URL", resp.Message)
+	}
+	if resp.URL != derechoAccesoURL {
+		t.Errorf("url = %q, want %q", resp.URL, derechoAccesoURL)
 	}
 }
 

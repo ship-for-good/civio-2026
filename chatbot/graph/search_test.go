@@ -4,22 +4,22 @@ import (
 	"testing"
 )
 
-func testFixture(nodes []ExportNode) ([]SearchEntry, map[int64]*ExportNode) {
+func testNodeByID(nodes []ExportNode) map[int64]*ExportNode {
 	nodeByID := make(map[int64]*ExportNode, len(nodes))
 	for i := range nodes {
 		nodeByID[nodes[i].ID] = &nodes[i]
 	}
-	return BuildIndex(nodes), nodeByID
+	return nodeByID
 }
 
-func TestSearch_exactTitleMatch(t *testing.T) {
+func TestTraverseSearch_exactTitleMatch(t *testing.T) {
 	nodes := []ExportNode{
 		{ID: 1, Title: "Retribuciones de Altos Cargos", Description: ""},
 		{ID: 2, Title: "Derecho de acceso", Description: "Formulario de solicitud"},
 	}
-	index, nodeByID := testFixture(nodes)
+	nodeByID := testNodeByID(nodes)
 
-	results := Search([]string{"retribuciones", "altos", "cargos"}, index, nodeByID)
+	results := TraverseSearch([]string{"retribuciones", "altos", "cargos"}, nodeByID)
 
 	if len(results) != 1 {
 		t.Fatalf("len(results) = %d, want 1", len(results))
@@ -35,7 +35,7 @@ func TestSearch_exactTitleMatch(t *testing.T) {
 	}
 }
 
-func TestSearch_partialDescriptionMatch(t *testing.T) {
+func TestTraverseSearch_partialDescriptionMatch(t *testing.T) {
 	nodes := []ExportNode{
 		{
 			ID:          10,
@@ -44,9 +44,9 @@ func TestSearch_partialDescriptionMatch(t *testing.T) {
 		},
 		{ID: 11, Title: "Altos Cargos", Description: "Retribuciones y bienes"},
 	}
-	index, nodeByID := testFixture(nodes)
+	nodeByID := testNodeByID(nodes)
 
-	results := Search([]string{"subvenciones"}, index, nodeByID)
+	results := TraverseSearch([]string{"subvenciones"}, nodeByID)
 
 	if len(results) != 1 {
 		t.Fatalf("len(results) = %d, want 1", len(results))
@@ -59,17 +59,81 @@ func TestSearch_partialDescriptionMatch(t *testing.T) {
 	}
 }
 
-func TestSearch_noResults(t *testing.T) {
+func TestTraverseSearch_noResults(t *testing.T) {
 	nodes := []ExportNode{
 		{ID: 1, Title: "Retribuciones", Description: "Altos cargos del Estado"},
 		{ID: 2, Title: "Contratos", Description: "Adjudicaciones públicas"},
 	}
-	index, nodeByID := testFixture(nodes)
+	nodeByID := testNodeByID(nodes)
 
-	results := Search([]string{"meteorología", "clima"}, index, nodeByID)
+	results := TraverseSearch([]string{"meteorología", "clima"}, nodeByID)
 
 	if len(results) != 0 {
 		t.Fatalf("len(results) = %d, want 0; got %+v", len(results), results)
+	}
+}
+
+func TestTraverseSearch_prefersLeafOverIntermediate(t *testing.T) {
+	parent1 := int64(1)
+	nodes := []ExportNode{
+		{ID: 1, Title: "Sección", Description: "contratos", PageType: "navigation"},
+		{
+			ID:       2,
+			Title:    "Detalle contratos",
+			URL:      "https://example.com/contratos",
+			PageType: "leaf_static",
+			ParentID: &parent1,
+		},
+	}
+	nodeByID := testNodeByID(nodes)
+
+	results := TraverseSearch([]string{"contratos"}, nodeByID)
+
+	if len(results) == 0 {
+		t.Fatal("expected at least one result")
+	}
+	if results[0].NodeID != 2 {
+		t.Errorf("results[0].NodeID = %d, want leaf node 2 ranked first", results[0].NodeID)
+	}
+	if results[0].Node.PageType != "leaf_static" {
+		t.Errorf("results[0] page_type = %q, want leaf_static", results[0].Node.PageType)
+	}
+}
+
+func TestTraverseSearch_findsMatchInSiblingBranch(t *testing.T) {
+	parent1 := int64(1)
+	nodes := []ExportNode{
+		{ID: 1, Title: "Raíz", Description: "portal general", PageType: "navigation"},
+		{ID: 2, Title: "Contratos", Description: "adjudicaciones públicas", ParentID: &parent1, PageType: "navigation"},
+		{ID: 3, Title: "Subvenciones", Description: "ayudas públicas", ParentID: &parent1, PageType: "navigation"},
+	}
+	nodeByID := testNodeByID(nodes)
+
+	results := TraverseSearch([]string{"subvenciones"}, nodeByID)
+
+	if len(results) != 1 {
+		t.Fatalf("len(results) = %d, want 1", len(results))
+	}
+	if results[0].NodeID != 3 {
+		t.Errorf("NodeID = %d, want 3 (sibling branch, not greedy-first branch)", results[0].NodeID)
+	}
+}
+
+func TestTraverseSearch_returnsIntermediateWhenNoLeaves(t *testing.T) {
+	parent1 := int64(1)
+	nodes := []ExportNode{
+		{ID: 1, Title: "Raíz", Description: "información general"},
+		{ID: 2, Title: "Subvenciones públicas", Description: "listado", ParentID: &parent1, PageType: "navigation"},
+	}
+	nodeByID := testNodeByID(nodes)
+
+	results := TraverseSearch([]string{"subvenciones"}, nodeByID)
+
+	if len(results) != 1 {
+		t.Fatalf("len(results) = %d, want 1", len(results))
+	}
+	if results[0].NodeID != 2 {
+		t.Errorf("NodeID = %d, want intermediate node 2", results[0].NodeID)
 	}
 }
 
@@ -81,7 +145,7 @@ func TestBuildPath(t *testing.T) {
 		{ID: 2, Title: "Altos Cargos", URL: "https://example.com/altos-cargos", ParentID: &parent1},
 		{ID: 3, Title: "Retribuciones", URL: "https://example.com/retribuciones", ParentID: &parent2},
 	}
-	_, nodeByID := testFixture(nodes)
+	nodeByID := testNodeByID(nodes)
 
 	path := BuildPath(3, nodeByID)
 

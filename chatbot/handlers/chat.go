@@ -10,26 +10,30 @@ import (
 )
 
 const (
-	msgFound    = "Sí, esa información está disponible en el Portal de Transparencia."
-	msgNotFound = "Esa información no está publicada directamente. Puedes solicitarla mediante el derecho de acceso."
+	msgFound = "Sí, esa información está disponible en el Portal de Transparencia."
+	msgNotFound = "Esa información no está publicada directamente. Puedes solicitarla mediante el derecho de acceso en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica"
+	derechoAccesoURL = "https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica"
 )
 
 // KeywordExtractor returns search terms for a citizen question.
 type KeywordExtractor func(question string) ([]string, error)
 
-// Handler serves POST /chat using a loaded graph and search index.
+// ResultVerifier checks whether a matched node answers the user's question.
+type ResultVerifier func(question, nodeTitle, nodeDescription string) (bool, string, error)
+
+// Handler serves POST /chat using a loaded graph.
 type Handler struct {
 	Graph           *graph.Graph
-	SearchIndex     []graph.SearchEntry
 	extractKeywords KeywordExtractor
+	verifyResult    ResultVerifier
 }
 
 // New creates a chat handler from a loaded graph.
 func New(g *graph.Graph) *Handler {
 	return &Handler{
 		Graph:           g,
-		SearchIndex:     graph.BuildIndex(g.Export.Nodes),
 		extractKeywords: llm.ExtractKeywords,
+		verifyResult:    llm.VerifyResult,
 	}
 }
 
@@ -80,13 +84,17 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 
 	keywords, err := h.extractKeywords(req.Question)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
-		return
+		keywords = llm.ExtractKeywordsFallback(req.Question)
 	}
 
-	results := graph.Search(keywords, h.SearchIndex, h.Graph.NodeByID)
+	results := graph.TraverseSearch(keywords, h.Graph.NodeByID)
 	if len(results) > 0 {
 		node := results[0].Node
+		matched, explanation, err := h.verifyResult(req.Question, node.Title, node.Description)
+		if err == nil && !matched {
+			writeNotFound(w, notFoundMessage(explanation))
+			return
+		}
 		writeJSON(w, http.StatusOK, chatResponse{
 			Found:       true,
 			Message:     msgFound,
@@ -97,17 +105,23 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessNode := findDerechoAccesoNode(h.Graph.NodeByID)
-	if accessNode == nil {
-		writeError(w, http.StatusInternalServerError, "derecho de acceso node not found in graph")
-		return
-	}
+	writeNotFound(w, msgNotFound)
+}
 
+func notFoundMessage(explanation string) string {
+	explanation = strings.TrimSpace(explanation)
+	if explanation == "" {
+		return msgNotFound
+	}
+	return explanation + " Puedes solicitarla mediante el derecho de acceso en " + derechoAccesoURL
+}
+
+func writeNotFound(w http.ResponseWriter, message string) {
 	writeJSON(w, http.StatusOK, chatResponse{
 		Found:       false,
-		Message:     msgNotFound,
-		URL:         accessNode.URL,
-		Path:        pathSteps(graph.BuildPath(accessNode.ID, h.Graph.NodeByID)),
+		Message:     message,
+		URL:         derechoAccesoURL,
+		Path:        []pathStep{},
 		MatchedNode: nil,
 	})
 }
@@ -124,24 +138,6 @@ func CORS(next http.HandlerFunc) http.HandlerFunc {
 		}
 		next(w, r)
 	}
-}
-
-func findDerechoAccesoNode(nodeByID map[int64]*graph.ExportNode) *graph.ExportNode {
-	var fallback *graph.ExportNode
-	for _, node := range nodeByID {
-		titleMatch := strings.Contains(strings.ToLower(node.Title), "derecho de acceso")
-		urlMatch := strings.Contains(node.URL, "derecho-acceso")
-		if !titleMatch && !urlMatch {
-			continue
-		}
-		if strings.Contains(node.URL, "solicite-informacion") {
-			return node
-		}
-		if fallback == nil {
-			fallback = node
-		}
-	}
-	return fallback
 }
 
 func pathSteps(steps []graph.PathStep) []pathStep {

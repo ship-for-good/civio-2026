@@ -8,28 +8,26 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 const (
-	geminiModel    = "gemini-2.0-flash"
-	geminiBaseURL  = "https://generativelanguage.googleapis.com/v1beta/models"
-	defaultTimeout = 30 * time.Second
+	geminiModel   = "gemini-2.0-flash-lite"
+	geminiBaseURL = "https://generativelanguage.googleapis.com/v1beta/models"
 )
 
-// Client calls the Google Generative Language API (Gemini Flash).
-type Client struct {
+// GeminiClient calls the Google Generative Language API (Gemini Flash).
+type GeminiClient struct {
 	apiKey     string
 	httpClient *http.Client
 }
 
-// NewClient reads GEMINI_API_KEY from the environment.
-func NewClient() (*Client, error) {
+// NewGeminiClient reads GEMINI_API_KEY from the environment.
+func NewGeminiClient() (*GeminiClient, error) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		return nil, fmt.Errorf("GEMINI_API_KEY is not set")
 	}
-	return &Client{
+	return &GeminiClient{
 		apiKey: apiKey,
 		httpClient: &http.Client{
 			Timeout: defaultTimeout,
@@ -37,9 +35,9 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
-// ExtractKeywords asks Gemini Flash for 2–4 search terms for the given question.
-func ExtractKeywords(question string) ([]string, error) {
-	client, err := NewClient()
+// GeminiExtractKeywords asks Gemini Flash for 2–4 search terms for the given question.
+func GeminiExtractKeywords(question string) ([]string, error) {
+	client, err := NewGeminiClient()
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +45,7 @@ func ExtractKeywords(question string) ([]string, error) {
 }
 
 // ExtractKeywords calls Gemini with the keyword-extraction prompt from CURSOR.md.
-func (c *Client) ExtractKeywords(question string) ([]string, error) {
+func (c *GeminiClient) ExtractKeywords(question string) ([]string, error) {
 	question = strings.TrimSpace(question)
 	if question == "" {
 		return nil, fmt.Errorf("question is empty")
@@ -60,33 +58,7 @@ func (c *Client) ExtractKeywords(question string) ([]string, error) {
 	return parseKeywords(text), nil
 }
 
-func keywordPrompt(question string) string {
-	return fmt.Sprintf(`Eres un asistente que ayuda a encontrar información en el Portal de Transparencia español.
-Dada la siguiente pregunta de un ciudadano, extrae entre 2 y 4 palabras clave
-para buscar en el índice del portal. Devuelve SOLO las palabras separadas por comas,
-sin explicaciones.
-
-Pregunta: %s
-Keywords:`, question)
-}
-
-func parseKeywords(raw string) []string {
-	raw = strings.TrimSpace(raw)
-	if raw == "" {
-		return nil
-	}
-	parts := strings.Split(raw, ",")
-	keywords := make([]string, 0, len(parts))
-	for _, p := range parts {
-		p = strings.TrimSpace(p)
-		if p != "" {
-			keywords = append(keywords, p)
-		}
-	}
-	return keywords
-}
-
-func (c *Client) generate(prompt string) (string, error) {
+func (c *GeminiClient) generate(prompt string) (string, error) {
 	url := fmt.Sprintf("%s/%s:generateContent?key=%s", geminiBaseURL, geminiModel, c.apiKey)
 
 	body, err := json.Marshal(generateContentRequest{

@@ -5,17 +5,11 @@ import (
 	"strings"
 )
 
-// SearchEntry is one searchable row for a graph node (title, description, child contents).
-type SearchEntry struct {
-	NodeID     int64
-	SearchText string // lowercase text used for keyword matching
-}
-
-// SearchResult is a ranked node match from Search.
+// SearchResult is a ranked node match from TraverseSearch.
 type SearchResult struct {
 	NodeID int64
 	Node   *ExportNode
-	Score  int // number of keyword matches
+	Score  int
 }
 
 // PathStep is one breadcrumb from root to the matched node.
@@ -24,66 +18,148 @@ type PathStep struct {
 	URL   string
 }
 
-// BuildIndex builds a search entry per node from title, description, and child contents.
-func BuildIndex(nodes []ExportNode) []SearchEntry {
-	index := make([]SearchEntry, len(nodes))
-	for i := range nodes {
-		node := &nodes[i]
-		index[i] = SearchEntry{
-			NodeID:     node.ID,
-			SearchText: strings.ToLower(buildSearchText(node)),
-		}
-	}
-	return index
-}
-
-func buildSearchText(node *ExportNode) string {
-	var b strings.Builder
-	b.WriteString(node.Title)
-	b.WriteByte(' ')
-	b.WriteString(node.Description)
-	for _, child := range node.ChildContents {
-		b.WriteByte(' ')
-		b.WriteString(child.Title)
-		b.WriteByte(' ')
-		b.WriteString(child.Description)
-	}
-	return b.String()
-}
-
-// Search returns up to 3 nodes with the highest keyword match scores.
-func Search(keywords []string, index []SearchEntry, nodeByID map[int64]*ExportNode) []SearchResult {
+// TraverseSearch scores every node reachable via BFS from the roots (and any
+// disconnected nodes), then returns up to 3 matches ordered by score while
+// prioritizing leaf_static over navigation page types.
+func TraverseSearch(keywords []string, nodes map[int64]*ExportNode) []SearchResult {
 	normalized := normalizeKeywords(keywords)
-	if len(normalized) == 0 {
+	if len(normalized) == 0 || len(nodes) == 0 {
 		return nil
 	}
 
+	children := buildChildrenMap(nodes)
 	var results []SearchResult
-	for _, entry := range index {
-		score := matchScore(entry.SearchText, normalized)
+
+	for _, node := range bfsNodes(nodes, children) {
+		score := nodeScore(node, normalized)
 		if score == 0 {
 			continue
 		}
-		node := nodeByID[entry.NodeID]
-		if node == nil {
-			continue
-		}
 		results = append(results, SearchResult{
-			NodeID: entry.NodeID,
+			NodeID: node.ID,
 			Node:   node,
 			Score:  score,
 		})
 	}
 
+	return topResultsByPageType(results, 3)
+}
+
+// bfsNodes visits all nodes: BFS from roots, then BFS on any disconnected nodes.
+func bfsNodes(nodes map[int64]*ExportNode, children map[int64][]*ExportNode) []*ExportNode {
+	visited := make(map[int64]bool, len(nodes))
+	var order []*ExportNode
+
+	runBFS := func(starts []*ExportNode) {
+		queue := starts
+		for head := 0; head < len(queue); head++ {
+			node := queue[head]
+			if node == nil || visited[node.ID] {
+				continue
+			}
+			visited[node.ID] = true
+			order = append(order, node)
+			for _, child := range children[node.ID] {
+				if !visited[child.ID] {
+					queue = append(queue, child)
+				}
+			}
+		}
+	}
+
+	runBFS(rootNodes(nodes))
+
+	var disconnected []*ExportNode
+	for _, node := range nodes {
+		if !visited[node.ID] {
+			disconnected = append(disconnected, node)
+		}
+	}
+	sort.Slice(disconnected, func(i, j int) bool {
+		return disconnected[i].ID < disconnected[j].ID
+	})
+	runBFS(disconnected)
+
+	return order
+}
+
+func buildChildrenMap(nodes map[int64]*ExportNode) map[int64][]*ExportNode {
+	children := make(map[int64][]*ExportNode)
+	for _, node := range nodes {
+		if node.ParentID == nil {
+			continue
+		}
+		parentID := *node.ParentID
+		children[parentID] = append(children[parentID], node)
+	}
+	for parentID := range children {
+		sort.Slice(children[parentID], func(i, j int) bool {
+			return children[parentID][i].ID < children[parentID][j].ID
+		})
+	}
+	return children
+}
+
+func rootNodes(nodes map[int64]*ExportNode) []*ExportNode {
+	var roots []*ExportNode
+	for _, node := range nodes {
+		if node.ParentID == nil {
+			roots = append(roots, node)
+		}
+	}
+	sort.Slice(roots, func(i, j int) bool {
+		return roots[i].ID < roots[j].ID
+	})
+	return roots
+}
+
+func nodeScore(node *ExportNode, keywords []string) int {
+	if node == nil {
+		return 0
+	}
+
+	score := 0
+	title := strings.ToLower(node.Title)
+	description := strings.ToLower(node.Description)
+
+	for _, kw := range keywords {
+		if strings.Contains(title, kw) {
+			score++
+		}
+		if strings.Contains(description, kw) {
+			score++
+		}
+		for _, child := range node.ChildContents {
+			childTitle := strings.ToLower(child.Title)
+			childDescription := strings.ToLower(child.Description)
+			if strings.Contains(childTitle, kw) {
+				score++
+			}
+			if strings.Contains(childDescription, kw) {
+				score++
+			}
+		}
+	}
+	return score
+}
+
+func topResultsByPageType(results []SearchResult, limit int) []SearchResult {
+	if len(results) == 0 {
+		return nil
+	}
 	sort.Slice(results, func(i, j int) bool {
+		leafI := results[i].Node.PageType == "leaf_static"
+		leafJ := results[j].Node.PageType == "leaf_static"
+		if leafI != leafJ {
+			return leafI
+		}
 		if results[i].Score != results[j].Score {
 			return results[i].Score > results[j].Score
 		}
 		return results[i].NodeID < results[j].NodeID
 	})
-
-	if len(results) > 3 {
-		results = results[:3]
+	if len(results) > limit {
+		results = results[:limit]
 	}
 	return results
 }
@@ -98,17 +174,6 @@ func normalizeKeywords(keywords []string) []string {
 		out = append(out, kw)
 	}
 	return out
-}
-
-// matchScore counts how many keywords appear in text (each keyword at most once).
-func matchScore(text string, keywords []string) int {
-	score := 0
-	for _, kw := range keywords {
-		if strings.Contains(text, kw) {
-			score++
-		}
-	}
-	return score
 }
 
 // BuildPath walks parent_id from nodeID to the root and returns steps root → leaf.
