@@ -4,7 +4,7 @@
 
 # Data
 data/*.db
-data/*.json
+#data/*.json
 !data/.gitkeep
 
 # Go
