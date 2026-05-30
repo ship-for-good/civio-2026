@@ -6,7 +6,7 @@ type StepGuideProps = {
 export function StepGuide({ steps, tip }: StepGuideProps) {
   return (
     <div>
-      <ol className="list-decimal list-inside space-y-2">
+      <ol data-testid="step-guide" className="list-decimal list-inside space-y-2">
         {steps.map((step, i) => (
           <li key={i} className="text-foreground leading-relaxed">
             {step}

@@ -23,11 +23,13 @@ export function SearchInput({ onSubmit, disabled = false }: SearchInputProps) {
         aria-label="Pregunta de información pública"
         placeholder="¿Qué información pública buscas?"
         disabled={disabled}
+        data-testid="search-input"
         className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent"
       />
       <button
         type="submit"
         disabled={disabled}
+        data-testid="search-submit"
         className="px-6 py-3 rounded-lg bg-accent text-white font-medium hover:bg-accent-hover transition-colors disabled:opacity-60"
       >
         Buscar
