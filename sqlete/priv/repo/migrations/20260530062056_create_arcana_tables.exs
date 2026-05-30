@@ -24,7 +24,9 @@ defmodule SQLete.Repo.Migrations.CreateArcanaTables do
       add :status, :string, default: "pending"
       add :error, :text
       add :chunk_count, :integer, default: 0
-      add :collection_id, references(:arcana_collections, type: :binary_id, on_delete: :nilify_all)
+
+      add :collection_id,
+          references(:arcana_collections, type: :binary_id, on_delete: :nilify_all)
 
       timestamps()
     end

@@ -7,8 +7,7 @@
 # General application configuration
 import Config
 
-config :sqlete, SQLete.Repo,
-  types: SQLete.PostgrexTypes
+config :sqlete, SQLete.Repo, types: SQLete.PostgrexTypes
 
 config :sqlete,
   namespace: SQLete,
@@ -24,10 +23,12 @@ config :sqlete,
 
 config :arcana,
   repo: SQLete.Repo,
-  embedder: :local,
+  embedder: SQLete.Embedder,
+  llm: &SQLete.LLM.complete/3,
   pdf_parser: :poppler,
   graph: [
     enabled: false,
+    extractor: SQLete.Graph.NotificationExtractor,
     relationship_extractor: nil,
     community_summarizer: nil
   ]

@@ -39,7 +39,7 @@ defmodule SQLete.Documents.PipelineTest do
 
     assert {:ok, ^pdf_binary} = Fake.get(doc_file.storage_key)
 
-    [job] = Repo.all(from job in Oban.Job)
+    [job] = Repo.all(from(job in Oban.Job))
 
     assert job.queue == "pdf_ingestion"
     assert String.ends_with?(job.worker, "SQLete.Documents.ProcessPdfWorker")
