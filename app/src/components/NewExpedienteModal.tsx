@@ -1,17 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
-import { validateExpediente } from '../utils/expediente.js'
+import { validateExpediente, type ExpedienteInput } from '../utils/expediente.js'
 
-export default function NewExpedienteModal({ isOpen, onClose, onSubmit, existingIds }) {
+interface NewExpedienteModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (input: ExpedienteInput, files: File[]) => Promise<void>
+  existingIds: string[]
+}
+
+type Status = 'idle' | 'submitting' | 'error'
+
+export default function NewExpedienteModal({ isOpen, onClose, onSubmit, existingIds }: NewExpedienteModalProps) {
   const [numeroExpediente, setNumeroExpediente] = useState('')
   const [asunto, setAsunto] = useState('')
-  const [files, setFiles] = useState([])
-  const [status, setStatus] = useState('idle') // 'idle' | 'submitting' | 'error'
-  const [fieldErrors, setFieldErrors] = useState({})
+  const [files, setFiles] = useState<File[]>([])
+  const [status, setStatus] = useState<Status>('idle')
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ExpedienteInput, string>>>({})
   const [errorMsg, setErrorMsg] = useState('')
 
-  const firstInputRef = useRef(null)
+  const firstInputRef = useRef<HTMLInputElement>(null)
 
-  // Foco al primer campo cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
       setNumeroExpediente('')
@@ -24,10 +32,9 @@ export default function NewExpedienteModal({ isOpen, onClose, onSubmit, existing
     }
   }, [isOpen])
 
-  // Cerrar con Esc (excepto mientras se envía)
   useEffect(() => {
     if (!isOpen) return
-    function handleKeyDown(e) {
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && status !== 'submitting') onClose()
     }
     document.addEventListener('keydown', handleKeyDown)
@@ -43,7 +50,7 @@ export default function NewExpedienteModal({ isOpen, onClose, onSubmit, existing
     ? 'Seleccionar archivos…'
     : `${files.length} archivo${plural} seleccionado${plural}`
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
     const input = { numeroExpediente, asunto }
@@ -60,15 +67,14 @@ export default function NewExpedienteModal({ isOpen, onClose, onSubmit, existing
 
     try {
       await onSubmit(input, files)
-      // El padre cierra el modal en caso de éxito.
     } catch (err) {
-      setErrorMsg(err.message || 'Error al crear el expediente')
+      setErrorMsg((err as Error).message || 'Error al crear el expediente')
       setStatus('error')
     }
   }
 
-  function handleFileChange(e) {
-    setFiles([...e.target.files])
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFiles([...e.target.files!])
   }
 
   return (
