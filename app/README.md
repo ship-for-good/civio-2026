@@ -59,7 +59,7 @@ npm test
 The login screen supports **email + password** authentication:
 
 - **Login** — enter your email and password and click "Entrar".
-- **Sign up** — switch to sign-up mode, enter your email and password and click "Crear cuenta". If email confirmation is enabled in your Supabase project, a confirmation email will be sent before access is granted.
+- **Sign up** — switch to sign-up mode, enter your name, email, and password and click "Crear cuenta". The name is stored in Supabase user metadata and used as the default `Autor` when creating new expedientes.
 
 To manage users: **Supabase → Authentication → Users → Invite user**.
 

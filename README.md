@@ -17,10 +17,11 @@ Civio gestiona decenas de solicitudes de transparencia simultáneas, con plazos 
 - **Dashboard de expedientes** — tabla ordenable y filtrable con todos los expedientes activos
 - **Urgencia automática** — calcula si un expediente está en riesgo según los días restantes hasta el vencimiento
 - **Digest diario** — sección resumen de silencio administrativo inminente, reclamadas y contenciosos
-- **Nuevo expediente** — formulario modal con adjuntos (almacenados en Supabase Storage)
-- **Edición de expedientes** — clic en fila abre modal de edición completa
+- **Nuevo expediente** — formulario modal con adjuntos (almacenados en Supabase Storage); el PDF del acuse de recibo puede auto-rellenar los datos
+- **Edición de expedientes** — clic en fila abre modal de edición (estado, asunto, vencimiento, notas)
+- **Estados**: `Solicitado`, `En tramitación`, `Reclamada`, `Contencioso`, `Resuelta`
 - **Carga de CSV** — arrastrar y soltar o subir un `.csv` actualizado desde el header
-- **Autenticación** — acceso restringido por email y contraseña (Supabase Auth)
+- **Autenticación** — registro e inicio de sesión por email y contraseña (Supabase Auth); el nombre se usa como autor por defecto
 - **Persistencia** — los expedientes creados se almacenan en Supabase y se fusionan con el CSV base al cargar
 
 ---

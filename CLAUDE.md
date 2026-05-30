@@ -22,13 +22,14 @@ React + Vite + TypeScript SPA ("Tracker de Solicitudes de Transparencia") in `ap
 | File | Role |
 |------|------|
 | `App.tsx` | Root: auth guard, CSV state, drag-and-drop, filters, sort, Supabase merge on load |
-| `components/LoginPage.tsx` | Magic-link login (Supabase OTP) |
-| `components/Header.tsx` | Top bar: CSV file-input + "Nuevo expediente" button |
+| `components/LoginPage.tsx` | Email + password login and sign-up (Supabase Auth) |
+| `components/Header.tsx` | Top bar: "Nuevo expediente" button + Civio logo with dots |
 | `components/StatsBar.tsx` | Summary counts by urgency/estado |
 | `components/DigestSection.tsx` | Daily digest: silencio administrativo, reclamadas, contencioso |
 | `components/FiltersBar.tsx` | Filter controls (estado, autor, ámbito, urgencia, free text) |
 | `components/RequestsTable.tsx` | Sortable table of all requests |
 | `components/NewExpedienteModal.tsx` | Modal to create a new expediente with file attachments |
+| `components/EditExpedienteModal.tsx` | Modal to edit an existing expediente (estado, asunto, vencimiento, notas) |
 | `components/Toast.tsx` | Ephemeral notification |
 | `contexts/AuthContext.tsx` | Supabase session provider (`useAuth` hook) |
 | `lib/supabase.ts` | Supabase client |
@@ -48,7 +49,7 @@ React + Vite + TypeScript SPA ("Tracker de Solicitudes de Transparencia") in `ap
 
 ### Auth flow
 
-Unauthenticated users see `LoginPage`. They enter an email → receive a magic link (Supabase OTP) → redirected back → session set.
+Unauthenticated users see `LoginPage`. They can log in (email + password) or sign up (email + password + name). Name is stored in Supabase user metadata and used as default `Autor` when creating expedientes.
 
 ## Data
 
@@ -59,7 +60,7 @@ CSV columns: `Id`, `Ámbito`, `Fecha`, `Estado`, `Asunto`, `Ministerio`, `Inicio
 Key domain concepts:
 - **Silencio administrativo** — response deadline (`Vencimiento`) passed with no resolution; Civio has ~30 days (`CLAIM_WINDOW_DAYS`) to file with CTBG.
 - **CTBG** — Consejo de Transparencia y Buen Gobierno, the oversight body.
-- **Estados**: `En tramitación`, `Reclamada`, `Contencioso`, `Resuelta`.
+- **Estados**: `Solicitado`, `En tramitación`, `Reclamada`, `Contencioso`, `Resuelta`.
 
 ## Tests
 
