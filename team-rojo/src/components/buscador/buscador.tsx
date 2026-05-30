@@ -76,20 +76,30 @@ export function Buscador() {
   const isLoading = view === "loading";
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-6 py-16">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-16 relative"
+      style={{
+        backgroundImage: "url('/sky.avif')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* overlay */}
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+
       <motion.div
         variants={container}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-2xl flex flex-col gap-8"
+        className="relative z-10 w-full max-w-2xl flex flex-col gap-8"
       >
         <motion.div variants={fadeUp} className="text-center">
-          <h1 className="font-pixel text-4xl sm:text-5xl tracking-tight text-foreground mb-4">
-            ¿Dónde está esa información pública?
-          </h1>
-          <p className="text-lg text-foreground-muted leading-relaxed">
-            Pregunta en lenguaje normal. Te decimos el portal correcto y cómo encontrarlo.
+          <p className="text-xs tracking-widest uppercase text-white/60 mb-4">
+            La información pública te pertenece
           </p>
+          <h1 className="text-4xl sm:text-6xl font-serif font-semibold tracking-tight text-white mb-3 leading-tight">
+            Aquí la encuentras.
+          </h1>
         </motion.div>
 
         <motion.div variants={fadeUp}>
@@ -99,21 +109,21 @@ export function Buscador() {
         {isLoading && (
           <motion.p
             variants={fadeUp}
-            className="text-center text-foreground-muted"
+            className="text-center text-white/70"
             role="status"
             aria-live="polite"
           >
-            Clasificando con el agente…
+            Localizando tu información…
           </motion.p>
         )}
 
         {view === "error" && errorMessage !== null && (
           <motion.div variants={fadeUp} className="text-center space-y-3">
-            <p className="text-foreground-muted">{errorMessage}</p>
+            <p className="text-white/70">{errorMessage}</p>
             <button
               type="button"
               onClick={handleReset}
-              className="text-sm text-accent hover:underline"
+              className="text-sm text-white hover:underline"
             >
               Volver a intentar
             </button>

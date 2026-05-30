@@ -2,9 +2,10 @@ import type { Classification } from "@/domain/buscador/types";
 
 type GoToPortalButtonProps = {
   data: Classification;
+  gradient?: string;
 };
 
-export function GoToPortalButton({ data }: GoToPortalButtonProps) {
+export function GoToPortalButton({ data, gradient }: GoToPortalButtonProps) {
   const href = data.deepLink ?? data.portalUrl;
   const hasDeepLink = Boolean(data.deepLink);
 
@@ -13,9 +14,10 @@ export function GoToPortalButton({ data }: GoToPortalButtonProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-medium hover:bg-accent-hover transition-colors"
+      className="flex items-center justify-center w-full px-5 py-3.5 rounded-full font-medium transition-colors bg-transparent hover:bg-gray-100 border text-foreground"
+      style={{ borderColor: "rgba(100,100,100,0.35)" }}
     >
-      → Ir al portal{hasDeepLink ? " (búsqueda lista)" : ""}
+      Hacer la solicitud
     </a>
   );
 }

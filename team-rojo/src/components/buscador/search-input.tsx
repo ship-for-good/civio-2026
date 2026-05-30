@@ -16,23 +16,28 @@ export function SearchInput({ onSubmit, disabled = false }: SearchInputProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full">
+    <form onSubmit={handleSubmit} className="relative w-full">
       <input
         name="query"
         type="text"
         aria-label="Pregunta de información pública"
-        placeholder="¿Qué información pública buscas?"
+        placeholder="Ej. ¿cuánto cobra una ministra?"
         disabled={disabled}
         data-testid="search-input"
-        className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent"
+        className="w-full px-5 py-4 pr-14 rounded-full text-white placeholder:text-white/50 focus:outline-none text-base"
+        style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
       />
       <button
         type="submit"
         disabled={disabled}
         data-testid="search-submit"
-        className="px-6 py-3 rounded-lg bg-accent text-white font-medium hover:bg-accent-hover transition-colors disabled:opacity-60"
+        aria-label="Buscar"
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-white hover:opacity-80 transition-opacity disabled:opacity-40"
+        style={{ background: "rgba(255,255,255,0.25)" }}
       >
-        Buscar
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
       </button>
     </form>
   );
