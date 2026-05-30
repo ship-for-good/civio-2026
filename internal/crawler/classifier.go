@@ -10,7 +10,7 @@ import (
 )
 
 func ClassifyPage(html []byte, pageURL string, childCount int) models.PageType {
-	if parser.IsExternalURL(pageURL) {
+	if parser.IsExternalURL(pageURL) && !parser.IsSedeURL(pageURL) {
 		return models.PageTypeExternal
 	}
 

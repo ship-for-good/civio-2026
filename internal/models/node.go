@@ -26,6 +26,10 @@ type Node struct {
 	HTTPLastModified time.Time
 	HTTPEtag         string
 	ScrapedAt        time.Time
+	ChildContents    []ChildContent
+	DynamicContent   *DynamicContent
+	DynamicHash      string
+	DynamicScrapedAt time.Time
 }
 
 type Edge struct {
@@ -73,6 +77,9 @@ type ExportNode struct {
 	HTTPLastModified string `json:"http_last_modified,omitempty"`
 	HTTPEtag         string `json:"http_etag,omitempty"`
 	ScrapedAt        string `json:"scraped_at,omitempty"`
+	ChildContents    []ChildContent       `json:"child_contents,omitempty"`
+	DynamicContent   *DynamicContent      `json:"dynamic_content,omitempty"`
+	DynamicScrapedAt string               `json:"dynamic_scraped_at,omitempty"`
 }
 
 type ExportEdge struct {

@@ -10,6 +10,10 @@ import (
 )
 
 func ExportJSON(store *Store, outPath string) error {
+	if err := RefreshChildContents(store); err != nil {
+		return err
+	}
+
 	nodes, err := store.AllNodes()
 	if err != nil {
 		return err
@@ -43,6 +47,9 @@ func ExportJSON(store *Store, outPath string) error {
 			HTTPLastModified: parser.FormatRFC3339(n.HTTPLastModified),
 			HTTPEtag:         n.HTTPEtag,
 			ScrapedAt:        parser.FormatRFC3339(n.ScrapedAt),
+			ChildContents:    n.ChildContents,
+			DynamicContent:   n.DynamicContent,
+			DynamicScrapedAt: parser.FormatRFC3339(n.DynamicScrapedAt),
 		})
 	}
 

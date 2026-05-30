@@ -5,3 +5,14 @@ services:
       - ./data:/data
     environment:
       DB_PATH: /data/graph.db
+
+  crawler-playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    volumes:
+      - ./data:/data
+    environment:
+      DB_PATH: /data/graph.db
+    # Playwright needs more shared memory for Chromium
+    shm_size: "1gb"
