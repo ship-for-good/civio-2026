@@ -1,0 +1,428 @@
+{
+  "metadata": {
+    "system": "Portal de la Transparencia de la Administración General del Estado (AGE)",
+    "baseUrl": "https://transparencia.sede.gob.es",
+    "procedureName": "Ejercicio del derecho de acceso a información pública",
+    "procedureId": 133628,
+    "authMethods": [
+      "clave",
+      "fnmt_certificate",
+      "dni_e_certificate"
+    ],
+    "description": "Complete list of 25 Spanish government entities for filing transparency access requests. Each entity can be accessed via certificate-based authentication. Agent should use the formEndpoint with user's X.509 certificate."
+  },
+  "entities": [
+    {
+      "idAmb": 101503,
+      "name": "Agencia Española de Protección de Datos",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101503",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101503",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101503",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101503",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101504,
+      "name": "Casa Real",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101504",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101504",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101504",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101504",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101505,
+      "name": "Secretaría de Estado de la Seguridad Social y Pensiones",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101505",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101505",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101505",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101505",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101506,
+      "name": "Ministerio de Agricultura, Pesca y Alimentación",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101506",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101506",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101506",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101506",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101507,
+      "name": "Ministerio de Asuntos Exteriores, Unión Europea y Cooperación",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101507",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101507",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101507",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101507",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101508,
+      "name": "Ministerio de Ciencia, Innovación y Universidades",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101508",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101508",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101508",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101508",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101509,
+      "name": "Ministerio de Cultura",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101509",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101509",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101509",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101509",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101510,
+      "name": "Ministerio de Defensa",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101510",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101510",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101510",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101510",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101511,
+      "name": "Ministerio de Derechos Sociales, Consumo y Agenda 2030",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101511",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101511",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101511",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101511",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101512,
+      "name": "Ministerio de Economía, Comercio y Empresa",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101512",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101512",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101512",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101512",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101513,
+      "name": "Ministerio de Educación, Formación Profesional y Deportes",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101513",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101513",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101513",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101513",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101514,
+      "name": "Ministerio de Hacienda",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101514",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101514",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101514",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101515,
+      "name": "Ministerio de Igualdad",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101515",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101515",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101515",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101515",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101516,
+      "name": "Ministerio de Inclusión, Seguridad Social y Migraciones",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101516",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101516",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101516",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101516",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101517,
+      "name": "Ministerio de Industria y Turismo",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101517",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101517",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101517",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101517",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101518,
+      "name": "Ministerio del Interior",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101518",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101518",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101518",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101518",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101519,
+      "name": "Ministerio de Juventud e Infancia",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101519",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101519",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101519",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101519",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101520,
+      "name": "Ministerio de Política Territorial y Memoria Democrática",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101520",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101520",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101520",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101520",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101521,
+      "name": "Ministerio de la Presidencia, Justicia, y Relaciones con Cortes",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101521",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101521",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101521",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101521",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101522,
+      "name": "Ministerio de Sanidad",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101522",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101522",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101522",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101522",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101523,
+      "name": "Ministerio de Trabajo y Economía Social",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101523",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101523",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101523",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101523",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101524,
+      "name": "Ministerio para la Transformación Digital y de la Función Pública",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101524",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101524",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101524",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101524",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101525,
+      "name": "Ministerio para la Transición Ecológica y el Reto Demográfico",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101525",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101525",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101525",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101525",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101526,
+      "name": "Ministerio de Transportes y Movilidad Sostenible",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101526",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101526",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101526",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101526",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    },
+    {
+      "idAmb": 101527,
+      "name": "Ministerio de Vivienda y Agenda Urbana",
+      "portadaUrl": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101527",
+      "formEndpoint": "/procedimiento/formulario?idProc=133628&idAmb=101527",
+      "signingEndpoint": "/procedimiento/firma?idProc=133628&idAmb=101527",
+      "certAuthUrl": "https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101527",
+      "authChallenge": {
+        "step1": "Navigate to formEndpoint",
+        "step2": "Browser challenges for certificate (Cl@ve or FNMT)",
+        "step3": "User selects certificate from OS keychain",
+        "step4": "Session established with Portal AGE"
+      }
+    }
+  ],
+  "agentIntegrationGuide": {
+    "overview": "This data is designed for certificate-based agents (similar to PideInfo Agent) to autonomously submit transparency requests.",
+    "architecture": "Agent authenticates with user's certificate (OS keychain) → navigates to entity's formEndpoint → fills form → signs submission → downloads proof → sends documents back to your system",
+    "implementation": [
+      "1. Agent receives entity data (idAmb, baseUrl, formEndpoint, signingEndpoint)",
+      "2. Agent navigates to: baseUrl + formEndpoint (e.g., https://transparencia.sede.gob.es/procedimiento/formulario?idProc=133628&idAmb=101526)",
+      "3. Portal redirects to certificate authentication (Cl@ve or FNMT cert picker)",
+      "4. User selects certificate from OS keychain (DNI-e, FNMT, or Autofirma)",
+      "5. Session established; form is now visible",
+      "6. Agent auto-fills form fields (requestor, subject, description)",
+      "7. Agent clicks 'Siguiente' → form submission creates idBorr (draft ID)",
+      "8. Agent navigates to signingEndpoint with idBorr",
+      "9. Portal redirects to signing endpoint (pasarela-ident.clave.gob.es)",
+      "10. User re-authenticates (may need to re-enter cert password)",
+      "11. Non-repudiation signature created; portal redirects with signValidation UUID",
+      "12. Agent extracts expedienteRef from confirmation page",
+      "13. Agent downloads PDF justificante (proof of submission)",
+      "14. Agent sends documents to your webhook (baseUrl, idAmb, expedienteRef, documents)"
+    ],
+    "webhook_payload_example": {
+      "baseUrl": "https://your-app.com",
+      "webhookPath": "/api/webhook/transparency-submission",
+      "userId": "user-uuid",
+      "source": "transparencia_age",
+      "entity": {
+        "idAmb": 101526,
+        "name": "Ministerio de Transportes y Movilidad Sostenible"
+      },
+      "expedienteRef": "ES_E04996103_2026_EXP_AC2000000676676",
+      "documents": [
+        {
+          "filename": "solicitud-acceso.pdf",
+          "contentType": "application/pdf",
+          "content": "<base64 encoded PDF>",
+          "contentHash": "sha256 hash",
+          "role": "main_request"
+        },
+        {
+          "filename": "justificante.pdf",
+          "contentType": "application/pdf",
+          "content": "<base64 encoded PDF>",
+          "contentHash": "sha256 hash",
+          "role": "proof_of_submission"
+        }
+      ],
+      "metadata": {
+        "submittedAt": "2026-05-30T17:53:00Z",
+        "agentVersion": "1.0.0",
+        "certificateIssuer": "CERES FNMT"
+      }
+    },
+    "certificate_requirements": {
+      "supported_certs": [
+        "FNMT-Class 3 (standard citizen certs)",
+        "DNI-e (electronic national ID)",
+        "Cl@ve (simplified identity, may redirect internally)"
+      ],
+      "cert_storage": "OS keychain (Keychain on macOS, Credential Manager on Windows, GNOME Keyring on Linux)",
+      "cert_selection": "User selects via browser's native certificate picker; Agent does not handle private keys",
+      "chain_validation": "Portal AGE validates cert chain server-side; Agent does not need X.509 validation logic"
+    }
+  }
+}
