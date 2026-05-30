@@ -72,3 +72,67 @@ describe("Buscador — el ciudadano encuentra el portal correcto", () => {
     expect(screen.getByText(/Contratos de limpieza del Ayuntamiento de Madrid/i)).toBeInTheDocument();
   });
 });
+
+describe("Buscador — Derecho de Acceso (flujo US-1)", () => {
+  it("When el ciudadano busca 'solicitud acceso información Ministerio de Hacienda', Then se muestra Sede Electrónica con deepLink a Hacienda", async () => {
+    const user = userEvent.setup();
+    render(<Buscador />);
+
+    const input = screen.getByRole("textbox", { name: /Pregunta de información pública/i });
+    await user.type(input, "solicitud acceso información Ministerio de Hacienda");
+    await user.click(screen.getByRole("button", { name: /Buscar/i }));
+
+    expect(await screen.findByRole("heading", { name: /Por qué aquí/i })).toBeInTheDocument();
+    expect(screen.getByText("Sede Electrónica — Derecho de Acceso")).toBeInTheDocument();
+
+    const link = screen.getByRole("link", { name: /Ir al portal/i });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514"
+    );
+    // deep link present → shows "(búsqueda lista)"
+    expect(link).toHaveTextContent("búsqueda lista");
+  });
+
+  it("When el ciudadano busca 'reclamación documentos subvenciones' sin ministerio, Then se muestra DERECHO_ACCESO sin deepLink", async () => {
+    const user = userEvent.setup();
+    render(<Buscador />);
+
+    const input = screen.getByRole("textbox", { name: /Pregunta de información pública/i });
+    await user.type(input, "reclamación documentos subvenciones");
+    await user.click(screen.getByRole("button", { name: /Buscar/i }));
+
+    expect(await screen.findByText("Sede Electrónica — Derecho de Acceso")).toBeInTheDocument();
+
+    const link = screen.getByRole("link", { name: /Ir al portal/i });
+    // no deep link → falls back to portalUrl (https://transparencia.sede.gob.es)
+    expect(link).toHaveAttribute("href", "https://transparencia.sede.gob.es");
+    // no "(búsqueda lista)" since deepLink is undefined
+    expect(link).not.toHaveTextContent("búsqueda lista");
+  });
+
+  it("When el ciudadano hace clic en chip de ejemplo de contratos, Then sigue siendo PLACE (DERECHO_ACCESO no interfiere)", async () => {
+    const user = userEvent.setup();
+    render(<Buscador />);
+
+    await user.click(screen.getByText(/Contratos de limpieza del Ayuntamiento de Madrid/i));
+
+    expect(await screen.findByText("Plataforma de Contratación del Sector Público")).toBeInTheDocument();
+  });
+
+  it("When el ciudadano busca 'pedir documentos Defensa', Then se muestra DERECHO_ACCESO con deepLink a Defensa", async () => {
+    const user = userEvent.setup();
+    render(<Buscador />);
+
+    const input = screen.getByRole("textbox", { name: /Pregunta de información pública/i });
+    await user.type(input, "pedir documentos Defensa");
+    await user.click(screen.getByRole("button", { name: /Buscar/i }));
+
+    expect(await screen.findByText("Sede Electrónica — Derecho de Acceso")).toBeInTheDocument();
+    const link = screen.getByRole("link", { name: /Ir al portal/i });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101510"
+    );
+  });
+});

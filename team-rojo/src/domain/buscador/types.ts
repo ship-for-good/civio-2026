@@ -1,5 +1,6 @@
 export type PortalId =
-  | "PLACE" | "BDNS" | "TRANSPARENCIA" | "BOE" | "MEDIOAMBIENTAL" | "UNKNOWN";
+  | "PLACE" | "BDNS" | "TRANSPARENCIA" | "BOE" | "MEDIOAMBIENTAL"
+  | "DERECHO_ACCESO" | "UNKNOWN";
 
 export type Classification = {
   portal: PortalId;
@@ -18,5 +19,5 @@ export type PortalInfo = {
   explanation: string;
   steps: string[];
   searchTip?: string;
-  buildDeepLink?: (query: string) => string; // only portals where deep-linking is known
+  buildDeepLink?: (query: string) => string | undefined; // only portals where deep-linking is known
 };

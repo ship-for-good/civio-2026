@@ -1,4 +1,5 @@
 import type { PortalId, PortalInfo } from "./types";
+import { detectEntity } from "./entities";
 
 // TODO-VERIFY: el parámetro `text` en la URL de PLACE no ha sido verificado
 // contra el portal en producción. La URL base es correcta; el query-param puede
@@ -6,6 +7,11 @@ import type { PortalId, PortalInfo } from "./types";
 export function buildPlaceDeepLink(query: string): string {
   const text = encodeURIComponent(query.trim());
   return `https://contrataciondelestado.es/wps/portal/plataforma?text=${text}`;
+}
+
+export function buildDerechoAccesoDeepLink(query: string): string | undefined {
+  const entity = detectEntity(query);
+  return entity?.portadaUrl;
 }
 
 export const PORTALS: Record<PortalId, PortalInfo> = {
@@ -83,6 +89,22 @@ export const PORTALS: Record<PortalId, PortalInfo> = {
     ],
     searchTip:
       "La información ambiental se rige por la Ley 27/2006: tienes derecho a pedirla aunque no esté publicada.",
+  },
+
+  DERECHO_ACCESO: {
+    portalName: "Sede Electrónica — Derecho de Acceso",
+    portalUrl: "https://transparencia.sede.gob.es",
+    explanation:
+      "Para solicitar información pública a un ministerio u organismo debes presentar una solicitud formal de derecho de acceso en la Sede Electrónica correspondiente. El sistema te redirigirá al formulario específico del organismo, donde deberás autenticarte con Cl@ve o certificado digital.",
+    steps: [
+      "Haz clic en «Ir al portal» para acceder al formulario del organismo correspondiente.",
+      "Autentícate con Cl@ve, certificado FNMT o DNI-e.",
+      "Rellena tus datos personales y describe la información que solicitas.",
+      "Revisa y confirma la solicitud para obtener el justificante de presentación.",
+    ],
+    searchTip:
+      "Indica el ministerio u organismo en tu consulta para ir directamente a su formulario. Si no lo especificas, el sistema te pedirá que lo selecciones.",
+    buildDeepLink: buildDerechoAccesoDeepLink,
   },
 
   UNKNOWN: {

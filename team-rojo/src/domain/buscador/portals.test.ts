@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PORTALS, buildPlaceDeepLink } from "./portals";
+import { PORTALS, buildPlaceDeepLink, buildDerechoAccesoDeepLink } from "./portals";
 import type { PortalId } from "./types";
 
 const ALL_PORTAL_IDS: PortalId[] = [
@@ -8,6 +8,7 @@ const ALL_PORTAL_IDS: PortalId[] = [
   "TRANSPARENCIA",
   "BOE",
   "MEDIOAMBIENTAL",
+  "DERECHO_ACCESO",
   "UNKNOWN",
 ];
 
@@ -36,6 +37,27 @@ describe("PORTALS — tabla de enrutamiento", () => {
       expect(steps.length).toBeGreaterThanOrEqual(3);
       expect(steps.length).toBeLessThanOrEqual(5);
     }
+  });
+});
+
+describe("buildDerechoAccesoDeepLink", () => {
+  it("devuelve la portadaUrl del Ministerio de Hacienda cuando la consulta incluye 'Hacienda'", () => {
+    const url = buildDerechoAccesoDeepLink("solicitud acceso información Ministerio de Hacienda");
+    expect(url).toBe(
+      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514"
+    );
+  });
+
+  it("devuelve la portadaUrl de Sanidad cuando la consulta menciona 'Sanidad'", () => {
+    const url = buildDerechoAccesoDeepLink("reclamación documentos Sanidad");
+    expect(url).toBe(
+      "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101522"
+    );
+  });
+
+  it("devuelve undefined cuando la consulta no menciona ningún organismo específico", () => {
+    const url = buildDerechoAccesoDeepLink("solicitud acceso información");
+    expect(url).toBeUndefined();
   });
 });
 
