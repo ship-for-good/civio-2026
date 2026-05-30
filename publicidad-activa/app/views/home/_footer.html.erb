@@ -1,0 +1,40 @@
+<footer class="border-t border-stone-200 bg-stone-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <span class="flex size-9 items-center justify-center rounded-lg bg-sky-600 text-white text-sm font-bold">PA</span>
+          <span class="font-semibold">Publicidad Activa</span>
+        </div>
+        <p class="text-sm text-stone-600 leading-relaxed">
+          Un acceso unificado y comprensible al inventario de publicidad activa del Estado español. Inspirado en las recomendaciones de la Fundación Civio.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-semibold text-stone-900 mb-3">Explorar</h2>
+        <ul class="space-y-2 text-sm text-stone-600">
+          <li><%= link_to "Contratos", explore_path(q: "contratos"), class: "hover:text-sky-700" %></li>
+          <li><%= link_to "Subvenciones", explore_path(q: "subvenciones"), class: "hover:text-sky-700" %></li>
+          <li><%= link_to "Cargos públicos", explore_path(materia: "altos-cargos"), class: "hover:text-sky-700" %></li>
+          <li><%= link_to "Presupuestos", explore_path(q: "presupuestos"), class: "hover:text-sky-700" %></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="font-semibold text-stone-900 mb-3">Recursos</h2>
+        <ul class="space-y-2 text-sm text-stone-600">
+          <li><%= link_to "Organismos", organisms_path, class: "hover:text-sky-700" %></li>
+          <li><a href="/api/search" class="hover:text-sky-700">API pública</a></li>
+          <li><%= link_to "Mapa de URLs", url_map_path, class: "hover:text-sky-700" %></li>
+          <li><a href="https://transparencia.gob.es/publicidad-activa" target="_blank" rel="noopener" class="hover:text-sky-700">Portal oficial</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-stone-500">
+      <p>© <%= Date.current.year %> Publicidad Activa · Administración General del Estado</p>
+      <p>Datos bajo licencia abierta · Enlaces a fuentes oficiales</p>
+    </div>
+  </div>
+</footer>

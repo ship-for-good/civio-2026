@@ -1,0 +1,43 @@
+<section class="relative overflow-hidden border-b border-stone-200/80" data-controller="search-focus">
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#e7e5e40f_1px,transparent_1px),linear-gradient(to_bottom,#e7e5e40f_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,#000_60%,transparent_100%)]"></div>
+
+  <div class="relative max-w-3xl mx-auto px-4 sm:px-6 pt-16 pb-20 text-center">
+    <div class="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1 text-xs text-stone-600 mb-8">
+      <span class="size-1.5 rounded-full bg-sky-500"></span>
+      <span>Nuevo · <%= number_with_delimiter(total_resources) %> recursos indexados del portal nacional</span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 mb-5">
+      ¿Qué información <span class="text-teal-600">pública</span> existe?
+    </h1>
+
+    <p class="text-lg text-stone-600 leading-relaxed mb-10 max-w-2xl mx-auto">
+      Explora contratos, subvenciones, cargos y estructuras del sector público español. Sin tecnicismos, sin saltar entre portales.
+    </p>
+
+    <%= form_with url: explore_path, method: :get, class: "relative max-w-2xl mx-auto" do %>
+      <div class="flex items-center rounded-full border border-stone-200 bg-white shadow-sm shadow-stone-200/50 pl-5 pr-2 py-2 focus-within:border-sky-300 focus-within:ring-2 focus-within:ring-sky-100 transition-all">
+        <svg class="size-5 shrink-0 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+        </svg>
+        <%= text_field_tag :q, params[:q], placeholder: "Busca contratos, asesores, subvenciones, estructuras…", class: "flex-1 min-w-0 border-0 bg-transparent px-3 py-2 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-0 text-sm sm:text-base", data: { search_focus_target: "input" } %>
+        <kbd class="hidden sm:inline-flex items-center rounded border border-stone-200 bg-stone-50 px-1.5 py-0.5 text-[10px] font-medium text-stone-400 mr-2">⌘ K</kbd>
+        <%= submit_tag "Buscar →", class: "shrink-0 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-sky-700 cursor-pointer transition-colors" %>
+      </div>
+    <% end %>
+
+    <div class="mt-8 max-w-2xl mx-auto text-left">
+      <p class="text-xs text-stone-500 mb-3 flex items-center gap-1.5">
+        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
+        </svg>
+        Pruebas:
+      </p>
+      <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+        <% HomeHelper::QUICK_SEARCHES.each_with_index do |item, index| %>
+          <%= link_to item[:label], explore_path(q: item[:query]), class: "inline-flex rounded-full border px-3 py-1.5 text-xs transition-colors #{index.zero? ? 'border-sky-200 bg-sky-50 text-sky-800 hover:bg-sky-100' : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:text-stone-900'}" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

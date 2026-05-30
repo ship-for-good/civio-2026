@@ -1,0 +1,62 @@
+{
+  "pg": {
+    "label": "Presidencia del Gobierno",
+    "description": "Moncloa, Vicepresidencias y gabinete.",
+    "icon": "building"
+  },
+  "mhac": {
+    "label": "Ministerio de Hacienda",
+    "description": "Presupuestos, tributos y financiación territorial.",
+    "icon": "coins"
+  },
+  "mjus": {
+    "label": "Ministerio de Justicia",
+    "description": "Normativa, registros y administración de justicia.",
+    "icon": "scale"
+  },
+  "mint": {
+    "label": "Ministerio del Interior",
+    "description": "Seguridad, Guardia Civil, Policía Nacional y prisiones.",
+    "icon": "shield"
+  },
+  "mdef": {
+    "label": "Ministerio de Defensa",
+    "description": "Fuerzas Armadas, industria de defensa y cooperación internacional.",
+    "icon": "star"
+  },
+  "msssi": {
+    "label": "Ministerio de Sanidad",
+    "description": "Salud pública, sanidad exterior y política farmacéutica.",
+    "icon": "heart"
+  },
+  "mecd": {
+    "label": "Educación y FP",
+    "description": "Educación, formación profesional y universidades.",
+    "icon": "book"
+  },
+  "mefp": {
+    "label": "Trabajo y Economía Social",
+    "description": "Empleo, relaciones laborales y economía social.",
+    "icon": "users"
+  },
+  "mapa": {
+    "label": "Agricultura, Pesca y Alimentación",
+    "description": "Política agrícola, pesca y cadena alimentaria.",
+    "icon": "leaf"
+  },
+  "minetad": {
+    "label": "Transición Ecológica",
+    "description": "Medio ambiente, energía y cambio climático.",
+    "icon": "globe"
+  },
+  "mfom": {
+    "label": "Transportes y Movilidad",
+    "description": "Infraestructuras, movilidad y vivienda.",
+    "icon": "train"
+  },
+  "maec": {
+    "label": "Asuntos Exteriores y UE",
+    "description": "Diplomacia, Unión Europea y cooperación internacional.",
+    "icon": "flag"
+  }
+}
