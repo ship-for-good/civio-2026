@@ -1,10 +1,10 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import { parseCSV } from './utils/csv.js'
 import { enrichRequests, type EnrichedRequest, type RawRequest } from './utils/urgency.js'
 import { CSV_RAW } from './data/csvData.js'
 import { TODAY, toISODate } from './utils/dates.js'
-import { buildExpediente, type ExpedienteInput } from './utils/expediente.js'
-import { uploadAttachments, insertExpediente } from './lib/expedientesRepo.js'
+import { buildExpediente, expedienteRecordToRaw, mergeById, type ExpedienteInput } from './utils/expediente.js'
+import { uploadAttachments, insertExpediente, fetchExpedientes } from './lib/expedientesRepo.js'
 import { useAuth } from './contexts/AuthContext.jsx'
 import Header from './components/Header.jsx'
 import StatsBar from './components/StatsBar.jsx'
@@ -42,6 +42,15 @@ export default function App() {
     setToastMsg(msg)
     setTimeout(() => setToastMsg(null), 3000)
   }, [])
+
+  useEffect(() => {
+    fetchExpedientes()
+      .then(records => {
+        const fetched = enrichRequests(records.map(expedienteRecordToRaw))
+        setRequests(prev => mergeById(prev, fetched))
+      })
+      .catch(() => showToast('Error al cargar expedientes de la base de datos'))
+  }, [showToast])
 
   const handleCSVLoad = useCallback((csvText: string, sourceName: string) => {
     const loaded = loadAndEnrich(csvText)

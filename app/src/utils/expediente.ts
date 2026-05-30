@@ -1,4 +1,14 @@
-import type { RawRequest } from './urgency.js'
+import type { RawRequest, EnrichedRequest } from './urgency.js'
+
+export interface ExpedienteRecord {
+  id: string
+  asunto: string
+  estado: string
+  fecha: string
+  vencimiento: string | null
+  autor: string
+  attachments: string[]
+}
 
 const CSV_KEYS: (keyof RawRequest)[] = [
   'Id', 'Ámbito', 'Fecha', 'Estado', 'Asunto', 'Ministerio',
@@ -50,6 +60,30 @@ export function buildExpediente(
     'Fecha': today,
     'Autor': options.autor ?? '',
   }
+}
+
+export function expedienteRecordToRaw(record: ExpedienteRecord): RawRequest {
+  const base = Object.fromEntries(CSV_KEYS.map(k => [k, ''])) as unknown as RawRequest
+  return {
+    ...base,
+    'Id': record.id,
+    'Asunto': record.asunto,
+    'Estado': record.estado,
+    'Fecha': record.fecha,
+    'Vencimiento': record.vencimiento ?? '',
+    'Autor': record.autor,
+  }
+}
+
+export function mergeById(
+  csvRows: EnrichedRequest[],
+  supabaseRows: EnrichedRequest[],
+): EnrichedRequest[] {
+  const supabaseById = new Map(supabaseRows.map(r => [r['Id'], r]))
+  const merged = csvRows.map(r => supabaseById.get(r['Id']) ?? r)
+  const csvIds = new Set(csvRows.map(r => r['Id']))
+  const added = supabaseRows.filter(r => !csvIds.has(r['Id']))
+  return [...added, ...merged]
 }
 
 export function slugifyFilename(filename: string): string {

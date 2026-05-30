@@ -1,5 +1,7 @@
 import { supabase } from './supabase.js'
-import { slugifyFilename } from '../utils/expediente.js'
+import { slugifyFilename, type ExpedienteRecord } from '../utils/expediente.js'
+
+export type { ExpedienteRecord }
 
 const BUCKET = 'expediente-adjuntos'
 
@@ -15,14 +17,13 @@ export async function uploadAttachments(files: File[], expedienteId: string): Pr
   return paths
 }
 
-export interface ExpedienteRecord {
-  id: string
-  asunto: string
-  estado: string
-  fecha: string
-  vencimiento: string | null
-  autor: string
-  attachments: string[]
+export async function fetchExpedientes(): Promise<ExpedienteRecord[]> {
+  const { data, error } = await supabase
+    .from('expedientes')
+    .select('*')
+    .order('fecha', { ascending: false })
+  if (error) throw error
+  return (data ?? []) as ExpedienteRecord[]
 }
 
 export async function insertExpediente(record: ExpedienteRecord): Promise<ExpedienteRecord> {

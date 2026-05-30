@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateExpediente, buildExpediente, slugifyFilename } from './expediente.js'
+import { validateExpediente, buildExpediente, slugifyFilename, expedienteRecordToRaw, mergeById, type ExpedienteRecord } from './expediente.js'
 import { enrichRequests } from './urgency.js'
 
 // ─────────────────────────────────────────────
@@ -114,6 +114,90 @@ describe('buildExpediente', () => {
   it('should_trim_numeroExpediente_before_assigning_to_Id', () => {
     const req = buildExpediente({ ...input, numeroExpediente: '  EXP-099  ' }, TODAY, options)
     expect(req['Id']).toBe('EXP-099')
+  })
+})
+
+// ─────────────────────────────────────────────
+// expedienteRecordToRaw
+// ─────────────────────────────────────────────
+describe('expedienteRecordToRaw', () => {
+  const dbRecord: ExpedienteRecord = {
+    id: 'EXP-042',
+    asunto: 'Solicitud presupuestos',
+    estado: 'En tramitación',
+    fecha: '2026-05-01',
+    vencimiento: '2026-07-01',
+    autor: 'ana@civio.es',
+    attachments: [],
+  }
+
+  it('should_map_db_record_to_raw_request_keys', () => {
+    const raw = expedienteRecordToRaw(dbRecord)
+    expect(raw['Id']).toBe('EXP-042')
+    expect(raw['Asunto']).toBe('Solicitud presupuestos')
+    expect(raw['Estado']).toBe('En tramitación')
+    expect(raw['Fecha']).toBe('2026-05-01')
+    expect(raw['Vencimiento']).toBe('2026-07-01')
+    expect(raw['Autor']).toBe('ana@civio.es')
+  })
+
+  it('should_map_null_vencimiento_to_empty_string', () => {
+    const raw = expedienteRecordToRaw({ ...dbRecord, vencimiento: null })
+    expect(raw['Vencimiento']).toBe('')
+  })
+
+  it('should_leave_unmapped_csv_keys_as_empty_string', () => {
+    const raw = expedienteRecordToRaw(dbRecord)
+    const unmappedKeys = [
+      'Ámbito', 'Ministerio', 'Inicio tramitación',
+      'Art 20.1 (volumen)', 'Vencimiento normal', 'Vencimiento 20.1',
+      'Resolución', 'Notificación', 'Días para respuesta',
+      'Días para reclamar por silencio administrativo', 'Días para reclamar resolución',
+      'Notas', 'Reclamación',
+    ]
+    for (const key of unmappedKeys) {
+      expect((raw as unknown as Record<string, string>)[key]).toBe('')
+    }
+  })
+})
+
+// ─────────────────────────────────────────────
+// mergeById
+// ─────────────────────────────────────────────
+describe('mergeById', () => {
+  const makeRow = (id: string, asunto: string) => {
+    const [enriched] = enrichRequests([{
+      Id: id, Asunto: asunto, Estado: 'En tramitación', Fecha: '2026-05-01',
+      Ámbito: '', Ministerio: '', 'Inicio tramitación': '', 'Art 20.1 (volumen)': '',
+      'Vencimiento normal': '', 'Vencimiento 20.1': '', Vencimiento: '', Resolución: '',
+      Notificación: '', 'Días para respuesta': '',
+      'Días para reclamar por silencio administrativo': '',
+      'Días para reclamar resolución': '', Notas: '', Autor: '', Reclamación: '',
+    }])
+    return enriched
+  }
+
+  it('should_keep_csv_rows_unchanged_when_no_supabase_rows', () => {
+    const csv = [makeRow('EXP-001', 'CSV row')]
+    const result = mergeById(csv, [])
+    expect(result).toHaveLength(1)
+    expect(result[0]['Id']).toBe('EXP-001')
+  })
+
+  it('should_append_new_supabase_rows_not_present_in_csv', () => {
+    const csv = [makeRow('EXP-001', 'CSV row')]
+    const supabase = [makeRow('EXP-002', 'Supabase row')]
+    const result = mergeById(csv, supabase)
+    expect(result).toHaveLength(2)
+    expect(result.map(r => r['Id'])).toContain('EXP-002')
+  })
+
+  it('should_prefer_supabase_row_when_id_collides', () => {
+    const csv = [makeRow('EXP-001', 'CSV version')]
+    const supabase = [makeRow('EXP-001', 'Supabase version')]
+    const result = mergeById(csv, supabase)
+    expect(result).toHaveLength(1)
+    expect(result[0]['Asunto']).toBe('Supabase version')
   })
 })
 
