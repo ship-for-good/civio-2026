@@ -108,7 +108,7 @@ test.describe("Happy Path: Derecho de Acceso → Ministerio de Hacienda", () => 
       const explanation = await buscador.explanation.innerText();
       expect(explanation.toLowerCase()).toContain("hacienda");
 
-      const stepsCount = await buscador.getStepsCount();
+      const stepsCount = await buscador.resultCard.locator("ol li").count();
       expect(stepsCount).toBeGreaterThanOrEqual(3);
       expect(stepsCount).toBeLessThanOrEqual(5);
 

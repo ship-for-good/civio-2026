@@ -19,14 +19,14 @@ export class BuscadorPage {
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole("heading", {
-      name: /¿dónde está esa información pública/i,
+      name: /Aquí la encuentras/i,
     });
     this.searchInput = page.getByTestId("search-input");
     this.submitButton = page.getByTestId("search-submit");
     this.resultCard = page.getByTestId("result-card");
-    this.resultLabel = page.getByTestId("result-label");
+    this.resultLabel = page.getByTestId("result-card").locator("h2").first();
     this.goToPortalButton = page.getByRole("link", {
-      name: /ir al portal/i,
+      name: /Hacer la solicitud/i,
     });
     this.explanation = page.locator("[data-testid='result-explanation']");
     this.stepsList = page.locator("[data-testid='step-guide']");
@@ -36,7 +36,7 @@ export class BuscadorPage {
       name: /probar otra/i,
     });
     this.loadingIndicator = page.getByRole("status", {
-      name: /clasificando/i,
+      name: /Localizando tu información/i,
     });
     this.queryChips = page.locator("[data-testid='query-chips']");
   }
