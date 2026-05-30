@@ -1,0 +1,22 @@
+<% content_for :title, "Página no encontrada — Publicidad Activa" %>
+
+<div class="py-12 sm:py-20 text-center">
+  <p class="text-7xl sm:text-8xl font-bold tracking-tight text-stone-200 select-none" aria-hidden="true">404</p>
+
+  <h1 class="mt-4 text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+    Página no encontrada
+  </h1>
+
+  <p class="mt-4 text-base sm:text-lg text-stone-600 max-w-md mx-auto leading-relaxed">
+    La dirección no existe o el contenido ya no está disponible. Comprueba la URL o vuelve al inicio.
+  </p>
+
+  <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+    <%= link_to "Ir al inicio", root_path,
+          class: "inline-flex items-center rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-sky-700 transition-colors" %>
+    <%= link_to "Explorar datos", explore_path,
+          class: "inline-flex items-center rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 hover:border-stone-300 hover:bg-stone-50 transition-colors" %>
+    <%= link_to "Organismos", organisms_path,
+          class: "inline-flex items-center rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 hover:border-stone-300 hover:bg-stone-50 transition-colors" %>
+  </div>
+</div>

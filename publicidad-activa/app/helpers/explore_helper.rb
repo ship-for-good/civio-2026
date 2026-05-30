@@ -18,11 +18,11 @@ module ExploreHelper
   end
 
   def explore_vigencia_pill_classes(active)
-    base = "inline-flex cursor-pointer items-center rounded-xl px-4 py-2.5 sm:px-5 sm:py-3 text-sm font-medium transition-colors"
+    base = "inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors"
     if active
-      "#{base} bg-stone-900 text-white shadow-sm"
+      "#{base} bg-stone-900 text-white"
     else
-      "#{base} border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50 hover:text-stone-900"
+      "#{base} text-stone-600 hover:bg-stone-100 hover:text-stone-900"
     end
   end
 

@@ -18,4 +18,7 @@ Rails.application.routes.draw do
 
   post "chatbot/ask", to: "chatbot#ask"
   get  "chatbot/faq", to: "chatbot#faq"
+
+  match "*path", to: "errors#not_found", via: :all,
+        constraints: ->(req) { !req.path.start_with?("/rails/") }
 end
