@@ -7,15 +7,18 @@ defmodule SQLete.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      SQLeteWeb.Telemetry,
-      SQLete.Repo
-    ] ++ arcana_children() ++ [
-      {DNSCluster, query: Application.get_env(:sqlete, :dns_cluster_query) || :ignore},
-      {Oban, Application.fetch_env!(:sqlete, Oban)},
-      {Phoenix.PubSub, name: SQLete.PubSub},
-      SQLeteWeb.Endpoint
-    ]
+    children =
+      [
+        SQLeteWeb.Telemetry,
+        SQLete.Repo
+      ] ++
+        arcana_children() ++
+        [
+          {DNSCluster, query: Application.get_env(:sqlete, :dns_cluster_query) || :ignore},
+          {Oban, Application.fetch_env!(:sqlete, Oban)},
+          {Phoenix.PubSub, name: SQLete.PubSub},
+          SQLeteWeb.Endpoint
+        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -39,12 +42,31 @@ defmodule SQLete.Application do
   end
 
   defp graph_children do
-    if Application.get_env(:sqlete, :documents_arcana_graph, true) or Arcana.Graph.enabled?() do
+    if graph_services_enabled?() and needs_ner_serving?() do
       [Arcana.Graph.NERServing]
     else
       []
     end
   end
+
+  defp graph_services_enabled? do
+    Application.get_env(:sqlete, :documents_arcana_graph, true) or Arcana.Graph.enabled?()
+  end
+
+  defp needs_ner_serving? do
+    graph_config = Application.get_env(:arcana, :graph, [])
+
+    case Keyword.get(graph_config, :extractor) do
+      nil -> entity_extractor_uses_ner?(Keyword.get(graph_config, :entity_extractor))
+      _extractor -> false
+    end
+  end
+
+  defp entity_extractor_uses_ner?(nil), do: true
+  defp entity_extractor_uses_ner?(:ner), do: true
+  defp entity_extractor_uses_ner?(Arcana.Graph.EntityExtractor.NER), do: true
+  defp entity_extractor_uses_ner?({Arcana.Graph.EntityExtractor.NER, _opts}), do: true
+  defp entity_extractor_uses_ner?(_other), do: false
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.

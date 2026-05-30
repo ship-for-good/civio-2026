@@ -10,7 +10,9 @@ defmodule SQLete.Repo.Migrations.CreateArcanaGraphTables do
       add :embedding, :vector, size: 1024
       add :metadata, :map, default: %{}
       add :chunk_id, references(:arcana_chunks, type: :binary_id, on_delete: :nilify_all)
-      add :collection_id, references(:arcana_collections, type: :binary_id, on_delete: :delete_all)
+
+      add :collection_id,
+          references(:arcana_collections, type: :binary_id, on_delete: :delete_all)
 
       timestamps()
     end
@@ -30,11 +32,13 @@ defmodule SQLete.Repo.Migrations.CreateArcanaGraphTables do
       add :span_start, :integer
       add :span_end, :integer
       add :context, :text
+
       add :entity_id,
           references(:arcana_graph_entities, type: :binary_id, on_delete: :delete_all),
           null: false
 
-      add :chunk_id, references(:arcana_chunks, type: :binary_id, on_delete: :delete_all), null: false
+      add :chunk_id, references(:arcana_chunks, type: :binary_id, on_delete: :delete_all),
+        null: false
 
       timestamps()
     end
@@ -48,6 +52,7 @@ defmodule SQLete.Repo.Migrations.CreateArcanaGraphTables do
       add :description, :text
       add :strength, :integer
       add :metadata, :map, default: %{}
+
       add :source_id,
           references(:arcana_graph_entities, type: :binary_id, on_delete: :delete_all),
           null: false
@@ -71,7 +76,9 @@ defmodule SQLete.Repo.Migrations.CreateArcanaGraphTables do
       add :entity_ids, {:array, :binary_id}, default: []
       add :dirty, :boolean, default: true
       add :change_count, :integer, default: 0
-      add :collection_id, references(:arcana_collections, type: :binary_id, on_delete: :delete_all)
+
+      add :collection_id,
+          references(:arcana_collections, type: :binary_id, on_delete: :delete_all)
 
       timestamps()
     end

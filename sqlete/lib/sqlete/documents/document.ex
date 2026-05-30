@@ -12,7 +12,7 @@ defmodule SQLete.Documents.Document do
           content_type: String.t(),
           byte_size: non_neg_integer(),
           checksum: String.t(),
-      status: :accepted | :uploaded | :queued | :processing | :completed | :failed,
+          status: :accepted | :uploaded | :queued | :processing | :completed | :failed,
           metadata: map()
         }
 end

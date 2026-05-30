@@ -14,7 +14,8 @@ defmodule SQLete.Documents do
   @spec ingest_pdf(binary(), ingest_attrs()) :: {:ok, Document.t()} | {:error, term()}
   def ingest_pdf(pdf_binary, attrs \\ %{})
 
-  def ingest_pdf(pdf_binary, attrs) when is_binary(pdf_binary) and (is_list(attrs) or is_map(attrs)) do
+  def ingest_pdf(pdf_binary, attrs)
+      when is_binary(pdf_binary) and (is_list(attrs) or is_map(attrs)) do
     attrs = normalize_attrs(attrs)
 
     with :ok <- validate_pdf_binary(pdf_binary),

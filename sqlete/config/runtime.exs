@@ -20,6 +20,40 @@ if System.get_env("PHX_SERVER") do
   config :sqlete, SQLeteWeb.Endpoint, server: true
 end
 
+env_integer = fn name, default ->
+  name
+  |> System.get_env(Integer.to_string(default))
+  |> String.to_integer()
+end
+
+env_float = fn name, default ->
+  case System.get_env(name) do
+    nil ->
+      default
+
+    value ->
+      case Float.parse(value) do
+        {number, ""} -> number
+        _other -> default
+      end
+  end
+end
+
+lm_studio_base_url = System.get_env("LM_STUDIO_URL", "http://127.0.0.1:1234")
+
+config :sqlete, :embedder,
+  base_url: lm_studio_base_url,
+  model: System.get_env("LM_STUDIO_EMBEDDER_MODEL", "text-embedding-qwen3-embedding-0.6b"),
+  timeout: env_integer.("LM_STUDIO_EMBEDDER_TIMEOUT", 120_000),
+  dimensions: env_integer.("LM_STUDIO_EMBEDDER_DIMENSIONS", 1024)
+
+config :sqlete, :llm,
+  base_url: lm_studio_base_url,
+  model: System.get_env("LM_STUDIO_LLM_MODEL", "qwen3.6-35b-a3b-ud-mlx"),
+  timeout: env_integer.("LM_STUDIO_LLM_TIMEOUT", 600_000),
+  max_tokens: env_integer.("LM_STUDIO_LLM_MAX_TOKENS", 8_192),
+  temperature: env_float.("LM_STUDIO_LLM_TEMPERATURE", 0.1)
+
 pdf_ingestion_queue_concurrency =
   System.get_env("OBAN_PDF_INGESTION_CONCURRENCY", "5")
   |> String.to_integer()
