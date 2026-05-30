@@ -100,6 +100,26 @@ func TestTraverseSearch_prefersLeafOverIntermediate(t *testing.T) {
 	}
 }
 
+func TestTraverseSearch_prefersBuscadorEntryOverNavigation(t *testing.T) {
+	nodes := []ExportNode{
+		{ID: 1, Title: "Sección", Description: "subvenciones", PageType: "navigation"},
+		{ID: 2, Title: "Buscador de subvenciones", Description: "entrada", PageType: "buscador_entry"},
+	}
+	nodeByID := testNodeByID(nodes)
+
+	results := TraverseSearch([]string{"subvenciones"}, nodeByID)
+
+	if len(results) == 0 {
+		t.Fatal("expected at least one result")
+	}
+	if results[0].NodeID != 2 {
+		t.Errorf("results[0].NodeID = %d, want buscador_entry node 2", results[0].NodeID)
+	}
+	if results[0].Node.PageType != "buscador_entry" {
+		t.Errorf("results[0] page_type = %q, want buscador_entry", results[0].Node.PageType)
+	}
+}
+
 func TestTraverseSearch_findsMatchInSiblingBranch(t *testing.T) {
 	parent1 := int64(1)
 	nodes := []ExportNode{

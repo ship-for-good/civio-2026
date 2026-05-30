@@ -20,7 +20,7 @@ type PathStep struct {
 
 // TraverseSearch scores every node reachable via BFS from the roots (and any
 // disconnected nodes), then returns up to 3 matches ordered by score while
-// prioritizing leaf_static over navigation page types.
+// prioritizing leaf_static and buscador_entry over navigation page types.
 func TraverseSearch(keywords []string, nodes map[int64]*ExportNode) []SearchResult {
 	normalized := normalizeKeywords(keywords)
 	if len(normalized) == 0 || len(nodes) == 0 {
@@ -143,15 +143,19 @@ func nodeScore(node *ExportNode, keywords []string) int {
 	return score
 }
 
+func isPreferredPageType(pageType string) bool {
+	return pageType == "leaf_static" || pageType == "buscador_entry"
+}
+
 func topResultsByPageType(results []SearchResult, limit int) []SearchResult {
 	if len(results) == 0 {
 		return nil
 	}
 	sort.Slice(results, func(i, j int) bool {
-		leafI := results[i].Node.PageType == "leaf_static"
-		leafJ := results[j].Node.PageType == "leaf_static"
-		if leafI != leafJ {
-			return leafI
+		preferredI := isPreferredPageType(results[i].Node.PageType)
+		preferredJ := isPreferredPageType(results[j].Node.PageType)
+		if preferredI != preferredJ {
+			return preferredI
 		}
 		if results[i].Score != results[j].Score {
 			return results[i].Score > results[j].Score

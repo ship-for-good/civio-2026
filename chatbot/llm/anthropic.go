@@ -99,6 +99,52 @@ func (c *AnthropicClient) VerifyResult(question, nodeTitle, nodeDescription stri
 	return parseVerification(text)
 }
 
+// GenerateNavigationHint asks Anthropic for plain-language guidance on what to
+// click or search within the selected page.
+func GenerateNavigationHint(question, lastNodeTitle, lastNodeDescription, lastNodeURL string) (string, error) {
+	client, err := NewAnthropicClient()
+	if err != nil {
+		return "", err
+	}
+	return client.GenerateNavigationHint(question, lastNodeTitle, lastNodeDescription, lastNodeURL)
+}
+
+// GenerateNavigationHint calls Anthropic to produce simple next-step instructions
+// for users without institutional knowledge.
+func (c *AnthropicClient) GenerateNavigationHint(question, lastNodeTitle, lastNodeDescription, lastNodeURL string) (string, error) {
+	question = strings.TrimSpace(question)
+	if question == "" {
+		return "", fmt.Errorf("question is empty")
+	}
+
+	text, err := c.complete(navigationHintPrompt(question, lastNodeTitle, lastNodeDescription, lastNodeURL))
+	if err != nil {
+		return "", fmt.Errorf("generate navigation hint: %w", err)
+	}
+	return strings.TrimSpace(text), nil
+}
+
+func navigationHintPrompt(question, lastNodeTitle, lastNodeDescription, lastNodeURL string) string {
+	return fmt.Sprintf(`Eres un asistente del Portal de Transparencia español.
+El usuario NO tiene conocimientos institucionales ni técnicos.
+
+Pregunta del usuario:
+"%s"
+
+Última página encontrada en el portal:
+Título: %s
+Descripción: %s
+URL: %s
+
+Escribe instrucciones claras y sencillas (2-4 frases) sobre qué debe buscar
+o en qué enlace debe clicar dentro de esa página para acercarse a la respuesta.
+Devuelve la respuesta en Markdown con este formato:
+- Empieza con un emoji relevante.
+- Usa **negritas** para los términos clave.
+- Añade una lista de pasos con el prefijo "– " (guion largo).
+No uses jerga técnica ni institucional.`, question, lastNodeTitle, lastNodeDescription, lastNodeURL)
+}
+
 func verifyResultPrompt(question, nodeTitle, nodeDescription string) string {
 	return fmt.Sprintf(`Eres un asistente del Portal de Transparencia español.
 Un ciudadano ha hecho esta pregunta:
@@ -111,8 +157,8 @@ Descripción: %s
 ¿Esta página responde realmente a la pregunta del ciudadano?
 
 Responde EXACTAMENTE en dos líneas:
-VEREDICTO: SI o NO
-MENSAJE: si NO, explica brevemente por qué no encaja; si SI, escribe ok`, question, nodeTitle, nodeDescription)
+VEREDICTO: SI o NO  (esta línea sin Markdown)
+MENSAJE: empieza con un emoji y usa Markdown con **negritas** para términos clave; si VEREDICTO es NO, explica brevemente por qué no encaja.`, question, nodeTitle, nodeDescription)
 }
 
 func parseVerification(text string) (bool, string, error) {
@@ -125,7 +171,8 @@ func parseVerification(text string) (bool, string, error) {
 		if line == "" {
 			continue
 		}
-		upper := strings.ToUpper(line)
+		clean := strings.ReplaceAll(line, "**", "")
+		upper := strings.ToUpper(clean)
 		if strings.HasPrefix(upper, "VEREDICTO:") {
 			verdict := strings.TrimSpace(strings.TrimPrefix(upper, "VEREDICTO:"))
 			matched = verdict == "SI" || strings.HasPrefix(verdict, "SI ")
@@ -133,7 +180,7 @@ func parseVerification(text string) (bool, string, error) {
 			continue
 		}
 		if strings.HasPrefix(upper, "MENSAJE:") {
-			_, rest, ok := strings.Cut(line, ":")
+			_, rest, ok := strings.Cut(clean, ":")
 			if ok {
 				message = strings.TrimSpace(rest)
 			}
@@ -143,7 +190,7 @@ func parseVerification(text string) (bool, string, error) {
 	if !foundVerdict {
 		return false, "", fmt.Errorf("could not parse verification response: %q", text)
 	}
-	if matched && (message == "" || strings.EqualFold(message, "ok")) {
+	if matched {
 		message = ""
 	}
 	return matched, message, nil

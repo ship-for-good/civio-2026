@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	msgFound = "Sí, esa información está disponible en el Portal de Transparencia."
-	msgNotFound = "Esa información no está publicada directamente. Puedes solicitarla mediante el derecho de acceso en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica"
+	msgFound = "✅ Sí, esa información está disponible en el **Portal de Transparencia**."
+	msgNotFound = "🔎 Esa información no está publicada directamente. Puedes solicitarla mediante el **derecho de acceso** en https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica"
 	derechoAccesoURL = "https://transparencia.gob.es/derecho-acceso/solicite-informacion-publica"
 )
 
@@ -21,11 +21,15 @@ type KeywordExtractor func(question string) ([]string, error)
 // ResultVerifier checks whether a matched node answers the user's question.
 type ResultVerifier func(question, nodeTitle, nodeDescription string) (bool, string, error)
 
+// NavigationHintGenerator creates plain-language guidance for next steps.
+type NavigationHintGenerator func(question, lastNodeTitle, lastNodeDescription, lastNodeURL string) (string, error)
+
 // Handler serves POST /chat using a loaded graph.
 type Handler struct {
 	Graph           *graph.Graph
 	extractKeywords KeywordExtractor
 	verifyResult    ResultVerifier
+	generateHint    NavigationHintGenerator
 }
 
 // New creates a chat handler from a loaded graph.
@@ -34,6 +38,7 @@ func New(g *graph.Graph) *Handler {
 		Graph:           g,
 		extractKeywords: llm.ExtractKeywords,
 		verifyResult:    llm.VerifyResult,
+		generateHint:    llm.GenerateNavigationHint,
 	}
 }
 
@@ -44,6 +49,7 @@ type chatRequest struct {
 type chatResponse struct {
 	Found       bool          `json:"found"`
 	Message     string        `json:"message"`
+	Hint        string        `json:"hint"`
 	URL         string        `json:"url"`
 	Path        []pathStep    `json:"path"`
 	MatchedNode *matchedNode  `json:"matched_node"`
@@ -88,24 +94,52 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	results := graph.TraverseSearch(keywords, h.Graph.NodeByID)
-	if len(results) > 0 {
-		node := results[0].Node
-		matched, explanation, err := h.verifyResult(req.Question, node.Title, node.Description)
-		if err == nil && !matched {
-			writeNotFound(w, notFoundMessage(explanation))
-			return
-		}
+	node, explanation, verified := h.firstVerifiedResult(req.Question, results)
+	if verified {
 		writeJSON(w, http.StatusOK, chatResponse{
 			Found:       true,
 			Message:     msgFound,
+			Hint:        "",
 			URL:         node.URL,
 			Path:        pathSteps(graph.BuildPath(node.ID, h.Graph.NodeByID)),
 			MatchedNode: toMatchedNode(node),
 		})
 		return
 	}
+	if len(results) > 0 {
+		last := results[len(results)-1].Node
+		hint := h.navigationHint(req.Question, last)
+		writeNotFound(w, notFoundMessage(explanation), hint)
+		return
+	}
 
-	writeNotFound(w, msgNotFound)
+	writeNotFound(w, msgNotFound, "")
+}
+
+// firstVerifiedResult tries up to the top 3 search results in order. It returns the
+// first node that passes verification, or false with the last rejection explanation.
+func (h *Handler) firstVerifiedResult(question string, results []graph.SearchResult) (*graph.ExportNode, string, bool) {
+	limit := len(results)
+	if limit > 3 {
+		limit = 3
+	}
+
+	var lastExplanation string
+	for i := 0; i < limit; i++ {
+		node := results[i].Node
+		if node == nil {
+			continue
+		}
+		matched, explanation, err := h.verifyResult(question, node.Title, node.Description)
+		if err != nil {
+			return node, "", true
+		}
+		if matched {
+			return node, "", true
+		}
+		lastExplanation = explanation
+	}
+	return nil, lastExplanation, false
 }
 
 func notFoundMessage(explanation string) string {
@@ -113,13 +147,25 @@ func notFoundMessage(explanation string) string {
 	if explanation == "" {
 		return msgNotFound
 	}
-	return explanation + " Puedes solicitarla mediante el derecho de acceso en " + derechoAccesoURL
+	return explanation + "\n\n– Si no aparece la información, puedes solicitarla mediante el **derecho de acceso** en " + derechoAccesoURL
 }
 
-func writeNotFound(w http.ResponseWriter, message string) {
+func (h *Handler) navigationHint(question string, node *graph.ExportNode) string {
+	if h.generateHint == nil || node == nil {
+		return ""
+	}
+	hint, err := h.generateHint(question, node.Title, node.Description, node.URL)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(hint)
+}
+
+func writeNotFound(w http.ResponseWriter, message, hint string) {
 	writeJSON(w, http.StatusOK, chatResponse{
 		Found:       false,
 		Message:     message,
+		Hint:        hint,
 		URL:         derechoAccesoURL,
 		Path:        []pathStep{},
 		MatchedNode: nil,

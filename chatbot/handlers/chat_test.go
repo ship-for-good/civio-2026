@@ -24,13 +24,21 @@ func testGraph(nodes []graph.ExportNode) *graph.Graph {
 func testHandler(g *graph.Graph, keywords KeywordExtractor) *Handler {
 	return testHandlerWithVerifier(g, keywords, func(string, string, string) (bool, string, error) {
 		return true, "", nil
+	}, func(string, string, string, string) (string, error) {
+		return "", nil
 	})
 }
 
-func testHandlerWithVerifier(g *graph.Graph, keywords KeywordExtractor, verify ResultVerifier) *Handler {
+func testHandlerWithVerifier(
+	g *graph.Graph,
+	keywords KeywordExtractor,
+	verify ResultVerifier,
+	hint NavigationHintGenerator,
+) *Handler {
 	h := New(g)
 	h.extractKeywords = keywords
 	h.verifyResult = verify
+	h.generateHint = hint
 	return h
 }
 
@@ -118,6 +126,33 @@ func TestChat_notFound_returnsFixedDerechoAcceso(t *testing.T) {
 	}
 }
 
+func TestChat_verifySecondResultAccepted(t *testing.T) {
+	nodes := []graph.ExportNode{
+		{ID: 1, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones"},
+		{ID: 2, Title: "Retribuciones de altos cargos", URL: "https://example.com/retribuciones", Description: "retribuciones"},
+	}
+	h := testHandlerWithVerifier(testGraph(nodes), func(string) ([]string, error) {
+		return []string{"contratos", "retribuciones"}, nil
+	}, func(_ string, title, _ string) (bool, string, error) {
+		if strings.Contains(strings.ToLower(title), "contratos") {
+			return false, "No trata sobre retribuciones.", nil
+		}
+		return true, "", nil
+	}, func(string, string, string, string) (string, error) {
+		return "", nil
+	})
+
+	rec := postChat(t, h, `{"question":"¿Cuáles son las retribuciones de los altos cargos?"}`)
+	resp := decodeChatResponse(t, rec)
+
+	if !resp.Found {
+		t.Fatal("found = false, want true using second verified result")
+	}
+	if resp.URL != nodes[1].URL {
+		t.Errorf("url = %q, want second result %q", resp.URL, nodes[1].URL)
+	}
+}
+
 func TestChat_verifyRejected_returnsNotFound(t *testing.T) {
 	nodes := []graph.ExportNode{
 		{ID: 1, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones"},
@@ -126,6 +161,8 @@ func TestChat_verifyRejected_returnsNotFound(t *testing.T) {
 		return []string{"contratos"}, nil
 	}, func(string, string, string) (bool, string, error) {
 		return false, "Esta página trata sobre contratos, no sobre retribuciones.", nil
+	}, func(string, string, string, string) (string, error) {
+		return "Busca el apartado de retribuciones en el menú de la página.", nil
 	})
 
 	rec := postChat(t, h, `{"question":"¿Cuáles son las retribuciones de los altos cargos?"}`)
@@ -145,6 +182,32 @@ func TestChat_verifyRejected_returnsNotFound(t *testing.T) {
 	}
 	if resp.URL != derechoAccesoURL {
 		t.Errorf("url = %q, want %q", resp.URL, derechoAccesoURL)
+	}
+	if resp.Hint == "" {
+		t.Error("hint is empty, want guidance text")
+	}
+}
+
+func TestChat_notFound_hintFailureDoesNotBreakResponse(t *testing.T) {
+	nodes := []graph.ExportNode{
+		{ID: 1, Title: "Contratos", URL: "https://example.com/contratos", Description: "adjudicaciones"},
+	}
+	h := testHandlerWithVerifier(testGraph(nodes), func(string) ([]string, error) {
+		return []string{"contratos"}, nil
+	}, func(string, string, string) (bool, string, error) {
+		return false, "No encaja con la pregunta.", nil
+	}, func(string, string, string, string) (string, error) {
+		return "", http.ErrHandlerTimeout
+	})
+
+	rec := postChat(t, h, `{"question":"¿Dónde están las retribuciones?"}`)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200; body: %s", rec.Code, rec.Body.String())
+	}
+
+	resp := decodeChatResponse(t, rec)
+	if resp.Hint != "" {
+		t.Errorf("hint = %q, want empty on hint failure", resp.Hint)
 	}
 }
 
