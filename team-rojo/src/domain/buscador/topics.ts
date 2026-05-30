@@ -118,6 +118,20 @@ export const TOPICS: Record<TopicId, TopicCopy> = {
       "Si buscas sueldos de cargos concretos, puede que la sección de retribuciones sea más directa.",
   },
 
+  hacienda: {
+    label: "Derecho de acceso — Ministerio de Hacienda",
+    explanation:
+      "Para pedir información del Ministerio de Hacienda que no esté publicada, debes presentar una solicitud de acceso en la sede electrónica del Portal de la Transparencia, en el procedimiento del ámbito de Hacienda.",
+    steps: [
+      "Abre el procedimiento de derecho de acceso en la sede de transparencia (ámbito Hacienda).",
+      "Identifícate con Cl@ve, certificado digital o DNI-e.",
+      "Cumplimenta el formulario describiendo con claridad la información que solicitas.",
+      "Guarda el resguardo de registro; podrás seguir el expediente en «Mis expedientes».",
+    ],
+    searchTip:
+      "Indica el documento o dato concreto; no hace falta justificar el motivo de la solicitud.",
+  },
+
   unknown: {
     label: "No lo tenemos claro todavía",
     explanation:

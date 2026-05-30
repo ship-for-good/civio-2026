@@ -124,6 +124,15 @@
       "source_url": "https://transparencia.gob.es/transparencia/publicidad-activa/organizacion-empleo",
       "type": "interno",
       "is_special_section": false
+    },
+    {
+      "id": "hacienda",
+      "keywords": [
+        "hacienda"
+      ],
+      "source_url": "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514",
+      "type": "externo",
+      "is_special_section": false
     }
   ]
 }

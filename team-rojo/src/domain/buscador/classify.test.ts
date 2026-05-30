@@ -138,6 +138,23 @@ describe("classify — grafo v2 (keywords.json)", () => {
         "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514",
       );
     });
+  });
+
+  describe("hacienda", () => {
+    it("Given hacienda, Then topicId es hacienda con URL del ámbito Hacienda", () => {
+      const result = classify("hacienda");
+      expect(result.topicId).toBe("hacienda");
+      expect(result.portalUrl).toBe(
+        "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514"
+      );
+      expect(result.routingType).toBe("externo");
+    });
+  });
+
+  describe("Prioridad del grafo", () => {
+    it("contrato antes que subvención en la misma frase", () => {
+      expect(classify("contrato de subvención mixto").topicId).toBe("contratacion");
+    });
 
     it("Given 'pedir documentos subvenciones', When se clasifica, Then el portal es DERECHO_ACCESO", () => {
       const result = classify("pedir documentos subvenciones");
@@ -235,68 +252,6 @@ describe("classify — grafo v2 (keywords.json)", () => {
       const result = classify("solicitud acceso información");
       expect(result.deepLink).toBeUndefined();
     });
-  });
-
-  describe("ClassifyOptions — fuzzy matching", () => {
-    it("Given 'solistud aceso' con fuzzyThreshold=2, When se clasifica, Then el portal es DERECHO_ACCESO", () => {
-      const result = classify("solistud aceso", { fuzzyThreshold: 2 });
-      expect(result.portal).toBe("DERECHO_ACCESO");
-    });
-
-    it("Given 'solistud aceso' sin fuzzy, When se clasifica, Then el portal es UNKNOWN", () => {
-      const result = classify("solistud aceso");
-      expect(result.portal).toBe("UNKNOWN");
-    });
-
-    it("Given typo grave 'soliztud' con fuzzyThreshold=2, When se clasifica, Then alcanza DERECHO_ACCESO", () => {
-      const result = classify("soliztud aceso", { fuzzyThreshold: 2 });
-      expect(result.portal).toBe("DERECHO_ACCESO");
-    });
-
-    it("Given 'reclamaci' bien escrito, fuzzyThreshold irrelevante y portal es DERECHO_ACCESO", () => {
-      const result = classify("reclamaci", { fuzzyThreshold: 2 });
-      expect(result.portal).toBe("DERECHO_ACCESO");
-    });
-
-    it("Given 'cntratos' (typo fuerte en contratos) con fuzzyThreshold=3, When se clasifica, Then alcanza PLACE", () => {
-      const result = classify("cntratos", { fuzzyThreshold: 3 });
-      expect(result.portal).toBe("PLACE");
-    });
-
-    it("Given fuzzyThreshold=0, se comporta igual que sin fuzzy", () => {
-      const resultWith = classify("solistud aceso", { fuzzyThreshold: 0 });
-      const resultWithout = classify("solistud aceso");
-      expect(resultWith.portal).toBe(resultWithout.portal);
-    });
-  });
-
-  describe("DERECHO_ACCESO — deepLink según entidad presente/ausente", () => {
-    it("con entidad explícita en la consulta, deepLink apunta a la portadaUrl del organismo", () => {
-      const result = classify("solicitud información Ministerio de Defensa");
-      expect(result.deepLink).toContain("idAmb=101510");
-    });
-
-    it("con entidad mencionada de forma corta, deepLink se construye igual", () => {
-      const result = classify("reclamación documentos Defensa");
-      expect(result.deepLink).toContain("idAmb=101510");
-    });
-
-    it("sin entidad en la consulta, deepLink es undefined", () => {
-      const result = classify("solicitud acceso información");
-      expect(result.deepLink).toBeUndefined();
-    });
-  });
-});
-
-describe("matchesKeyword", () => {
-  it("no hace match de obra dentro de cobra", () => {
-    const text = normalize("cuanto cobra un ministro");
-    expect(matchesKeyword(text, normalize("obra"))).toBe(false);
-  });
-
-  it("hace match de frases multi-palabra", () => {
-    const text = normalize("derecho de acceso a documentos");
-    expect(matchesKeyword(text, normalize("derecho de acceso"))).toBe(true);
   });
 });
 

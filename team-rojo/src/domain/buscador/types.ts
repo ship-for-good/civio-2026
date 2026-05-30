@@ -9,6 +9,7 @@ export type TopicId =
   | "derecho_acceso"
   | "normativa_boe"
   | "estatales_generales"
+  | "hacienda"
   | "unknown";
 
 export type RoutingType = "interno" | "externo";
