@@ -1,7 +1,7 @@
 import { TODAY } from '../utils/dates.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
-export default function Header({ onCSVLoad }) {
+export default function Header({ onCSVLoad, onNewExpediente }) {
   const { session, signOut } = useAuth()
   const todayStr = TODAY.toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -22,6 +22,14 @@ export default function Header({ onCSVLoad }) {
         <h1>Civio · Tracker de Solicitudes de Transparencia</h1>
         <div className="subtitle">Derecho de acceso a la información pública — OPP-2</div>
       </div>
+      <button
+        type="button"
+        className="upload-btn"
+        onClick={onNewExpediente}
+        title="Dar de alta un nuevo expediente"
+      >
+        + Nuevo expediente
+      </button>
       <label className="upload-btn" title="Cargar tu propio CSV de solicitudes">
         Cargar CSV
         <input type="file" accept=".csv" style={{ display: 'none' }} onChange={handleFileChange} />

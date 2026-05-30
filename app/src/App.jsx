@@ -1,7 +1,10 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { parseCSV } from './utils/csv.js'
 import { enrichRequests } from './utils/urgency.js'
 import { CSV_RAW } from './data/csvData.js'
+import { TODAY, toISODate } from './utils/dates.js'
+import { buildExpediente } from './utils/expediente.js'
+import { uploadAttachments, insertExpediente } from './lib/expedientesRepo.js'
 import { useAuth } from './contexts/AuthContext.jsx'
 import Header from './components/Header.jsx'
 import StatsBar from './components/StatsBar.jsx'
@@ -10,6 +13,7 @@ import FiltersBar from './components/FiltersBar.jsx'
 import RequestsTable from './components/RequestsTable.jsx'
 import Toast from './components/Toast.jsx'
 import LoginPage from './components/LoginPage.jsx'
+import NewExpedienteModal from './components/NewExpedienteModal.jsx'
 
 const EMPTY_FILTERS = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
 
@@ -25,7 +29,10 @@ export default function App() {
   const [toastMsg, setToastMsg] = useState(null)
   const [highlightedId, setHighlightedId] = useState(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const dragCounter = useRef(0)
+
+  const existingIds = useMemo(() => requests.map(r => r['Id']), [requests])
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -80,6 +87,27 @@ export default function App() {
     }
   }, [handleCSVLoad, showToast])
 
+  // Errors bubble up to the modal — no try/catch here (single error-handling site).
+  const handleCreateExpediente = useCallback(async (input, files) => {
+    const raw = buildExpediente(input, toISODate(TODAY), { autor: session?.user?.email })
+    const attachments = files.length
+      ? await uploadAttachments(files, raw['Id'])
+      : []
+    await insertExpediente({
+      id: raw['Id'],
+      asunto: raw['Asunto'],
+      estado: raw['Estado'],
+      fecha: raw['Fecha'],
+      vencimiento: null,
+      autor: raw['Autor'],
+      attachments,
+    })
+    const [enriched] = enrichRequests([raw])
+    setRequests(prev => [enriched, ...prev])
+    setIsModalOpen(false)
+    showToast(`Expediente ${raw['Id']} creado ✓`)
+  }, [session, showToast])
+
   const filtered = requests.filter(r => {
     if (filters.estado && r['Estado'] !== filters.estado) return false
     if (filters.autor && r['Autor'] !== filters.autor) return false
@@ -115,7 +143,7 @@ export default function App() {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Header onCSVLoad={handleCSVLoad} />
+      <Header onCSVLoad={handleCSVLoad} onNewExpediente={() => setIsModalOpen(true)} />
       {isDragOver && (
         <div className="drop-banner">Suelta el CSV aquí</div>
       )}
@@ -146,6 +174,12 @@ export default function App() {
         </div>
       </div>
       <Toast message={toastMsg} />
+      <NewExpedienteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateExpediente}
+        existingIds={existingIds}
+      />
     </div>
   )
 }
