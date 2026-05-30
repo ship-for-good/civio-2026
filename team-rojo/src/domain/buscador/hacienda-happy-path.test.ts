@@ -34,11 +34,25 @@ describe("v1 happy path — Ministerio de Hacienda", () => {
     expect(result.entityMatch?.idAmb).toBe(HACIENDA_ID_AMB);
   });
 
-  it("Given query larga con Hacienda sin agente, Then derecho_acceso + detectEntity también llega a portada", () => {
+  it("Given query larga con Hacienda sin agente, Then se promueve a topic hacienda con portada", () => {
     const result = classify("solicitud acceso información Ministerio de Hacienda");
 
-    expect(result.topicId).toBe("derecho_acceso");
+    expect(result.topicId).toBe("hacienda");
     expect(result.deepLink).toBe(HACIENDA_PORTADA);
     expect(result.entityMatch?.name).toBe("Ministerio de Hacienda");
+  });
+
+  it("Given 'como reclamo a hacienda', Then enruta a topic hacienda con portada concreta", () => {
+    const fromClassify = classify("como reclamo a hacienda");
+    expect(fromClassify.topicId).toBe("hacienda");
+    expect(fromClassify.deepLink).toBe(HACIENDA_PORTADA);
+    expect(fromClassify.portalUrl).toBe(HACIENDA_PORTADA);
+
+    const fromAgentTopic = buildClassificationFromTopicId(
+      "como reclamo a hacienda",
+      "derecho_acceso"
+    );
+    expect(fromAgentTopic.topicId).toBe("hacienda");
+    expect(fromAgentTopic.deepLink).toBe(HACIENDA_PORTADA);
   });
 });

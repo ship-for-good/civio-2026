@@ -29,41 +29,39 @@ const CONTRATACION_STUB: Classification = {
   explanation: "Los contratos se publican en PLACE.",
   steps: ["Abre PLACE.", "Busca por objeto.", "Filtra."],
   deepLink: "https://contrataciondelestado.es/wps/portal/plataforma?text=limpieza",
-  searchTip: "El CPV clasifica el objeto del contrato.",
 };
 
 describe("ResultCard — componente de presentación del resultado", () => {
-  it("Given unknown sin deepLink, Then Ir al portal apunta al portalUrl", () => {
+  it("Given unknown sin deepLink, Then Hacer la solicitud apunta al portalUrl", () => {
     render(<ResultCard data={UNKNOWN_STUB} onReset={() => {}} />);
 
-    const link = screen.getByRole("link", { name: /Ir al portal/i });
+    const link = screen.getByRole("link", { name: /Hacer la solicitud/i });
     expect(link).toHaveAttribute("href", "https://transparencia.gob.es");
-    expect(link).not.toHaveTextContent("búsqueda lista");
   });
 
-  it("Given contratacion con deepLink, Then Ir al portal usa deepLink", () => {
+  it("Given contratacion con deepLink, Then Hacer la solicitud usa deepLink", () => {
     render(<ResultCard data={CONTRATACION_STUB} onReset={() => {}} />);
 
-    const link = screen.getByRole("link", { name: /Ir al portal/i });
+    const link = screen.getByRole("link", { name: /Hacer la solicitud/i });
     expect(link).toHaveAttribute("href", CONTRATACION_STUB.deepLink);
-    expect(link).toHaveTextContent("búsqueda lista");
   });
 
-  it("renderiza los pasos y el searchTip", () => {
+  it("renderiza los pasos", () => {
     render(<ResultCard data={CONTRATACION_STUB} onReset={() => {}} />);
 
     CONTRATACION_STUB.steps.forEach((step) => {
       expect(screen.getByText(step)).toBeInTheDocument();
     });
-    expect(screen.getByText(/CPV clasifica/i)).toBeInTheDocument();
   });
 
-  it("llama a onReset al pulsar Probar otra", async () => {
+  it("llama a onReset al pulsar ¿No es esto lo que buscas?", async () => {
     const user = userEvent.setup();
     const onReset = vi.fn();
     render(<ResultCard data={UNKNOWN_STUB} onReset={onReset} />);
 
-    await user.click(screen.getByRole("button", { name: /¿No es esto\? Probar otra/i }));
+    await user.click(
+      screen.getByRole("button", { name: /¿No es esto lo que buscas\?/i })
+    );
     expect(onReset).toHaveBeenCalledOnce();
   });
 });
