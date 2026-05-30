@@ -185,7 +185,7 @@ export default function App() {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Header onCSVLoad={handleCSVLoad} onNewExpediente={() => setIsModalOpen(true)} />
+      <Header onNewExpediente={() => setIsModalOpen(true)} />
       {isDragOver && (
         <div className="drop-banner">Suelta el CSV aquí</div>
       )}
