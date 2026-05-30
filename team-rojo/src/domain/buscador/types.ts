@@ -1,3 +1,5 @@
+import type { EntityMatch } from "./entities";
+
 export type TopicId =
   | "retribuciones"
   | "contratacion"
@@ -39,6 +41,12 @@ export type Classification = {
   steps: string[];
   deepLink?: string;
   searchTip?: string;
+  /**
+   * Entidad concreta (ministerio/organismo) a la que se dirige una solicitud de
+   * derecho de acceso. `portadaUrl` es la página pública que lleva a la
+   * selección del método de identificación (Cl@ve, certificado, DNIe).
+   */
+  entityMatch?: EntityMatch;
 };
 
 export type TopicCopy = {

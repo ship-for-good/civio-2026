@@ -2,6 +2,7 @@ import type { Classification, KnowledgeNode } from "./types";
 import {
   buildClassificationFromTopicId,
   isKnownTopicId,
+  type ClassifyOptions,
 } from "./classification";
 import { KNOWLEDGE_GRAPH } from "./knowledge-graph";
 
@@ -36,12 +37,12 @@ function fuzzyNodeMatches(
  */
 export function classify(
   query: string,
-  options?: { fuzzyThreshold?: number }
+  options?: ClassifyOptions
 ): Classification {
   const normalizedQuery = normalize(query);
 
   if (!normalizedQuery.trim()) {
-    return buildClassificationFromTopicId(query, "unknown");
+    return buildClassificationFromTopicId(query, "unknown", options);
   }
 
   const node = KNOWLEDGE_GRAPH.find((n) => nodeMatches(normalizedQuery, n));
@@ -53,9 +54,9 @@ export function classify(
           `[buscador] El nodo "${node.id}" está en keywords.json pero no en topics.ts; se usa unknown.`,
         );
       }
-      return buildClassificationFromTopicId(query, "unknown");
+      return buildClassificationFromTopicId(query, "unknown", options);
     }
-    return buildClassificationFromTopicId(query, node.id);
+    return buildClassificationFromTopicId(query, node.id, options);
   }
 
   if (options?.fuzzyThreshold && options.fuzzyThreshold > 0) {
@@ -64,11 +65,11 @@ export function classify(
     );
     if (fuzzyNode) {
       if (!isKnownTopicId(fuzzyNode.id)) {
-        return buildClassificationFromTopicId(query, "unknown");
+        return buildClassificationFromTopicId(query, "unknown", options);
       }
-      return buildClassificationFromTopicId(query, fuzzyNode.id);
+      return buildClassificationFromTopicId(query, fuzzyNode.id, options);
     }
   }
 
-  return buildClassificationFromTopicId(query, "unknown");
+  return buildClassificationFromTopicId(query, "unknown", options);
 }

@@ -139,6 +139,14 @@ export function detectEntity(
   return null;
 }
 
+/**
+ * Busca una entidad por su idAmb. Útil cuando el clasificador (agente) ya
+ * devuelve la entidad y solo necesitamos recuperar su URL y datos.
+ */
+export function findEntityById(idAmb: number): EntityMatch | null {
+  return ENTITY_LIST.find((e) => e.idAmb === idAmb) ?? null;
+}
+
 export function buildPortadaUrl(idAmb: number): string {
   return `https://transparencia.sede.gob.es/procedimiento/portada?idProc=${PROC_ID}&idAmb=${idAmb}`;
 }
