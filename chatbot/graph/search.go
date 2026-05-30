@@ -18,6 +18,12 @@ type SearchResult struct {
 	Score  int // number of keyword matches
 }
 
+// PathStep is one breadcrumb from root to the matched node.
+type PathStep struct {
+	Title string
+	URL   string
+}
+
 // BuildIndex builds a search entry per node from title, description, and child contents.
 func BuildIndex(nodes []ExportNode) []SearchEntry {
 	index := make([]SearchEntry, len(nodes))
@@ -103,4 +109,31 @@ func matchScore(text string, keywords []string) int {
 		}
 	}
 	return score
+}
+
+// BuildPath walks parent_id from nodeID to the root and returns steps root → leaf.
+func BuildPath(nodeID int64, nodeByID map[int64]*ExportNode) []PathStep {
+	node, ok := nodeByID[nodeID]
+	if !ok {
+		return nil
+	}
+
+	var chain []*ExportNode
+	for cur := node; cur != nil; {
+		chain = append(chain, cur)
+		if cur.ParentID == nil {
+			break
+		}
+		parent, ok := nodeByID[*cur.ParentID]
+		if !ok {
+			break
+		}
+		cur = parent
+	}
+
+	path := make([]PathStep, len(chain))
+	for i, n := range chain {
+		path[len(chain)-1-i] = PathStep{Title: n.Title, URL: n.URL}
+	}
+	return path
 }

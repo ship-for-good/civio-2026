@@ -72,3 +72,30 @@ func TestSearch_noResults(t *testing.T) {
 		t.Fatalf("len(results) = %d, want 0; got %+v", len(results), results)
 	}
 }
+
+func TestBuildPath(t *testing.T) {
+	parent1 := int64(1)
+	parent2 := int64(2)
+	nodes := []ExportNode{
+		{ID: 1, Title: "Publicidad Activa", URL: "https://example.com/publicidad-activa"},
+		{ID: 2, Title: "Altos Cargos", URL: "https://example.com/altos-cargos", ParentID: &parent1},
+		{ID: 3, Title: "Retribuciones", URL: "https://example.com/retribuciones", ParentID: &parent2},
+	}
+	_, nodeByID := testFixture(nodes)
+
+	path := BuildPath(3, nodeByID)
+
+	want := []PathStep{
+		{Title: "Publicidad Activa", URL: nodes[0].URL},
+		{Title: "Altos Cargos", URL: nodes[1].URL},
+		{Title: "Retribuciones", URL: nodes[2].URL},
+	}
+	if len(path) != len(want) {
+		t.Fatalf("len(path) = %d, want %d", len(path), len(want))
+	}
+	for i, step := range want {
+		if path[i] != step {
+			t.Errorf("path[%d] = %+v, want %+v", i, path[i], step)
+		}
+	}
+}
