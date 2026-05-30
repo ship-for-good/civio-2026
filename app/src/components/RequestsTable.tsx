@@ -1,16 +1,23 @@
 import { useEffect, useRef } from 'react'
 import { formatDateShort } from '../utils/dates.js'
+import type { EnrichedRequest } from '../utils/urgency.js'
 
-const STATE_BADGE_CLASS = {
+const STATE_BADGE_CLASS: Record<string, string> = {
   'En tramitación': 'badge-tramitacion',
   'Reclamada': 'badge-reclamada',
   'Contencioso': 'badge-contencioso',
   'Resuelta': 'badge-resuelta',
 }
 
-const URGENCY_ICON = { critical: '🔴', warning: '🟠', ok: '🟢' }
+const URGENCY_ICON: Record<string, string> = { critical: '🔴', warning: '🟠', ok: '🟢' }
 
-const COLUMNS = [
+interface Column {
+  key: string | null
+  label: string
+  title?: string
+}
+
+const COLUMNS: Column[] = [
   { key: 'urgencyOrder', label: 'URG', title: 'Urgencia' },
   { key: 'Id', label: 'Expediente', title: 'ID Expediente' },
   { key: 'Asunto', label: 'Asunto' },
@@ -24,12 +31,24 @@ const COLUMNS = [
   { key: null, label: 'Notas' },
 ]
 
-export default function RequestsTable({ requests, sort, onSort, highlightedId }) {
-  const rowRefs = useRef({})
+interface Sort {
+  column: string
+  dir: 'asc' | 'desc'
+}
+
+interface RequestsTableProps {
+  requests: EnrichedRequest[]
+  sort: Sort
+  onSort: (col: string) => void
+  highlightedId: string | null
+}
+
+export default function RequestsTable({ requests, sort, onSort, highlightedId }: RequestsTableProps) {
+  const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({})
 
   useEffect(() => {
     if (highlightedId && rowRefs.current[highlightedId]) {
-      rowRefs.current[highlightedId].scrollIntoView({ behavior: 'smooth', block: 'center' })
+      rowRefs.current[highlightedId]!.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [highlightedId])
 
@@ -47,7 +66,7 @@ export default function RequestsTable({ requests, sort, onSort, highlightedId })
                     ? sort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc'
                     : ''
                 }
-                onClick={col.key ? () => onSort(col.key) : undefined}
+                onClick={col.key ? () => onSort(col.key!) : undefined}
                 style={!col.key ? { cursor: 'default' } : undefined}
               >
                 {col.label}
@@ -61,7 +80,7 @@ export default function RequestsTable({ requests, sort, onSort, highlightedId })
               key={r['Id']}
               r={r}
               isHighlighted={r['Id'] === highlightedId}
-              setRef={el => { if (el) rowRefs.current[r['Id']] = el }}
+              setRef={el => { rowRefs.current[r['Id']] = el }}
             />
           ))}
         </tbody>
@@ -70,10 +89,16 @@ export default function RequestsTable({ requests, sort, onSort, highlightedId })
   )
 }
 
-function TableRow({ r, isHighlighted, setRef }) {
+interface TableRowProps {
+  r: EnrichedRequest
+  isHighlighted: boolean
+  setRef: (el: HTMLTableRowElement | null) => void
+}
+
+function TableRow({ r, isHighlighted, setRef }: TableRowProps) {
   const daysVal = r.daysUntilDeadline
   let daysText = '—'
-  let daysStyle = {}
+  let daysStyle: React.CSSProperties = {}
 
   if (daysVal !== null) {
     if (daysVal < 0) {
