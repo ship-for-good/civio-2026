@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-MISTRAL_API_KEY = os.environ["MISTRAL_API_KEY"]
+MISTRAL_API_KEY = "WKxOPHkvqQKyC7aA8a6vXC7WC9YNcJEt"
 
 # Load scraped data
 try:
@@ -16,11 +16,6 @@ except FileNotFoundError:
 
 # Sample FAQ data (in Spanish)
 faqs = {
-    "What is the transparency portal?": "El portal de transparencia es una plataforma donde los organismos públicos en España publican información clave como contratos, subvenciones y organigramas.",
-    "How do I submit a request?": "Puedes enviar una solicitud navegando a la sección 'Presentar una solicitud' en el portal de transparencia y completando el formulario.",
-    "What information can I request?": "Puedes solicitar información como contratos, subvenciones, salarios de altos cargos y organigramas.",
-    "How long does it take to get a response?": "La administración tiene 1 mes para responder, que puede extenderse a 2 meses en algunos casos.",
-    "What if I don't receive a response?": "Si no recibes una respuesta, puedes escalar tu solicitud al Consejo de Transparencia y Buen Gobierno.",
     "¿Qué es el portal de transparencia?": "El portal de transparencia es una plataforma donde los organismos públicos en España publican información clave como contratos, subvenciones y organigramas.",
     "¿Cómo presento una solicitud?": "Puedes presentar una solicitud navegando a la sección 'Presentar una solicitud' en el portal de transparencia y completando el formulario.",
     "¿Qué información puedo solicitar?": "Puedes solicitar información como contratos, subvenciones, salarios de altos cargos y organigramas.",
