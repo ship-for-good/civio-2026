@@ -60,6 +60,33 @@ class Search::Services::SearchResourcesTest < ActiveSupport::TestCase
     refute result.resources.any? { |r| r.id == "rpt-mdef-historico" }
   end
 
+  test "filters historico only" do
+    result = Search::Services::SearchResources.call(vigencia: "historico")
+
+    assert result.resources.all? { |r| r.vigencia == "historico" }
+    assert_includes result.resources.map(&:id), "rpt-mdef-historico"
+    refute result.resources.any? { |r| r.id == "rpt-mdef-vigente" }
+  end
+
+  test "excludes resources without organismo" do
+    Resources::Models::Resource.create!(
+      id: "sin-organismo",
+      url: "https://transparencia.gob.es/publicidad-activa/por-materias/organizacion-empleo/relaciones-puestos-trabajo",
+      materia: "organizacion-empleo",
+      materia_label: "Organización y empleo",
+      subtema: "relaciones-puestos-trabajo",
+      subtema_label: "Relaciones de puestos de trabajo (RPT)",
+      vigencia: "vigente",
+      path_segments: %w[publicidad-activa por-materias organizacion-empleo relaciones-puestos-trabajo],
+      depth: 4
+    )
+
+    result = Search::Services::SearchResources.call(vigencia: "all")
+
+    refute result.resources.any? { |r| r.id == "sin-organismo" }
+    assert result.resources.all? { |r| r.organismo_code.present? }
+  end
+
   test "searches defensa rpt with synonyms" do
     result = Search::Services::SearchResources.call(query: "Defensa RPT", vigencia: "all")
 
@@ -75,9 +102,9 @@ class Search::Services::SearchResourcesTest < ActiveSupport::TestCase
   end
 
   test "filters by materia" do
-    result = Search::Services::SearchResources.call(materia: "altos-cargos", vigencia: "all")
+    result = Search::Services::SearchResources.call(materia: "organizacion-empleo", vigencia: "all")
 
-    assert result.resources.all? { |r| r.materia == "altos-cargos" }
+    assert result.resources.all? { |r| r.materia == "organizacion-empleo" }
     assert result.total.positive?
   end
 

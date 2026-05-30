@@ -39,7 +39,7 @@ module Search
       private
 
       def base_scope
-        Resources::Models::Resource.all
+        Resources::Models::Resource.where.not(organismo_code: nil)
       end
 
       def apply_filters(scope)
