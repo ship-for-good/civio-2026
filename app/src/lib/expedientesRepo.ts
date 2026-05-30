@@ -35,3 +35,17 @@ export async function insertExpediente(record: ExpedienteRecord): Promise<Expedi
   if (error) throw error
   return data as ExpedienteRecord
 }
+
+export async function updateExpediente(
+  id: string,
+  patch: Partial<ExpedienteRecord>,
+): Promise<ExpedienteRecord> {
+  const { data, error } = await supabase
+    .from('expedientes')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data as ExpedienteRecord
+}

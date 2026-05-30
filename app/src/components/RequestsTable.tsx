@@ -41,9 +41,10 @@ interface RequestsTableProps {
   sort: Sort
   onSort: (col: string) => void
   highlightedId: string | null
+  onEdit: (r: EnrichedRequest) => void
 }
 
-export default function RequestsTable({ requests, sort, onSort, highlightedId }: RequestsTableProps) {
+export default function RequestsTable({ requests, sort, onSort, highlightedId, onEdit }: RequestsTableProps) {
   const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({})
 
   useEffect(() => {
@@ -81,6 +82,7 @@ export default function RequestsTable({ requests, sort, onSort, highlightedId }:
               r={r}
               isHighlighted={r['Id'] === highlightedId}
               setRef={el => { rowRefs.current[r['Id']] = el }}
+              onEdit={onEdit}
             />
           ))}
         </tbody>
@@ -93,9 +95,10 @@ interface TableRowProps {
   r: EnrichedRequest
   isHighlighted: boolean
   setRef: (el: HTMLTableRowElement | null) => void
+  onEdit: (r: EnrichedRequest) => void
 }
 
-function TableRow({ r, isHighlighted, setRef }: TableRowProps) {
+function TableRow({ r, isHighlighted, setRef, onEdit }: TableRowProps) {
   const daysVal = r.daysUntilDeadline
   let daysText = '—'
   let daysStyle: React.CSSProperties = {}
@@ -122,6 +125,11 @@ function TableRow({ r, isHighlighted, setRef }: TableRowProps) {
     <tr
       ref={setRef}
       className={`urgency-${r.urgencyLevel}${isHighlighted ? ' highlighted' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label={`Editar expediente ${r['Id']}`}
+      onClick={() => onEdit(r)}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEdit(r) } }}
     >
       <td>
         <span className={`urgency-label ${r.urgencyLevel}`}>

@@ -3,8 +3,8 @@ import { parseCSV } from './utils/csv.js'
 import { enrichRequests, type EnrichedRequest, type RawRequest } from './utils/urgency.js'
 import { CSV_RAW } from './data/csvData.js'
 import { TODAY, toISODate } from './utils/dates.js'
-import { buildExpediente, expedienteRecordToRaw, mergeById, type ExpedienteInput } from './utils/expediente.js'
-import { uploadAttachments, insertExpediente, fetchExpedientes } from './lib/expedientesRepo.js'
+import { buildExpediente, expedienteRecordToRaw, mergeById, applyEdit, type ExpedienteInput, type ExpedienteEditInput } from './utils/expediente.js'
+import { uploadAttachments, insertExpediente, updateExpediente, fetchExpedientes } from './lib/expedientesRepo.js'
 import { useAuth } from './contexts/AuthContext.jsx'
 import Header from './components/Header.jsx'
 import StatsBar from './components/StatsBar.jsx'
@@ -13,6 +13,7 @@ import FiltersBar, { type Filters } from './components/FiltersBar.jsx'
 import RequestsTable from './components/RequestsTable.jsx'
 import Toast from './components/Toast.jsx'
 import NewExpedienteModal from './components/NewExpedienteModal.jsx'
+import EditExpedienteModal from './components/EditExpedienteModal.jsx'
 
 const EMPTY_FILTERS: Filters = { search: '', estado: '', autor: '', ambito: '', urgencia: '' }
 
@@ -34,6 +35,7 @@ export default function App() {
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editing, setEditing] = useState<EnrichedRequest | null>(null)
   const dragCounter = useRef(0)
 
   const existingIds = useMemo(() => requests.map(r => r['Id']), [requests])
@@ -99,6 +101,30 @@ export default function App() {
       showToast('Solo se aceptan archivos .csv')
     }
   }, [handleCSVLoad, showToast])
+
+  const handleEdit = useCallback((r: EnrichedRequest) => setEditing(r), [])
+
+  const handleUpdateExpediente = useCallback(async (
+    id: string,
+    input: ExpedienteEditInput,
+    newFiles: File[],
+  ) => {
+    const current = requests.find(r => r['Id'] === id)!
+    const newPaths = newFiles.length ? await uploadAttachments(newFiles, id) : []
+    const mergedAttachments = [...(current.attachments ?? []), ...newPaths]
+    await updateExpediente(id, {
+      asunto: input.asunto,
+      estado: input.estado,
+      vencimiento: input.vencimiento || null,
+      notas: input.notas,
+      attachments: mergedAttachments,
+    })
+    const updatedRaw = applyEdit(current, input)
+    const [enriched] = enrichRequests([{ ...updatedRaw, attachments: mergedAttachments }])
+    setRequests(prev => prev.map(r => r['Id'] === id ? enriched : r))
+    setEditing(null)
+    showToast(`Expediente ${id} actualizado ✓`)
+  }, [requests, showToast])
 
   const handleCreateExpediente = useCallback(async (input: ExpedienteInput, files: File[]) => {
     const raw = buildExpediente(input, toISODate(TODAY), { autor: session?.user?.email })
@@ -182,6 +208,7 @@ export default function App() {
             sort={sort}
             onSort={handleSort}
             highlightedId={highlightedId}
+            onEdit={handleEdit}
           />
         </div>
       </div>
@@ -191,6 +218,12 @@ export default function App() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateExpediente}
         existingIds={existingIds}
+      />
+      <EditExpedienteModal
+        isOpen={!!editing}
+        request={editing}
+        onClose={() => setEditing(null)}
+        onSubmit={handleUpdateExpediente}
       />
     </div>
   )

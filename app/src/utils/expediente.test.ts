@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateExpediente, buildExpediente, slugifyFilename, expedienteRecordToRaw, mergeById, type ExpedienteRecord } from './expediente.js'
+import { validateExpediente, buildExpediente, slugifyFilename, expedienteRecordToRaw, mergeById, validateExpedienteEdit, applyEdit, ESTADOS, type ExpedienteRecord } from './expediente.js'
 import { enrichRequests } from './urgency.js'
 
 // ─────────────────────────────────────────────
@@ -198,6 +198,79 @@ describe('mergeById', () => {
     const result = mergeById(csv, supabase)
     expect(result).toHaveLength(1)
     expect(result[0]['Asunto']).toBe('Supabase version')
+  })
+})
+
+// ─────────────────────────────────────────────
+// validateExpedienteEdit
+// ─────────────────────────────────────────────
+describe('validateExpedienteEdit', () => {
+  it('should_reject_when_asunto_is_empty', () => {
+    const { valid, errors } = validateExpedienteEdit({ asunto: '', estado: 'En tramitación' })
+    expect(valid).toBe(false)
+    expect(errors.asunto).toBeTruthy()
+  })
+
+  it('should_reject_when_asunto_is_whitespace_only', () => {
+    const { valid, errors } = validateExpedienteEdit({ asunto: '   ', estado: 'Reclamada' })
+    expect(valid).toBe(false)
+    expect(errors.asunto).toBeTruthy()
+  })
+
+  it('should_reject_when_estado_is_invalid', () => {
+    const { valid, errors } = validateExpedienteEdit({ asunto: 'Solicitud', estado: 'Inventado' })
+    expect(valid).toBe(false)
+    expect(errors.estado).toBeTruthy()
+  })
+
+  it('should_be_valid_with_asunto_and_valid_estado', () => {
+    for (const estado of ESTADOS) {
+      const { valid, errors } = validateExpedienteEdit({ asunto: 'Solicitud', estado })
+      expect(valid).toBe(true)
+      expect(Object.keys(errors)).toHaveLength(0)
+    }
+  })
+})
+
+// ─────────────────────────────────────────────
+// applyEdit
+// ─────────────────────────────────────────────
+describe('applyEdit', () => {
+  const makeRaw = () => enrichRequests([{
+    Id: 'EXP-001', Asunto: 'Asunto original', Estado: 'En tramitación',
+    Fecha: '2026-05-01', Ámbito: 'Local', Ministerio: 'Min. A',
+    'Inicio tramitación': '', 'Art 20.1 (volumen)': '',
+    'Vencimiento normal': '', 'Vencimiento 20.1': '', Vencimiento: '2026-08-01',
+    Resolución: '', Notificación: '', 'Días para respuesta': '',
+    'Días para reclamar por silencio administrativo': '',
+    'Días para reclamar resolución': '', Notas: 'Nota vieja', Autor: 'ana@civio.es', Reclamación: '',
+  }])[0]
+
+  it('should_update_estado_asunto_vencimiento_and_notas_keeping_other_fields', () => {
+    const original = makeRaw()
+    const result = applyEdit(original, {
+      asunto: 'Nuevo asunto',
+      estado: 'Reclamada',
+      vencimiento: '2026-09-01',
+      notas: 'Nota nueva',
+    })
+    expect(result['Asunto']).toBe('Nuevo asunto')
+    expect(result['Estado']).toBe('Reclamada')
+    expect(result['Vencimiento']).toBe('2026-09-01')
+    expect(result['Notas']).toBe('Nota nueva')
+    // otros campos intactos
+    expect(result['Id']).toBe('EXP-001')
+    expect(result['Ámbito']).toBe('Local')
+    expect(result['Ministerio']).toBe('Min. A')
+    expect(result['Autor']).toBe('ana@civio.es')
+    expect(result['Fecha']).toBe('2026-05-01')
+  })
+
+  it('should_not_mutate_the_original_request', () => {
+    const original = makeRaw()
+    applyEdit(original, { asunto: 'Cambiado', estado: 'Resuelta', vencimiento: '', notas: '' })
+    expect(original['Asunto']).toBe('Asunto original')
+    expect(original['Estado']).toBe('En tramitación')
   })
 })
 

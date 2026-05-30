@@ -1,5 +1,8 @@
 import type { RawRequest, EnrichedRequest } from './urgency.js'
 
+export const ESTADOS = ['En tramitación', 'Reclamada', 'Contencioso', 'Resuelta'] as const
+export type Estado = typeof ESTADOS[number]
+
 export interface ExpedienteRecord {
   id: string
   asunto: string
@@ -8,6 +11,7 @@ export interface ExpedienteRecord {
   vencimiento: string | null
   autor: string
   attachments: string[]
+  notas?: string
 }
 
 const CSV_KEYS: (keyof RawRequest)[] = [
@@ -23,9 +27,16 @@ export interface ExpedienteInput {
   asunto?: string
 }
 
+export interface ExpedienteEditInput {
+  asunto?: string
+  estado?: string
+  vencimiento?: string
+  notas?: string
+}
+
 export interface ValidationResult {
   valid: boolean
-  errors: Partial<Record<keyof ExpedienteInput, string>>
+  errors: Partial<Record<string, string>>
 }
 
 export function validateExpediente(input: ExpedienteInput, existingIds: string[]): ValidationResult {
@@ -72,6 +83,8 @@ export function expedienteRecordToRaw(record: ExpedienteRecord): RawRequest {
     'Fecha': record.fecha,
     'Vencimiento': record.vencimiento ?? '',
     'Autor': record.autor,
+    'Notas': record.notas ?? '',
+    attachments: record.attachments ?? [],
   }
 }
 
@@ -84,6 +97,30 @@ export function mergeById(
   const csvIds = new Set(csvRows.map(r => r['Id']))
   const added = supabaseRows.filter(r => !csvIds.has(r['Id']))
   return [...added, ...merged]
+}
+
+export function validateExpedienteEdit(input: ExpedienteEditInput): ValidationResult {
+  const errors: Partial<Record<string, string>> = {}
+
+  if (!(input.asunto ?? '').trim()) {
+    errors.asunto = 'El asunto es obligatorio'
+  }
+
+  if (input.estado !== undefined && !(ESTADOS as readonly string[]).includes(input.estado)) {
+    errors.estado = `El estado debe ser uno de: ${ESTADOS.join(', ')}`
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors }
+}
+
+export function applyEdit(req: RawRequest, input: ExpedienteEditInput): RawRequest {
+  return {
+    ...req,
+    'Asunto': (input.asunto ?? req['Asunto']),
+    'Estado': (input.estado ?? req['Estado']),
+    'Vencimiento': (input.vencimiento ?? req['Vencimiento']),
+    'Notas': (input.notas ?? req['Notas']),
+  }
 }
 
 export function slugifyFilename(filename: string): string {

@@ -30,6 +30,7 @@ export interface RawRequest {
   Notas: string
   Autor: string
   Reclamación: string
+  attachments?: string[]
 }
 
 export interface EnrichedRequest extends RawRequest {

@@ -136,6 +136,25 @@ header .today-badge {
   border-color: rgba(255, 255, 255, 0.6);
 }
 
+/* ── Table action buttons ─────────────────────────────────────── */
+.btn-action {
+  background: transparent;
+  border: 1px solid var(--civio-blue);
+  color: var(--civio-blue);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-action:hover {
+  background: var(--civio-blue);
+  color: #fff;
+}
+
 /* ── Drop banner ──────────────────────────────────────────────── */
 .drop-banner {
   position: fixed;
@@ -407,10 +426,11 @@ thead th.sorted-desc::after { content: ' ↓'; opacity: 0.5; }
 
 tbody tr {
   border-bottom: 1px solid var(--border);
-  transition: background 0.1s;
+  transition: background 0.15s;
+  cursor: pointer;
 }
 
-tbody tr:hover { background: var(--bg); }
+tbody tr:hover { background: var(--civio-blue-muted); }
 tbody tr:last-child { border-bottom: none; }
 
 /* Urgency left-border stripes */
@@ -783,6 +803,15 @@ tr.highlighted { animation: highlight-pulse 2s ease-out; }
   display: block;
   text-align: center;
   font-size: 13px;
+  border: 1px solid var(--civio-blue);
+  color: var(--civio-blue);
+  background: transparent;
+}
+
+.modal-file-label:hover {
+  background: var(--civio-blue);
+  color: #fff;
+  border-color: var(--civio-blue);
 }
 
 .modal-files {
