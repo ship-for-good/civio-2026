@@ -129,4 +129,13 @@ class Search::Services::SearchResourcesTest < ActiveSupport::TestCase
     assert result.facets.key?(:organismo_code)
     assert result.facets[:materia].any? { |f| f[:name] == "organizacion-empleo" }
   end
+
+  test "returns vigencia counts independent of selected vigencia filter" do
+    result = Search::Services::SearchResources.call(query: "Defensa RPT", vigencia: "vigente")
+
+    assert_equal 1, result.vigencia_counts["vigente"]
+    assert_equal 1, result.vigencia_counts["historico"]
+    assert_equal 2, result.vigencia_counts["all"]
+    assert_equal 1, result.total
+  end
 end

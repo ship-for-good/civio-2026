@@ -2,11 +2,11 @@
 
 module HomeHelper
   QUICK_SEARCHES = [
-    { label: "Subvenciones a medios de comunicación", query: "subvenciones medios" },
-    { label: "Contratos del Ministerio de Sanidad", query: "sanidad contratos" },
-    { label: "Asesores del Gobierno", query: "asesores gobierno" },
-    { label: "Cargos públicos y retribuciones", query: "retribuciones altos cargos" },
-    { label: "Agenda de altos cargos", query: "agenda altos cargos" }
+    { label: "Estructura orgánica de ministerios", query: "estructura" },
+    { label: "Relaciones de puestos de trabajo (RPT)", query: "relaciones puestos" },
+    { label: "Retribuciones de altos cargos", query: "retribuciones altos cargos" },
+    { label: "Normativa de organización", query: "normativa organización" },
+    { label: "Ministerio de Transportes", query: "transportes" }
   ].freeze
 
   def organism_icon(icon)

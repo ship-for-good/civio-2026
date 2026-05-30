@@ -9,7 +9,7 @@ module Search
 
       STOP_WORDS = %w[a al de del y e en la el lo los las un una por con para que].freeze
 
-      Result = Struct.new(:resources, :facets, :total, keyword_init: true)
+      Result = Struct.new(:resources, :facets, :total, :vigencia_counts, keyword_init: true)
 
       def self.call(**kwargs)
         new(**kwargs).call
@@ -25,27 +25,34 @@ module Search
       end
 
       def call
-        scope = base_scope
-        scope = apply_filters(scope)
-        scope = apply_text_search(scope) if @query.present?
+        scope = filtered_scope(include_vigencia: true)
+        counts_scope = filtered_scope(include_vigencia: false)
 
         resources = scope.order(:materia, :subtema, :url).to_a
 
         Result.new(
           resources: resources,
           facets: build_facets(scope),
-          total: resources.size
+          total: resources.size,
+          vigencia_counts: build_vigencia_counts(counts_scope)
         )
       end
 
       private
 
+      def filtered_scope(include_vigencia:)
+        scope = base_scope
+        scope = apply_filters(scope, include_vigencia: include_vigencia)
+        scope = apply_text_search(scope) if @query.present?
+        scope
+      end
+
       def base_scope
         Resources::Models::Resource.where.not(organismo_code: nil)
       end
 
-      def apply_filters(scope)
-        scope = scope.where(vigencia: @vigencia) unless @vigencia == "all"
+      def apply_filters(scope, include_vigencia: true)
+        scope = scope.where(vigencia: @vigencia) if include_vigencia && @vigencia != "all"
         scope = scope.where(materia: @materia) if @materia
         scope = scope.where(subtema: @subtema) if @subtema
         scope = scope.where(organismo_code: @organismo_code) if @organismo_code
@@ -99,6 +106,18 @@ module Search
 
       def synonyms
         @synonyms ||= catalog.alias_index.merge(SUBTEMA_SYNONYMS)
+      end
+
+      def build_vigencia_counts(scope)
+        counts = scope.group(:vigencia).count
+        vigente = counts["vigente"] || 0
+        historico = counts["historico"] || 0
+
+        {
+          "vigente" => vigente,
+          "historico" => historico,
+          "all" => vigente + historico
+        }
       end
 
       def build_facets(scope)

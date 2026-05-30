@@ -18,12 +18,17 @@ module ExploreHelper
   end
 
   def explore_vigencia_pill_classes(active)
-    base = "inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors"
+    base = "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors"
     if active
       "#{base} bg-stone-900 text-white"
     else
       "#{base} text-stone-600 hover:bg-stone-100 hover:text-stone-900"
     end
+  end
+
+  def explore_vigencia_count_classes(active)
+    base = "tabular-nums"
+    active ? "#{base} text-white/70" : "#{base} text-stone-400"
   end
 
   def explore_search_active?
