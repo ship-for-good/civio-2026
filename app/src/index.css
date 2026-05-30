@@ -7,6 +7,8 @@
   --civio-blue-muted: #e8edf5;
   --civio-accent:     #56FFA9;
   --civio-accent-dim: rgba(86, 255, 169, 0.15);
+  --civio-yellow:       #FCEB6A;
+  --civio-yellow-hover: #f7e23f;
 
   /* ── Surfaces (Vercel light mode) ── */
   --bg:      #fafafa;
@@ -61,14 +63,14 @@ body {
 
 /* ── Header ───────────────────────────────────────────────────── */
 header {
-  background: var(--surface);
-  color: var(--text);
+  background: var(--civio-blue);
+  color: #fff;
   padding: 0 24px;
   height: 56px;
   display: flex;
   align-items: center;
   gap: 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   position: sticky;
   top: 0;
   z-index: 40;
@@ -78,30 +80,48 @@ header h1 {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.2px;
-  color: var(--civio-blue);
+  color: #fff;
 }
 
 header .subtitle {
   font-size: 12px;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 1px;
 }
 
 header .today-badge {
   margin-left: auto;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
   padding: 3px 10px;
   border-radius: var(--radius-full);
   font-size: 12px;
 }
 
 /* ── Header action buttons ────────────────────────────────────── */
+.new-expediente-btn {
+  background: var(--civio-yellow);
+  color: var(--civio-blue);
+  border: none;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.new-expediente-btn:hover {
+  background: var(--civio-yellow-hover);
+}
+
 .upload-btn {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.9);
   padding: 5px 12px;
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -112,8 +132,8 @@ header .today-badge {
 }
 
 .upload-btn:hover {
-  background: var(--bg);
-  border-color: #999;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Drop banner ──────────────────────────────────────────────── */
@@ -686,8 +706,8 @@ tr.highlighted { animation: highlight-pulse 2s ease-out; }
   height: 30px;
   padding: 0 12px;
   background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
+  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-family: inherit;
@@ -696,9 +716,9 @@ tr.highlighted { animation: highlight-pulse 2s ease-out; }
 }
 
 .logout-btn:hover {
-  background: var(--bg);
-  color: var(--text);
-  border-color: #999;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Modal ────────────────────────────────────────────────────── */

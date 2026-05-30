@@ -30,11 +30,11 @@ export default function Header({ onCSVLoad, onNewExpediente }: HeaderProps) {
       </div>
       <button
         type="button"
-        className="upload-btn"
+        className="new-expediente-btn"
         onClick={onNewExpediente}
         title="Dar de alta un nuevo expediente"
       >
-        + Nuevo expediente
+        Nuevo expediente
       </button>
       <label className="upload-btn" title="Cargar tu propio CSV de solicitudes">
         Cargar CSV
