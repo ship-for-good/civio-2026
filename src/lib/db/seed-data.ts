@@ -13,46 +13,48 @@ export const EXAMPLE_QUESTIONS = [
   "Quines subvencions culturals s'han concedit recentment?",
 ];
 
+/** Aliniat amb `src/data/popular-topics.ts` i el portal de transparència de Barcelona. */
 export const TOPICS = [
   {
     title: "Contractació pública",
-    summary: "Qui guanya les licitacions i amb quins criteris.",
+    summary:
+      "Licitacions, adjudicacions i formalitzacions de l'Ajuntament i entitats municipals.",
     category: "Contractes",
     image_key: "topic-contracts",
     published_at: "2026-05-28",
   },
   {
     title: "Pressupostos",
-    summary: "On va cada euro del pressupost municipal i autonòmic.",
+    summary: "Pressupostos anuals, execució i situació econòmico-presupostària de l'Ajuntament.",
     category: "Pressupost",
     image_key: "topic-budgets",
     published_at: "2026-05-27",
   },
   {
     title: "Subvencions",
-    summary: "Ajudes públiques concedides a entitats i empreses.",
+    summary: "Convocatòries, ajudes concedides i dades obertes de subvencions municipals.",
     category: "Subvencions",
     image_key: "topic-grants",
     published_at: "2026-05-26",
   },
   {
     title: "Mobilitat",
-    summary: "Inversions en transport públic i carrils bici.",
+    summary: "Plans de mobilitat, infraestructures i informació relacionada amb el transport a la ciutat.",
     category: "Mobilitat",
     image_key: "topic-mobility",
     published_at: "2026-05-25",
   },
   {
     title: "Medi ambient",
-    summary: "Polítiques de sostenibilitat i qualitat de l'aire.",
+    summary: "Qualitat de l'aire, soroll, impacte ambiental i informació ambiental municipal.",
     category: "Clima",
     image_key: "topic-budgets",
     published_at: "2026-05-24",
   },
   {
-    title: "Alts càrrecs",
-    summary: "Retribucions, agendes i declaracions de béns.",
-    category: "Transparència",
+    title: "Habitatge",
+    summary: "Polítiques de vivenda, rehabilitació i subvencions de l'Institut Municipal de l'Habitatge.",
+    category: "Habitatge",
     image_key: "topic-contracts",
     published_at: "2026-05-23",
   },
@@ -60,34 +62,34 @@ export const TOPICS = [
 
 export const FEATURED_ITEMS = [
   {
-    title: "Publicat el portal d'alts càrrecs 2026",
-    summary: "Inclou retribucions, agendes i declaracions de béns actualitzades.",
-    image_key: "topic-contracts",
+    title: "Proposta de pressupost municipal 2026",
+    summary: "La proposta de pressupost supera els 4.000 M€, segons el portal de transparència.",
+    image_key: "topic-budgets",
+    published_at: "2026-05-28",
+  },
+  {
+    title: "Barcelona aconsegueix el segell Infoparticipa 2025",
+    summary: "Reconeixement a la qualitat de la informació i la participació ciutadana publicada.",
+    image_key: "topic-grants",
     published_at: "2026-05-26",
   },
   {
-    title: "Nou conveni col·lectiu municipal",
-    summary: "Detalls del conveni signat amb els treballadors públics aquest mes.",
+    title: "Pròrroga del Pla estratègic de subvencions 2025-26",
+    summary: "Aprovada per la Comissió de Govern el 24 d'octubre de 2024.",
     image_key: "topic-grants",
     published_at: "2026-05-22",
   },
   {
-    title: "Auditoria del transport metropolità",
-    summary: "Resultats de l'auditoria independent sobre eficiència i costos.",
+    title: "Retribucions i currículums dels alts càrrecs",
+    summary: "Dades actualitzades des dels sistemes de recursos humans municipals.",
+    image_key: "topic-contracts",
+    published_at: "2026-05-20",
+  },
+  {
+    title: "Pla de mobilitat — Estadi Olímpic Lluís Companys",
+    summary: "Conveni Ajuntament–FCB per a partits durant les obres del Camp Nou (annex I).",
     image_key: "topic-mobility",
     published_at: "2026-05-18",
-  },
-  {
-    title: "Memòria anual de subvencions",
-    summary: "Resum amb totes les ajudes concedides durant l'any anterior.",
-    image_key: "topic-budgets",
-    published_at: "2026-05-14",
-  },
-  {
-    title: "Índex de transparència municipal",
-    summary: "Classificació dels ajuntaments segons publicació de dades obertes.",
-    image_key: "topic-contracts",
-    published_at: "2026-05-10",
   },
 ];
 

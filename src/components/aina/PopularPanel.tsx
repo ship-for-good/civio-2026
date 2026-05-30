@@ -11,144 +11,8 @@ import {
   ArrowUpRight,
   Hash,
 } from "lucide-react";
-import contracts from "@/assets/topic-contracts.jpg";
-import budgets from "@/assets/topic-budgets.jpg";
-import grants from "@/assets/topic-grants.jpg";
-import mobility from "@/assets/topic-mobility.jpg";
+import { POPULAR_TOPICS } from "@/data/popular-topics";
 import { cn } from "@/lib/utils";
-
-type Article = { title: string; source: string; url: string };
-type Topic = {
-  id: string;
-  title: string;
-  desc: string;
-  tags: string[];
-  img: string;
-  views: number;        // weekly consultations
-  trend: number;        // % vs last week
-  reason: string;       // why it's ranked here
-  summary: string[];    // MCP-generated bullets
-  articles: Article[];
-};
-
-// Mock dataset — ranked by `views` (descending).
-const TOPICS: Topic[] = [
-  {
-    id: "contractacio",
-    title: "Contractació pública",
-    desc: "Qui guanya les licitacions i amb quins criteris.",
-    tags: ["Contractes", "Licitacions"],
-    img: contracts,
-    views: 12840,
-    trend: 38,
-    reason: "Pic de consultes després de l'adjudicació de l'AVE i obres metropolitanes.",
-    summary: [
-      "La Generalitat ha adjudicat 312 contractes nous aquesta setmana, un 18% més que la mitjana mensual.",
-      "El 64% del volum econòmic es concentra en obres d'infraestructura ferroviària i sanitàries.",
-      "Tres empreses constructores acumulen el 41% de l'import total adjudicat.",
-    ],
-    articles: [
-      { title: "Adjudicada la nova fase de l'AVE per 480 M€", source: "DOGC", url: "#" },
-      { title: "Llistat de licitacions setmanals · gener", source: "Plataforma de Contractació", url: "#" },
-      { title: "Anàlisi: concentració d'adjudicacions", source: "El Crític", url: "#" },
-    ],
-  },
-  {
-    id: "pressupostos",
-    title: "Pressupostos",
-    desc: "On va cada euro del pressupost municipal i autonòmic.",
-    tags: ["Pressupost", "Despesa"],
-    img: budgets,
-    views: 9620,
-    trend: 22,
-    reason: "Debat parlamentari sobre els pressupostos 2026 en curs.",
-    summary: [
-      "El projecte de pressupostos 2026 incrementa un 6,4% la despesa social respecte al 2025.",
-      "Sanitat i Educació concentren el 58% del total, amb una pujada conjunta de 1.300 M€.",
-      "Inversió en habitatge multiplica per 2,1 la dotació de l'exercici anterior.",
-    ],
-    articles: [
-      { title: "El Govern presenta el projecte de pressupostos 2026", source: "Govern.cat", url: "#" },
-      { title: "Comparativa partides 2025–2026", source: "Idescat", url: "#" },
-    ],
-  },
-  {
-    id: "subvencions",
-    title: "Subvencions",
-    desc: "Ajudes públiques concedides a entitats i empreses.",
-    tags: ["Subvencions", "Ajudes"],
-    img: grants,
-    views: 7110,
-    trend: 12,
-    reason: "Publicació del padró d'ajudes culturals i tecnològiques de 2026.",
-    summary: [
-      "S'han publicat 47 noves convocatòries d'ajudes amb un import global de 92 M€.",
-      "El sector cultural rep la dotació més gran (28 M€), seguit per energia neta (19 M€).",
-      "Termini mitjà per sol·licitar: 31 dies. Hi ha 4 convocatòries que tanquen aquesta setmana.",
-    ],
-    articles: [
-      { title: "Convocatòries obertes a empreses i entitats", source: "DOGC", url: "#" },
-      { title: "Mapa de subvencions culturals", source: "CoNCA", url: "#" },
-    ],
-  },
-  {
-    id: "mobilitat",
-    title: "Mobilitat",
-    desc: "Inversions en transport públic i carrils bici.",
-    tags: ["Mobilitat", "Transport"],
-    img: mobility,
-    views: 5430,
-    trend: -4,
-    reason: "Estabilitat respecte la setmana anterior — sense grans anuncis nous.",
-    summary: [
-      "TMB inverteix 88 M€ en renovació de la flota d'autobusos elèctrics fins 2027.",
-      "Es projecten 64 km de nous carrils bici a l'AMB en els pròxims 18 mesos.",
-      "Rodalies registra el millor índex de puntualitat dels últims 4 trimestres (87%).",
-    ],
-    articles: [
-      { title: "Pla de renovació de flota TMB", source: "TMB", url: "#" },
-      { title: "Carrils bici metropolitans · estat d'execució", source: "AMB", url: "#" },
-    ],
-  },
-  {
-    id: "medi-ambient",
-    title: "Medi ambient",
-    desc: "Polítiques de sostenibilitat i qualitat de l'aire.",
-    tags: ["Clima", "Sostenibilitat"],
-    img: budgets,
-    views: 3980,
-    trend: 9,
-    reason: "Episodis de contaminació activen consultes sobre la ZBE i mesures correctores.",
-    summary: [
-      "Els nivells de NO₂ superen el llindar OMS en 7 estacions de l'AMB durant 3 dies.",
-      "La ZBE Rondes ha reduït un 14% les emissions de partícules des de la seva ampliació.",
-      "Pla de transició energètica preveu 600 MW addicionals de solar fotovoltaica el 2026.",
-    ],
-    articles: [
-      { title: "Informe setmanal de qualitat de l'aire", source: "Generalitat", url: "#" },
-      { title: "ZBE: balanç i pròxims passos", source: "AMB", url: "#" },
-    ],
-  },
-  {
-    id: "habitatge",
-    title: "Habitatge",
-    desc: "Lloguers, promocions públiques i ajudes a joves.",
-    tags: ["Habitatge", "Lloguer"],
-    img: contracts,
-    views: 2870,
-    trend: 17,
-    reason: "Nova línia d'ajudes a joves de fins a 35 anys publicada divendres.",
-    summary: [
-      "L'INCASOL licita 1.240 noves vivendes de lloguer social a 18 municipis.",
-      "Bo lloguer jove: import màxim de 250 €/mes durant 24 mesos.",
-      "Preu mitjà del lloguer a Barcelona: 1.180 €/mes, +3,2% interanual.",
-    ],
-    articles: [
-      { title: "Convocatòria bo lloguer jove 2026", source: "Agència Habitatge", url: "#" },
-      { title: "Promocions INCASOL en marxa", source: "INCASOL", url: "#" },
-    ],
-  },
-];
 
 const RANK_STYLES = [
   { Icon: Crown, ring: "ring-amber-400/60", chip: "bg-gradient-to-br from-amber-400 to-amber-600 text-white", label: "Or" },
@@ -163,7 +27,7 @@ function formatViews(n: number): string {
 
 export function PopularPanel() {
   const ranked = useMemo(
-    () => [...TOPICS].sort((a, b) => b.views - a.views).slice(0, 6),
+    () => [...POPULAR_TOPICS].sort((a, b) => b.views - a.views).slice(0, 6),
     [],
   );
   const [selectedId, setSelectedId] = useState<string>(ranked[0].id);
@@ -176,7 +40,17 @@ export function PopularPanel() {
       <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent">
         <ShieldCheck className="h-3.5 w-3.5" />
         <span>
-          Resums generats amb <strong className="font-semibold">MCP</strong> · fonts oficials verificades
+          Dades i enllaços del{" "}
+          <a
+            href="https://ajuntament.barcelona.cat/transparencia/ca"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline underline-offset-2 hover:text-accent"
+          >
+            portal de Transparència de Barcelona
+          </a>
+          {" "}
+          (maig 2026)
         </span>
       </div>
 
@@ -325,12 +199,12 @@ export function PopularPanel() {
               <p className="text-sm text-foreground/90">{selected.reason}</p>
             </div>
 
-            {/* MCP-generated summary */}
+            {/* Summary from official transparency sources */}
             <div>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-foreground">Resum del tema</h3>
                 <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">
-                  <Sparkles className="h-3 w-3" /> Generat amb MCP
+                  <Sparkles className="h-3 w-3" /> Font oficial
                 </span>
               </div>
               <ul className="space-y-2">

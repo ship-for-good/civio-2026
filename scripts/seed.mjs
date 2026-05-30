@@ -52,46 +52,47 @@ const EXAMPLE_QUESTIONS = [
   "Quines subvencions culturals s'han concedit recentment?",
 ];
 
+// Aliniat amb src/lib/db/seed-data.ts i src/data/popular-topics.ts
 const TOPICS = [
   [
     "Contractació pública",
-    "Qui guanya les licitacions i amb quins criteris.",
+    "Licitacions, adjudicacions i formalitzacions de l'Ajuntament i entitats municipals.",
     "Contractes",
     "topic-contracts",
     "2026-05-28",
   ],
   [
     "Pressupostos",
-    "On va cada euro del pressupost municipal i autonòmic.",
+    "Pressupostos anuals, execució i situació econòmico-presupostària de l'Ajuntament.",
     "Pressupost",
     "topic-budgets",
     "2026-05-27",
   ],
   [
     "Subvencions",
-    "Ajudes públiques concedides a entitats i empreses.",
+    "Convocatòries, ajudes concedides i dades obertes de subvencions municipals.",
     "Subvencions",
     "topic-grants",
     "2026-05-26",
   ],
   [
     "Mobilitat",
-    "Inversions en transport públic i carrils bici.",
+    "Plans de mobilitat, infraestructures i informació relacionada amb el transport a la ciutat.",
     "Mobilitat",
     "topic-mobility",
     "2026-05-25",
   ],
   [
     "Medi ambient",
-    "Polítiques de sostenibilitat i qualitat de l'aire.",
+    "Qualitat de l'aire, soroll, impacte ambiental i informació ambiental municipal.",
     "Clima",
     "topic-budgets",
     "2026-05-24",
   ],
   [
-    "Alts càrrecs",
-    "Retribucions, agendes i declaracions de béns.",
-    "Transparència",
+    "Habitatge",
+    "Polítiques de vivenda, rehabilitació i subvencions de l'Institut Municipal de l'Habitatge.",
+    "Habitatge",
     "topic-contracts",
     "2026-05-23",
   ],
@@ -99,34 +100,34 @@ const TOPICS = [
 
 const FEATURED = [
   [
-    "Publicat el portal d'alts càrrecs 2026",
-    "Inclou retribucions, agendes i declaracions de béns actualitzades.",
-    "topic-contracts",
+    "Proposta de pressupost municipal 2026",
+    "La proposta de pressupost supera els 4.000 M€, segons el portal de transparència.",
+    "topic-budgets",
+    "2026-05-28",
+  ],
+  [
+    "Barcelona aconsegueix el segell Infoparticipa 2025",
+    "Reconeixement a la qualitat de la informació i la participació ciutadana publicada.",
+    "topic-grants",
     "2026-05-26",
   ],
   [
-    "Nou conveni col·lectiu municipal",
-    "Detalls del conveni signat amb els treballadors públics aquest mes.",
+    "Pròrroga del Pla estratègic de subvencions 2025-26",
+    "Aprovada per la Comissió de Govern el 24 d'octubre de 2024.",
     "topic-grants",
     "2026-05-22",
   ],
   [
-    "Auditoria del transport metropolità",
-    "Resultats de l'auditoria independent sobre eficiència i costos.",
+    "Retribucions i currículums dels alts càrrecs",
+    "Dades actualitzades des dels sistemes de recursos humans municipals.",
+    "topic-contracts",
+    "2026-05-20",
+  ],
+  [
+    "Pla de mobilitat — Estadi Olímpic Lluís Companys",
+    "Conveni Ajuntament–FCB per a partits durant les obres del Camp Nou (annex I).",
     "topic-mobility",
     "2026-05-18",
-  ],
-  [
-    "Memòria anual de subvencions",
-    "Resum amb totes les ajudes concedides durant l'any anterior.",
-    "topic-budgets",
-    "2026-05-14",
-  ],
-  [
-    "Índex de transparència municipal",
-    "Classificació dels ajuntaments segons publicació de dades obertes.",
-    "topic-contracts",
-    "2026-05-10",
   ],
 ];
 
