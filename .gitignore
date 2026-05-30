@@ -1,0 +1,11 @@
+# Binaries
+/transparencia
+*.exe
+
+# Data
+data/*.db
+data/*.json
+!data/.gitkeep
+
+# Go
+/vendor/

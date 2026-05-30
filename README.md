@@ -1,5 +1,17 @@
 # Ship for Good · 1st Edition
 
+## Team Verde — Transparencia Graph Crawler
+
+**Problema:** El portal de transparencia es un directorio de enlaces difícil de navegar; el conocimiento de dónde buscar es tácito (OPP-1a).
+
+**Solución:** Crawler en Go que construye el grafo de Publicidad Activa en local (SQLite + JSON exportable).
+
+**Documentación:** [TRANSPARENCIA-CRAWLER.md](./TRANSPARENCIA-CRAWLER.md)
+
+**Stack:** Go, SQLite, Docker
+
+---
+
 think · build · help
 
 **May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/)**

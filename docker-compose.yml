@@ -1,0 +1,7 @@
+services:
+  crawler:
+    build: .
+    volumes:
+      - ./data:/data
+    environment:
+      DB_PATH: /data/graph.db
