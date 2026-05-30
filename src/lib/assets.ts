@@ -39,6 +39,19 @@ export function imageForKey(key: string): string {
 }
 
 /** Punt de focus per `object-position` (evita retalls estranys segons la imatge). */
+const FEATURED_IMAGE_KEYS = new Set([
+  "featured-pressupost",
+  "featured-infoparticipa",
+  "featured-subvencions",
+  "featured-alts-carrecs",
+  "featured-mobilitat",
+  "featured-etica",
+]);
+
+export function isFeaturedImageKey(key: string): boolean {
+  return FEATURED_IMAGE_KEYS.has(key);
+}
+
 export function imageObjectPositionForKey(key: string): string {
   const positions: Record<string, string> = {
     "topic-habitatge": "center 22%",

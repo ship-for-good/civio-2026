@@ -1,6 +1,6 @@
 import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { useFeatured } from "@/hooks/use-aina-queries";
-import { formatDateCa, imageForKey, imageObjectPositionForKey } from "@/lib/assets";
+import { formatDateCa, imageForKey, imageObjectPositionForKey, isFeaturedImageKey } from "@/lib/assets";
 import { cn } from "@/lib/utils";
 import { McpVerifiedBadge } from "@/components/aina/McpVerifiedBadge";
 
@@ -31,14 +31,24 @@ export function MissedPanel() {
               rel="noopener noreferrer"
               className="flex items-start gap-4 p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-primary-soft/30">
+              <div
+                className={cn(
+                  "relative shrink-0 overflow-hidden rounded-xl",
+                  isFeaturedImageKey(i.image_key)
+                    ? "h-32 w-32 bg-gradient-to-br from-primary/15 to-accent/10 ring-1 ring-primary/20"
+                    : "h-28 w-28 bg-primary-soft/30",
+                )}
+              >
                 <img
                   src={imageForKey(i.image_key)}
                   alt=""
                   loading="lazy"
-                  width={112}
-                  height={112}
-                  className="absolute inset-0 h-full w-full object-contain p-1 transition-transform duration-500 group-hover:scale-[1.05]"
+                  width={128}
+                  height={128}
+                  className={cn(
+                    "absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-[1.05]",
+                    isFeaturedImageKey(i.image_key) ? "object-contain p-1.5" : "object-cover",
+                  )}
                   style={{ objectPosition: imageObjectPositionForKey(i.image_key) }}
                 />
               </div>
