@@ -4,6 +4,18 @@ import { TOPICS } from "./topics";
 
 const GRAPH_TOPIC_IDS = new Set(KNOWLEDGE_GRAPH.map((n) => n.id));
 
+const TOPIC_TO_PORTAL: Record<TopicId, string> = {
+  retribuciones: "TRANSPARENCIA",
+  contratacion: "PLACE",
+  subvenciones: "BDNS",
+  bienes_patrimonio: "BOE",
+  casa_real: "CASA_REAL",
+  derecho_acceso: "DERECHO_ACCESO",
+  normativa_boe: "BOE",
+  estatales_generales: "TRANSPARENCIA",
+  unknown: "UNKNOWN",
+};
+
 export function isKnownTopicId(id: string): id is TopicId {
   return id in TOPICS;
 }
@@ -49,8 +61,11 @@ function buildClassification(
   const resolvedUrl =
     topicId === "unknown" ? "https://transparencia.gob.es" : node!.source_url;
 
+  const dl = copy.buildDeepLink?.(query);
+
   return {
     topicId,
+    portal: TOPIC_TO_PORTAL[topicId],
     label: copy.label,
     portalUrl: resolvedUrl,
     routingType: node?.type ?? "interno",
@@ -58,6 +73,6 @@ function buildClassification(
     explanation: copy.explanation,
     steps: copy.steps,
     ...(copy.searchTip !== undefined && { searchTip: copy.searchTip }),
-    ...(copy.buildDeepLink !== undefined && { deepLink: copy.buildDeepLink(query) }),
+    ...(dl !== undefined && { deepLink: dl }),
   };
 }

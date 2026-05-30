@@ -1,9 +1,9 @@
 packages:
-  - '.'
+  - "."
 
 allowBuilds:
-  '@parcel/watcher': true
-  '@swc/core': true
+  "@parcel/watcher": true
+  "@swc/core": true
   esbuild: true
   sharp: true
   sqlite3: true
@@ -14,9 +14,9 @@ ignoredBuiltDependencies:
   - unrs-resolver
 
 minimumReleaseAgeExclude:
-  - '@cursor/sdk-darwin-arm64@1.0.16'
-  - '@cursor/sdk-darwin-x64@1.0.16'
-  - '@cursor/sdk-linux-arm64@1.0.16'
-  - '@cursor/sdk-linux-x64@1.0.16'
-  - '@cursor/sdk-win32-x64@1.0.16'
-  - '@cursor/sdk@1.0.16'
+  - "@cursor/sdk-darwin-arm64@1.0.16"
+  - "@cursor/sdk-darwin-x64@1.0.16"
+  - "@cursor/sdk-linux-arm64@1.0.16"
+  - "@cursor/sdk-linux-x64@1.0.16"
+  - "@cursor/sdk-win32-x64@1.0.16"
+  - "@cursor/sdk@1.0.16"
