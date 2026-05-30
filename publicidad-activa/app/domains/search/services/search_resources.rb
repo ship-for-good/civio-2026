@@ -7,6 +7,8 @@ module Search
         "rpt" => "relaciones-puestos-trabajo"
       }.freeze
 
+      STOP_WORDS = %w[a al de del y e en la el lo los las un una por con para que].freeze
+
       Result = Struct.new(:resources, :facets, :total, keyword_init: true)
 
       def self.call(**kwargs)
@@ -52,28 +54,51 @@ module Search
       end
 
       def apply_text_search(scope)
-        @query.downcase.split(/\s+/).each do |term|
-          variants = [ term, synonyms[term] ].compact.uniq
-          clauses = variants.map do |variant|
-            pattern = "%#{ActiveRecord::Base.sanitize_sql_like(variant)}%"
-            <<~SQL.squish
-              (LOWER(url) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(materia) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(subtema) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(materia_label) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(subtema_label) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(COALESCE(organismo_code, '')) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(COALESCE(tipo, '')) LIKE #{ActiveRecord::Base.connection.quote(pattern)} OR
-               LOWER(path_segments) LIKE #{ActiveRecord::Base.connection.quote(pattern)})
-            SQL
-          end
+        searchable_terms.each do |term|
+          clauses = term_variants(term).flat_map { |variant| match_clauses(variant) }
           scope = scope.where(clauses.join(" OR "))
         end
         scope
       end
 
+      def searchable_terms
+        @searchable_terms ||= @query.downcase.split(/\s+/).reject { |term| STOP_WORDS.include?(term) }
+      end
+
+      def term_variants(term)
+        normalized = catalog.normalize_search_text(term)
+        [ term, synonyms[normalized], *catalog.codes_for_search_term(term) ].compact.uniq
+      end
+
+      def match_clauses(variant)
+        if known_organismo_code?(variant)
+          return [ "organismo_code = #{ActiveRecord::Base.connection.quote(variant)}" ]
+        end
+
+        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(variant)}%"
+        quoted = ActiveRecord::Base.connection.quote(pattern)
+        [ <<~SQL.squish ]
+          (LOWER(url) LIKE #{quoted} OR
+           LOWER(materia) LIKE #{quoted} OR
+           LOWER(subtema) LIKE #{quoted} OR
+           LOWER(materia_label) LIKE #{quoted} OR
+           LOWER(subtema_label) LIKE #{quoted} OR
+           LOWER(COALESCE(organismo_code, '')) LIKE #{quoted} OR
+           LOWER(COALESCE(tipo, '')) LIKE #{quoted} OR
+           LOWER(path_segments) LIKE #{quoted})
+        SQL
+      end
+
+      def known_organismo_code?(variant)
+        catalog.entry(variant).present?
+      end
+
+      def catalog
+        @catalog ||= Organisms::Services::LoadCatalog.call
+      end
+
       def synonyms
-        @synonyms ||= Organisms::Services::LoadCatalog.call.alias_index.merge(SUBTEMA_SYNONYMS)
+        @synonyms ||= catalog.alias_index.merge(SUBTEMA_SYNONYMS)
       end
 
       def build_facets(scope)

@@ -101,6 +101,20 @@ class Search::Services::SearchResourcesTest < ActiveSupport::TestCase
     assert result.resources.any? { |r| r.organismo_code == "aepd" }
   end
 
+  test "searches organism label from catalog" do
+    result = Search::Services::SearchResources.call(query: "Ministerio de Defensa", vigencia: "all")
+
+    assert result.resources.any? { |r| r.organismo_code == "mdef" }
+    assert result.resources.all? { |r| r.organismo_code == "mdef" }
+  end
+
+  test "searches materia and subtema labels" do
+    result = Search::Services::SearchResources.call(query: "Relaciones puestos", vigencia: "all")
+
+    assert result.resources.all? { |r| r.subtema == "relaciones-puestos-trabajo" }
+    assert result.total.positive?
+  end
+
   test "filters by materia" do
     result = Search::Services::SearchResources.call(materia: "organizacion-empleo", vigencia: "all")
 

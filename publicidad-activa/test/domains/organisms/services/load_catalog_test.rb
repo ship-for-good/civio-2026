@@ -42,7 +42,16 @@ class Organisms::Services::LoadCatalogTest < ActiveSupport::TestCase
     catalog = Organisms::Services::LoadCatalog.new(CATALOG)
 
     assert_equal "mdef", catalog.alias_index["defensa"]
-    assert_equal "aepd", catalog.alias_index["protección"]
+    assert_equal "aepd", catalog.alias_index["proteccion"]
+  end
+
+  test "finds organism codes from label and aliases" do
+    catalog = Organisms::Services::LoadCatalog.new(CATALOG)
+
+    assert_equal %w[mdef], catalog.codes_for_search_term("ministerio")
+    assert_equal %w[mdef], catalog.codes_for_search_term("defensa")
+    assert_equal %w[aepd], catalog.codes_for_search_term("proteccion")
+    assert_equal %w[aepd], catalog.codes_for_search_term("protección")
   end
 
   test "groups resource counts by label" do

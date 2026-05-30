@@ -1,25 +1,64 @@
+<% content_for :main_class, ExploreHelper::EXPLORE_MAIN_CLASS %>
 <% content_for :title, "Explorar — Publicidad Activa" %>
 
-<h1 class="text-2xl font-semibold mb-4">Explorar</h1>
+<header class="mb-10 sm:mb-14 max-w-3xl">
+  <span class="inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-600 mb-5">
+    Buscador
+  </span>
+  <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-stone-900 leading-tight">
+    Explorar
+  </h1>
+  <p class="mt-4 sm:mt-5 text-base sm:text-lg text-stone-600 leading-relaxed">
+    Busca recursos de publicidad activa por organismo, materia o subtema. Solo se muestran recursos vinculados a un ministerio u organismo.
+  </p>
+</header>
 
-<%= form_with url: explore_path, method: :get, class: "flex flex-wrap gap-2 mb-6" do |f| %>
-  <%= f.text_field :q, value: params[:q], placeholder: "Buscar (ej. Defensa RPT)", class: "border border-gray-300 rounded px-3 py-2 flex-1 min-w-[200px]" %>
-  <%= f.select :vigencia,
-      [["Vigentes", "vigente"], ["No vigentes", "historico"], ["Todos", "all"]],
-      { selected: params[:vigencia].presence || "vigente" },
-      class: "border border-gray-300 rounded px-3 py-2" %>
-  <%= f.submit "Buscar", class: "bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800" %>
-<% end %>
+<section class="mb-12 sm:mb-16 rounded-2xl border border-stone-200 bg-white p-6 sm:p-8 shadow-sm">
+  <%= render "search_form" %>
 
-<p class="text-sm text-gray-600 mb-4"><%= @result.total %> resultados</p>
-
-<ul class="space-y-3">
-  <% @result.resources.first(50).each do |resource| %>
-    <li class="bg-white border border-gray-200 rounded-lg p-4">
-      <p class="font-medium"><%= resource.subtema_label %> · <%= resource.materia_label %></p>
-      <p class="text-sm text-gray-600"><%= organism_label(resource.organismo_code) %> · <%= resource.tipo&.upcase %></p>
-      <p class="text-xs text-gray-500 mt-1"><%= resource.vigencia == "historico" ? "No vigente" : "Vigente" %><%= " · #{resource.periodo}" if resource.periodo.present? %></p>
-      <%= link_to "Abrir en transparencia.gob.es", resource.url, target: "_blank", rel: "noopener", class: "text-sm text-blue-700 hover:underline mt-2 inline-block" %>
-    </li>
+  <% if params[:organismo].present? || params[:materia].present? || params[:subtema].present? || params[:tipo].present? %>
+    <div class="mt-6 pt-6 border-t border-stone-100">
+      <%= render "active_filters" %>
+    </div>
   <% end %>
-</ul>
+</section>
+
+<% if explore_search_active? %>
+  <section class="space-y-6 sm:space-y-8">
+    <%= render "organisms/section_heading",
+      title: "Resultados",
+      count: organism_resource_count(@result.total),
+      description: @result.total > 50 ? "Mostrando los primeros 50 resultados. Refina la búsqueda para acotar." : nil %>
+
+    <% if @result.resources.any? %>
+      <ul class="space-y-4 sm:space-y-5">
+        <% @result.resources.first(50).each do |resource| %>
+          <%= render "result_card", resource: resource %>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="rounded-2xl border border-stone-200 bg-white px-6 py-14 sm:px-10 sm:py-16 text-center shadow-sm">
+        <div class="mx-auto flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-500 mb-6">
+          <svg class="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+          </svg>
+        </div>
+        <p class="text-lg font-semibold text-stone-900">No hay resultados para esta búsqueda</p>
+        <p class="mt-3 text-sm sm:text-base text-stone-500 max-w-md mx-auto leading-relaxed">
+          Prueba con el nombre de un organismo, una materia o un subtema. También puedes explorar por
+          <%= link_to "organismo", organisms_path, class: "text-sky-700 hover:text-sky-900 font-medium" %>.
+        </p>
+        <div class="mt-8">
+          <%= link_to "Ver todos los organismos", organisms_path, class: organism_btn_primary("sm:px-8") %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+<% else %>
+  <section class="rounded-2xl border border-dashed border-stone-200 bg-stone-50/60 px-6 py-14 sm:px-10 sm:py-16 text-center">
+    <p class="text-base sm:text-lg font-medium text-stone-700">Empieza escribiendo en el buscador</p>
+    <p class="mt-3 text-sm sm:text-base text-stone-500 max-w-lg mx-auto leading-relaxed">
+      Por defecto se muestran solo recursos vigentes. Cambia el filtro si necesitas versiones históricas.
+    </p>
+  </section>
+<% end %>

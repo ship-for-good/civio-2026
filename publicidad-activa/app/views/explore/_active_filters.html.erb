@@ -1,0 +1,42 @@
+<% if params[:organismo].present? || params[:materia].present? || params[:subtema].present? || params[:tipo].present? %>
+  <div class="space-y-3">
+    <p class="text-sm font-medium text-stone-700">Filtros activos</p>
+    <div class="flex flex-wrap gap-2 sm:gap-3">
+      <% if params[:organismo].present? %>
+        <span class="<%= organism_stat_badge %> gap-2 px-3 py-1.5">
+          <%= organism_label(params[:organismo]) %>
+          <%= link_to explore_path(explore_filter_params.except("organismo")), class: "text-stone-400 hover:text-stone-700 transition-colors", aria: { label: "Quitar filtro de organismo" } do %>
+            <span aria-hidden="true">×</span>
+          <% end %>
+        </span>
+      <% end %>
+
+      <% if params[:materia].present? %>
+        <span class="<%= organism_stat_badge %> gap-2 px-3 py-1.5">
+          <%= params[:materia].tr("-", " ") %>
+          <%= link_to explore_path(explore_filter_params.except("materia")), class: "text-stone-400 hover:text-stone-700 transition-colors", aria: { label: "Quitar filtro de materia" } do %>
+            <span aria-hidden="true">×</span>
+          <% end %>
+        </span>
+      <% end %>
+
+      <% if params[:subtema].present? %>
+        <span class="<%= organism_stat_badge %> gap-2 px-3 py-1.5">
+          <%= params[:subtema].tr("-", " ") %>
+          <%= link_to explore_path(explore_filter_params.except("subtema")), class: "text-stone-400 hover:text-stone-700 transition-colors", aria: { label: "Quitar filtro de subtema" } do %>
+            <span aria-hidden="true">×</span>
+          <% end %>
+        </span>
+      <% end %>
+
+      <% if params[:tipo].present? %>
+        <span class="<%= organism_stat_badge %> gap-2 px-3 py-1.5">
+          <%= params[:tipo].upcase %>
+          <%= link_to explore_path(explore_filter_params.except("tipo")), class: "text-stone-400 hover:text-stone-700 transition-colors", aria: { label: "Quitar filtro de tipo" } do %>
+            <span aria-hidden="true">×</span>
+          <% end %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+<% end %>

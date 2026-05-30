@@ -29,7 +29,7 @@ class OrganismsController < ApplicationController
     @materias = Organisms::Services::BuildOrganismNavigation.materias_for(@code)
     @subtemas = Organisms::Services::BuildOrganismNavigation.subtemas_for(@code, @materia)
 
-    head :not_found and return if @subtemas.empty?
+    render_not_found and return if @subtemas.empty?
   end
 
   def subtema
@@ -45,6 +45,6 @@ class OrganismsController < ApplicationController
     @vigente = result.vigente
     @historicos = result.historicos
 
-    head :not_found and return if @vigente.nil? && @historicos.empty?
+    render_not_found and return if @vigente.nil? && @historicos.empty?
   end
 end

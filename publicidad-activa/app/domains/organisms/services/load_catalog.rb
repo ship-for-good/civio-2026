@@ -30,9 +30,26 @@ module Organisms
       def alias_index
         @alias_index ||= @data.each_with_object({}) do |(code, meta), index|
           Array(meta["aliases"]).each do |term|
-            index[term.to_s.downcase] = code.to_s
+            index[normalize_search_text(term)] = code.to_s
           end
         end
+      end
+
+      def codes_for_search_term(term)
+        normalized = normalize_search_text(term)
+        return [] if normalized.blank?
+
+        @data.each_with_object([]) do |(code, meta), codes|
+          label = normalize_search_text(meta["label"])
+          aliases = Array(meta["aliases"]).map { |alias_term| normalize_search_text(alias_term) }
+
+          match = normalize_search_text(code) == normalized ||
+                  aliases.include?(normalized) ||
+                  (normalized.length >= 3 && label.include?(normalized)) ||
+                  (normalized.length >= 3 && aliases.any? { |alias_term| alias_term.include?(normalized) })
+
+          codes << code.to_s if match
+        end.uniq
       end
 
       def codes_with_label(label)
@@ -69,6 +86,10 @@ module Organisms
           icon: meta["icon"],
           aliases: Array(meta["aliases"])
         )
+      end
+
+      def normalize_search_text(text)
+        ActiveSupport::Inflector.transliterate(text.to_s.downcase)
       end
 
       def featured

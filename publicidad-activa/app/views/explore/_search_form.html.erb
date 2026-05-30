@@ -1,0 +1,29 @@
+<%= form_with url: explore_path, method: :get do %>
+  <% %i[organismo materia subtema tipo].each do |param| %>
+    <% if params[param].present? %>
+      <%= hidden_field_tag param, params[param] %>
+    <% end %>
+  <% end %>
+
+  <div class="space-y-6">
+    <div class="flex items-center rounded-full border border-stone-200 bg-stone-50/80 pl-5 sm:pl-6 pr-1.5 py-1.5 shadow-sm shadow-stone-200/30 focus-within:border-sky-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-sky-100 transition-all">
+      <%= text_field_tag :q, params[:q],
+        id: "q",
+        placeholder: "Organismo, materia o subtema…",
+        class: "flex-1 min-w-0 border-0 bg-transparent py-3 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-0 text-sm sm:text-base" %>
+      <%= submit_tag "Buscar →", class: "shrink-0 rounded-full bg-sky-600 px-5 sm:px-6 py-2.5 text-sm font-medium text-white hover:bg-sky-700 cursor-pointer transition-colors" %>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+      <span class="text-sm text-stone-500">Vigencia</span>
+      <div class="flex flex-wrap gap-2">
+        <% ExploreHelper::VIGENCIA_OPTIONS.each do |option_label, value| %>
+          <% active = explore_vigencia_value == value %>
+          <%= link_to option_label,
+            explore_path(explore_filter_params.merge("vigencia" => value)),
+            class: explore_vigencia_pill_classes(active) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
