@@ -88,21 +88,14 @@ export function ChatHero() {
   };
 
   return (
-    <section id="top" className="relative w-full">
-      <div className="mx-auto max-w-3xl px-4 pt-4 pb-6 text-center sm:px-6 sm:pt-6 sm:pb-8">
-        <div className="animate-fade-in-up border-accent/40 bg-background/60 text-accent inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold shadow-[0_0_0_4px_oklch(0.74_0.16_55/0.08)] backdrop-blur-md">
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-          <span>
-            <strong className="font-semibold">MCP</strong> super powered
-          </span>
-        </div>
-
-        <h1 className="animate-fade-in-up text-foreground mt-6 text-4xl tracking-tight text-balance sm:mt-8 sm:text-6xl">
+    <section id="top" className="relative">
+      <div className="mx-auto max-w-3xl px-4 pb-6 pt-10 text-center sm:px-6 sm:pb-8 sm:pt-14">
+        <h1 className="animate-fade-in-up mt-8 text-balance text-4xl tracking-tight text-foreground sm:text-6xl">
           <span className="font-extrabold">AI</span>
           <span className="font-medium">na de Transparència</span>
         </h1>
 
-        <p className="animate-fade-in-up text-muted-foreground mx-auto mt-4 max-w-xl text-pretty text-sm sm:text-base">
+        <p className="animate-fade-in-up mx-auto mt-5 max-w-xl text-pretty text-sm text-muted-foreground sm:text-base">
           No és una IA qualsevol. Connectada amb el protocol{" "}
           <strong className="text-accent">MCP</strong>, consulta dades públiques en directe i et
           respon amb fonts verificables. Més precisa, més certera.
@@ -110,7 +103,7 @@ export function ChatHero() {
 
         <form
           onSubmit={onSubmit}
-          className="animate-fade-in-up relative mx-auto mt-6 max-w-2xl sm:mt-8"
+          className="animate-fade-in-up relative mx-auto mt-8 max-w-2xl"
           aria-label="Fes una pregunta sobre dades públiques"
         >
           <div className="liquid-glass liquid-glass-focus relative rounded-3xl p-3">
@@ -141,7 +134,7 @@ export function ChatHero() {
                 aria-hidden="true"
                 className="text-muted-foreground pointer-events-none absolute top-7 left-7 text-left text-base"
               >
-                <span className="typewriter-caret">{placeholder}</span>
+                <span className="caret">{placeholder}</span>
               </div>
             )}
 
@@ -176,7 +169,7 @@ export function ChatHero() {
                 type="submit"
                 disabled={!value.trim()}
                 aria-label="Enviar pregunta"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-[oklch(0.66_0.17_45)] text-white shadow-[0_8px_24px_-8px_oklch(0.74_0.16_55/0.6)] transition-all hover:scale-[1.04] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-primary text-white shadow-[0_8px_24px_-8px_oklch(0.74_0.16_55/0.6)] transition-all hover:scale-[1.04] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 dark:from-[oklch(0.65_0.18_45)] dark:to-[oklch(0.74_0.17_235)]"
               >
                 <ArrowUp className="h-5 w-5" />
               </button>

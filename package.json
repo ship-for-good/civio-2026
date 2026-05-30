@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:seed": "node scripts/seed.mjs"
+    "db:seed": "node scripts/seed.mjs",
+    "assets:storyset-featured": "node scripts/fetch-storyset-featured.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

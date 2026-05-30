@@ -9,7 +9,12 @@ export type PopularTopicData = {
   title: string;
   desc: string;
   tags: string[];
-  image_key: "topic-contracts" | "topic-budgets" | "topic-grants" | "topic-mobility";
+  image_key:
+    | "topic-contracts"
+    | "topic-budgets"
+    | "topic-grants"
+    | "topic-mobility"
+    | "topic-habitatge";
   views: number;
   trend: number;
   reason: string;

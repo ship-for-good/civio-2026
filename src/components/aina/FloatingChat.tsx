@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUp, Network, Sparkles, X } from "lucide-react";
 import { useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
@@ -12,8 +12,26 @@ const PAGE_CONTEXT: Record<string, string> = {
 export function FloatingChat() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [bottomOffset, setBottomOffset] = useState(20);
   const { pathname } = useLocation();
   const ctx = PAGE_CONTEXT[pathname] ?? "Pregunta sobre dades públiques.";
+
+  useEffect(() => {
+    const footer = document.querySelector("footer");
+    if (!footer) return;
+    const update = () => {
+      const rect = footer.getBoundingClientRect();
+      const overlap = window.innerHeight - rect.top;
+      setBottomOffset(overlap > 0 ? overlap + 20 : 20);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [pathname]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,41 +40,40 @@ export function FloatingChat() {
 
   return (
     <>
-      {/* Floating button */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Tancar xat" : "Obrir xat MCP"}
+        style={{ bottom: `${bottomOffset}px` }}
         className={cn(
-          "fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full text-white shadow-glow transition-all hover:scale-105",
-          "bg-gradient-to-br from-accent to-[oklch(0.65_0.18_45)]",
+          "fixed right-5 z-[1100] inline-flex h-14 w-14 items-center justify-center rounded-full text-white shadow-glow transition-all hover:scale-105",
+          "bg-gradient-to-br from-accent to-primary dark:from-[oklch(0.65_0.18_45)] dark:to-[oklch(0.74_0.17_235)]",
           !open && "animate-pulse-ring",
         )}
       >
         {open ? <X className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
       </button>
 
-      {/* Drawer */}
       {open && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm animate-fade-in-up"
+            className="fixed inset-0 z-[1090] animate-fade-in-up bg-foreground/20 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed bottom-24 right-5 z-50 w-[min(380px,calc(100vw-2.5rem))] origin-bottom-right animate-fade-in-up">
+          <div
+            style={{ bottom: `${bottomOffset + 76}px` }}
+            className="fixed right-5 z-[1100] w-[min(380px,calc(100vw-2.5rem))] origin-bottom-right animate-fade-in-up"
+          >
             <div className="liquid-glass liquid-glass-focus rounded-2xl p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white">
                     <Network className="h-4 w-4" />
                   </span>
-                  <div>
-                    <div className="text-sm font-semibold text-foreground">Pregunta a AIna</div>
-                    <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                      <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
-                      MCP super powered
-                    </div>
+                  <div className="text-sm text-foreground">
+                    Pregunta a <span className="font-extrabold">AI</span>
+                    <span className="font-medium">na</span>
                   </div>
                 </div>
                 <button

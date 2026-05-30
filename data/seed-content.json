@@ -3,7 +3,7 @@
     {
       "title": "Proposta de pressupost municipal 2026",
       "summary": "El portal de transparència destaca que la proposta de pressupost supera els 4.000 M€. Consulteu pressupost vigent, consolidats i informes.",
-      "image_key": "topic-budgets",
+      "image_key": "featured-pressupost",
       "published_at": "2026-05-28",
       "source": "Portal de Transparència — Ajuntament de Barcelona",
       "url": "https://ajuntament.barcelona.cat/transparencia/ca/gestio-economica-i-administrativa"
@@ -11,7 +11,7 @@
     {
       "title": "Barcelona aconsegueix el segell Infoparticipa 2025",
       "summary": "Setè any consecutiu amb el 100% dels 52 indicadors del mapa Infoparticipa (UAB). Només Barcelona i Mataró, entre grans ciutats, ho aconsegueixen.",
-      "image_key": "topic-grants",
+      "image_key": "featured-infoparticipa",
       "published_at": "2026-05-26",
       "source": "Servei de Premsa — Ajuntament de Barcelona",
       "url": "https://ajuntament.barcelona.cat/premsa/2025/03/31/lajuntament-de-barcelona-reconegut-per-sete-any-consecutiu-per-la-seva-transparencia-informativa/"
@@ -19,7 +19,7 @@
     {
       "title": "Pròrroga del Pla estratègic de subvencions 2025-26",
       "summary": "Aprovada per la Comissió de Govern el 24 d'octubre de 2024. Inclou memoràries de la convocatòria general i el buscador d'atorgades.",
-      "image_key": "topic-grants",
+      "image_key": "featured-subvencions",
       "published_at": "2026-05-22",
       "source": "Portal de Transparència — Ajuntament de Barcelona",
       "url": "https://ajuntament.barcelona.cat/transparencia/ca/gestio-economica-i-administrativa"
@@ -27,7 +27,7 @@
     {
       "title": "Retribucions i currículums dels alts càrrecs",
       "summary": "Retribucions anualitzades en brut, declaracions d'activitats i resum patrimonial. Dades actualitzades des dels sistemes de RR. HH. municipals.",
-      "image_key": "topic-contracts",
+      "image_key": "featured-alts-carrecs",
       "published_at": "2026-05-20",
       "source": "Portal de Transparència — Ajuntament de Barcelona",
       "url": "https://ajuntament.barcelona.cat/transparencia/es/datos-de-los-cargos-municipales-y-eventuales"
@@ -35,7 +35,7 @@
     {
       "title": "Pla de mobilitat — Estadi Olímpic Lluís Companys",
       "summary": "Conveni Ajuntament–FCB (2022) per a partits durant les obres del Camp Nou. El pla de mobilitat és l'annex I del conveni.",
-      "image_key": "topic-mobility",
+      "image_key": "featured-mobilitat",
       "published_at": "2026-05-18",
       "source": "Portal de Transparència — Ajuntament de Barcelona",
       "url": "https://ajuntament.barcelona.cat/transparencia/ca/urbanisme-i-ecologia"
@@ -43,7 +43,7 @@
     {
       "title": "Bústia Ètica i de Bon Govern",
       "summary": "Canal segur de participació per enfortir el sector públic. També al carrusel del portal de transparència municipal.",
-      "image_key": "topic-contracts",
+      "image_key": "featured-etica",
       "published_at": "2026-05-14",
       "source": "Portal de Transparència — Ajuntament de Barcelona",
       "url": "https://ajuntament.barcelona.cat/transparencia/ca/bustia-etica-i-de-bon-govern"
@@ -215,7 +215,7 @@
       "title": "Habitatge",
       "desc": "Polítiques de vivenda, rehabilitació i subvencions de l'Institut Municipal de l'Habitatge.",
       "tags": ["Habitatge", "Lloguer"],
-      "image_key": "topic-contracts",
+      "image_key": "topic-habitatge",
       "views": 2870,
       "trend": 17,
       "reason": "Les subvencions de l'Institut Municipal de l'Habitatge i la Rehabilitació es publiquen fora del buscador general, amb fitxers dedicats a transparència.",

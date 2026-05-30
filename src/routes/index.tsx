@@ -1,8 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ChatHero } from "@/components/aina/ChatHero";
 import { FeatureCards } from "@/components/aina/FeatureCards";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="bg-background relative flex min-h-dvh flex-col overflow-hidden">
+    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-background">
       <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-0 h-[75vh]">
         <div
           className="absolute inset-0"
@@ -33,15 +32,13 @@ function Index() {
         />
       </div>
 
-      <div className="absolute top-0 right-0 left-0 z-30 flex items-center justify-between px-4 pt-4 sm:px-6 sm:pt-5">
-        <Link to="/" aria-label="Inici" className="inline-flex items-center gap-2">
-          <img src={logo} alt="" width={28} height={28} className="h-7 w-7 drop-shadow-sm" />
-          <span className="text-foreground/90 text-sm font-semibold tracking-tight">AIna</span>
-        </Link>
-        <ThemeToggle />
+      <div className="absolute left-0 right-0 top-0 z-30">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-end px-4 sm:px-6">
+          <ThemeToggle />
+        </div>
       </div>
 
-      <main className="relative z-10 flex flex-1 flex-col justify-start overflow-y-auto pt-14 sm:pt-16">
+      <main className="relative z-10 flex flex-1 flex-col justify-center">
         <ChatHero />
         <div className="pb-6 sm:pb-8">
           <FeatureCards />

@@ -1,7 +1,8 @@
-import { ArrowUpRight, ExternalLink, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { useFeatured } from "@/hooks/use-aina-queries";
-import { formatDateCa, imageForKey } from "@/lib/assets";
+import { formatDateCa, imageForKey, imageObjectPositionForKey } from "@/lib/assets";
 import { cn } from "@/lib/utils";
+import { McpVerifiedBadge } from "@/components/aina/McpVerifiedBadge";
 
 export function MissedPanel() {
   const { data: items = [], isLoading } = useFeatured();
@@ -16,20 +17,7 @@ export function MissedPanel() {
 
   return (
     <div>
-      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent">
-        <ShieldCheck className="h-3.5 w-3.5" />
-        <span>
-          Enllaços al{" "}
-          <a
-            href="https://ajuntament.barcelona.cat/transparencia/ca"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold underline underline-offset-2 hover:text-accent"
-          >
-            portal de Transparència de Barcelona
-          </a>
-        </span>
-      </div>
+      <McpVerifiedBadge showPortalLink />
 
       <div className="grid gap-5 sm:grid-cols-2">
         {items.map((i) => (
@@ -41,19 +29,20 @@ export function MissedPanel() {
               href={i.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex gap-4 p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex items-start gap-4 p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="bg-muted aspect-square h-28 w-28 flex-none overflow-hidden rounded-xl">
+              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-primary-soft/30">
                 <img
                   src={imageForKey(i.image_key)}
                   alt=""
                   loading="lazy"
-                  width={224}
-                  height={224}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                  width={112}
+                  height={112}
+                  className="absolute inset-0 h-full w-full object-contain p-1 transition-transform duration-500 group-hover:scale-[1.05]"
+                  style={{ objectPosition: imageObjectPositionForKey(i.image_key) }}
                 />
               </div>
-              <div className="min-w-0 flex-1 py-1">
+              <div className="min-w-0 flex-1 pt-0.5">
                 <div className="flex items-start justify-between gap-2">
                   <time className="text-accent text-xs font-medium" dateTime={i.published_at}>
                     {formatDateCa(i.published_at)}

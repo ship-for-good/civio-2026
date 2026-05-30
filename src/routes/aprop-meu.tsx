@@ -28,7 +28,7 @@ function ApropMeuPage() {
     <div className="bg-background flex min-h-dvh flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <section className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6">
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
           <Link
             to="/"
             className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm"

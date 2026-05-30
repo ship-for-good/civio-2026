@@ -37,6 +37,8 @@ Fallback estàtic: `src/data/fallback.ts` si la DB no està disponible.
 
 Mapa «A prop meu»: `src/data/barcelona-tenders-verified.ts` — només licitacions reals de [licitacions.bcn.cat](https://licitacions.bcn.cat/) (URL `.../detalle?id={id}`). No usar IDs ficticis 9001–9015.
 
+Imatges: `src/lib/assets.ts` (`imageForKey`, `imageObjectPositionForKey`). Temes populars / hero: `topic-*.jpg`, `habitatge.png`, `card-*.jpg`, `logo.png` (sync Lovable). **Destacats** («Potser t'has perdut»): il·lustracions úniques [Storyset](https://storyset.com) recolorejades `#EFB062` a `src/assets/featured/featured-*.svg`; regenerar amb `npm run assets:storyset-featured`. Atribució Storyset al peu (`SiteFooter`). Després de canviar `data/seed-content.json`: `npm run db:seed`.
+
 ## Prompt semilla (enganxa al iniciar sessió)
 
 ```

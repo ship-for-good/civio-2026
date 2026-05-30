@@ -6,13 +6,13 @@ import {
   TrendingUp,
   Eye,
   ExternalLink,
-  ShieldCheck,
-  Sparkles,
   ArrowUpRight,
   Hash,
 } from "lucide-react";
 import { usePopularTopics } from "@/hooks/use-aina-queries";
+import { imageObjectPositionForKey } from "@/lib/assets";
 import { cn } from "@/lib/utils";
+import { McpVerifiedBadge, McpVerifiedChip } from "@/components/aina/McpVerifiedBadge";
 
 const RANK_STYLES = [
   { Icon: Crown, ring: "ring-amber-400/60", chip: "bg-gradient-to-br from-amber-400 to-amber-600 text-white", label: "Or" },
@@ -54,23 +54,7 @@ export function PopularPanel() {
 
   return (
     <div>
-      {/* MCP attribution banner */}
-      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent">
-        <ShieldCheck className="h-3.5 w-3.5" />
-        <span>
-          Dades i enllaços del{" "}
-          <a
-            href="https://ajuntament.barcelona.cat/transparencia/ca"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold underline underline-offset-2 hover:text-accent"
-          >
-            portal de Transparència de Barcelona
-          </a>
-          {" "}
-          (maig 2026)
-        </span>
-      </div>
+      <McpVerifiedBadge showPortalLink />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(280px,360px)_1fr]">
         {/* LEFT — fixed-rank list */}
@@ -78,7 +62,7 @@ export function PopularPanel() {
           {ranked.map((t, idx) => {
             const rank = idx + 1;
             const rankStyle = RANK_STYLES[idx];
-            const isActive = t.id === selectedId;
+            const isActive = t.id === activeId;
             const widthPct = Math.max(8, Math.round((t.views / maxViews) * 100));
             return (
               <li key={t.id}>
@@ -163,7 +147,8 @@ export function PopularPanel() {
               src={selected.img}
               alt=""
               loading="lazy"
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: imageObjectPositionForKey(selected.image_key) }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
             <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/40 px-2.5 py-1 text-xs font-bold text-white backdrop-blur">
@@ -221,9 +206,7 @@ export function PopularPanel() {
             <div>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-foreground">Resum del tema</h3>
-                <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">
-                  <Sparkles className="h-3 w-3" /> Font oficial
-                </span>
+                <McpVerifiedChip />
               </div>
               <ul className="space-y-2">
                 {selected.summary.map((line, i) => (
