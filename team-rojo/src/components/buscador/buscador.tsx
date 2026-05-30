@@ -93,14 +93,16 @@ export function Buscador() {
         animate="visible"
         className="relative z-10 w-full max-w-2xl flex flex-col gap-8"
       >
-        <motion.div variants={fadeUp} className="text-center">
-          <p className="text-xs tracking-widest uppercase text-white/60 mb-4">
-            La información pública te pertenece
-          </p>
-          <h1 className="text-4xl sm:text-6xl font-serif font-semibold tracking-tight text-white mb-3 leading-tight">
-            Aquí la encuentras.
-          </h1>
-        </motion.div>
+        {(view === "idle" || view === "loading" || view === "error") && (
+          <motion.div variants={fadeUp} className="text-center">
+            <p className="text-xs tracking-widest uppercase text-white/60 mb-4">
+              La información pública te pertenece
+            </p>
+            <h1 className="text-4xl sm:text-6xl font-serif font-semibold tracking-tight text-white mb-3 leading-tight">
+              Aquí la encuentras.
+            </h1>
+          </motion.div>
+        )}
 
         <motion.div variants={fadeUp}>
           <SearchInput onSubmit={handleQuery} disabled={isLoading} />
