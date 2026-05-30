@@ -7,12 +7,12 @@ import cardNearby from "@/assets/card-nearby.jpg";
 import cardTrending from "@/assets/card-trending.jpg";
 import cardMissed from "@/assets/card-missed.jpg";
 import logo from "@/assets/logo.png";
-import featuredPressupost from "@/assets/featured/featured-pressupost.svg";
-import featuredInfoparticipa from "@/assets/featured/featured-infoparticipa.svg";
-import featuredSubvencions from "@/assets/featured/featured-subvencions.svg";
-import featuredAltsCarrecs from "@/assets/featured/featured-alts-carrecs.svg";
-import featuredMobilitat from "@/assets/featured/featured-mobilitat.svg";
-import featuredEtica from "@/assets/featured/featured-etica.svg";
+import featuredPressupost from "@/assets/featured/featured-pressupost.png";
+import featuredInfoparticipa from "@/assets/featured/featured-infoparticipa.png";
+import featuredSubvencions from "@/assets/featured/featured-subvencions.png";
+import featuredAltsCarrecs from "@/assets/featured/featured-alts-carrecs.png";
+import featuredMobilitat from "@/assets/featured/featured-mobilitat.png";
+import featuredEtica from "@/assets/featured/featured-etica.png";
 
 const IMAGE_MAP: Record<string, string> = {
   "topic-contracts": contracts,
