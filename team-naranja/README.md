@@ -4,16 +4,14 @@
 
 Asistente de navegación del ecosistema de transparencia española. Ayuda a localizar dónde se publica cada tipo de información pública (presupuestos, retribuciones, contratos, agendas, etc.).
 
-## Problem it solves
+## Problema que resuelve
 La información pública está dispersa, desordenada y es difícil de entender. La herramienta la unifica, la aclara y la hace accesible para cualquiera.
 
 ## Prerequisites
 - Node.js (v18 o superior)  
 - npm o yarn  
-- Next.js  
 - React  
 - TailwindCSS  
-- SDK de Anthropic (Claude)
 
 ## Installation and setup instructions
 
@@ -114,6 +112,109 @@ src/
 ```
 
 `src/routeTree.gen.ts` se genera automáticamente; no lo edites a mano.
+
+## Arquitectura del sistema
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Navegador                            │
+│                                                             │
+│  ┌──────────────┐     ┌──────────────────────────────────┐  │
+│  │   Chat UI    │────▶│     useAssistant (hook)          │  │
+│  │  (TanStack   │     │                                  │  │
+│  │   Router)    │◀────│  1. Recibe query del usuario     │  │
+│  └──────────────┘     │  2. matching.ts → top topics     │  │
+│                       │  3. Devuelve status + payload    │  │
+│                       └──────────────┬───────────────────┘  │
+│                                      │                      │
+│                       ┌──────────────▼───────────────────┐  │
+│                       │        catalog.json               │  │
+│                       │  (fuente de datos estática)      │  │
+│                       │                                  │  │
+│                       │  availability:                   │  │
+│                       │   hosted → FoundReportCard       │  │
+│                       │   linked → ExternalPortalCard    │  │
+│                       │   external_portal → redirect     │  │
+│                       │   not_published → RequestWizard  │  │
+│                       └──────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Estado MVP (sin servidor):** toda la lógica corre en el cliente. No hay llamadas a API externas ni base de datos; el matching es local contra `catalog.json`.
+
+**Arquitectura objetivo (post-hackathon):**
+
+```
+Usuario → Chat UI (React)
+               │
+               ▼
+         POST /api/ask
+               │
+               ▼
+   ┌───────────────────────┐
+   │   Backend (API)       │
+   │  1. Match semántico   │──▶ Vector DB / RAG
+   │  2. Llamada LLM       │──▶ Claude / OpenAI
+   │  3. JSON tipado       │
+   └───────────┬───────────┘
+               │
+       catalog.json / DB
+        (actualizado por
+         scraper/cron)
+```
+
+---
+
+## Decisiones técnicas clave
+
+| Decisión | Alternativa | Motivo |
+|----------|------------------------|--------|
+| **Todo en cliente, sin backend** | API + LLM | Permite demo funcional sin API keys ni deploy de servidor en el tiempo del hackathon |
+| **`catalog.json` estático** | Base de datos relacional | Simplicidad para el MVP; el esquema ya está diseñado para migrar a DB |
+| **Matching por palabras clave (`matching.ts`)** | Embeddings + búsqueda vectorial | Sin latencia de red, sin coste de inferencia, suficiente para ≤20 temas |
+| **`availability` como campo discriminante** | Lógica en el cliente | El catálogo declara el flujo; la UI solo renderiza según el valor recibido — fácil de migrar a API |
+
+---
+
+## Roadmap
+
+### 1. Mantener el catálogo actualizado automáticamente
+
+El `catalog.json` es el corazón del sistema. Para que no quede obsoleto hay dos vías:
+
+- **Scraping periódico:** un script (Python/Node) que visite cada `source_url` del catálogo, detecte cambios en los datasets publicados (nuevos archivos, fechas de actualización, enlaces rotos) y actualice `last_crawled` y los metadatos. Se puede ejecutar con un cron diario.
+- **APIs oficiales:** algunos portales ya exponen APIs REST o endpoints SPARQL (p. ej. `datos.gob.es`, Portal de Contratación del Estado). Donde existan, es preferible consultarlas directamente en lugar de hacer scraping frágil sobre HTML.
+
+El objetivo es que el campo `last_crawled` y el estado `availability` se actualicen solos, sin intervención manual.
+
+### 2. Conectar con un LLM y construir un RAG
+
+El matching actual es por palabras clave y solo cubre temas que están en el catálogo. Los siguientes pasos:
+
+- **Integrar Claude o GPT-4o** en el backend para interpretar preguntas en lenguaje natural ambiguas y generar respuestas enriquecidas (resumen del dataset, contexto legal, limitaciones).
+- **RAG sobre el catálogo:** convertir cada entrada de `catalog.json` en un embedding y almacenarlo en una base de datos vectorial (pgvector, Pinecone, Qdrant). La búsqueda semántica reemplaza al matching por keywords y mejora la cobertura para preguntas no exactas.
+- Limitar la IA a extracción y resumen estructurado, nunca a generar texto periodístico o legal (política Civio).
+
+### 3. Añadir una base de datos
+
+Migrar de `catalog.json` a una base de datos relacional (PostgreSQL) o documental permite:
+
+- Histórico de cambios por tema (cuándo se publicó algo, cuándo desapareció).
+- Búsqueda full-text nativa.
+- Gestión de múltiples portales y jurisdicciones sin que el JSON crezca indefinidamente.
+
+### 4. Ampliar cobertura de portales
+
+- Portales autonómicos (17 CCAA tienen portales propios con distintos niveles de apertura).
+- Portal de Contratación del Estado (PLACE) con integración de códigos CPV.
+- Portales de ayuntamientos de las principales ciudades.
+- La arquitectura de `catalog.json` ya está diseñada para esto: añadir un campo `jurisdiction` por entrada basta para soportar multi-ámbito.
+
+### 5. Monitorización y alertas
+
+Detectar automáticamente cuando un dataset que antes estaba publicado desaparece, o cuando se publica por primera vez información que no estaba disponible. Esto permite alertar a periodistas o ciudadanos interesados en un tema concreto (oportunidad OPP-1b del challenge Civio).
+
+---
 
 ## Solución de problemas
 
