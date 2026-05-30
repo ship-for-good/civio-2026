@@ -70,6 +70,69 @@ const fmtEur = (n: number) =>
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("ca-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
 
+type ScrollBlock = "start" | "center" | "end" | "nearest";
+
+/** Scroll dins d'un contenidor amb overflow (scrollIntoView no ho fa bé). */
+function scrollWithinContainer(
+  container: HTMLElement,
+  element: HTMLElement,
+  options?: { behavior?: ScrollBehavior; block?: ScrollBlock; padding?: number },
+) {
+  const padding = options?.padding ?? 12;
+  const behavior = options?.behavior ?? "smooth";
+  const block = options?.block ?? "nearest";
+
+  const elRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const elTop = elRect.top - containerRect.top + container.scrollTop;
+  const elBottom = elTop + element.offsetHeight;
+  const viewTop = container.scrollTop;
+  const viewBottom = viewTop + container.clientHeight;
+
+  let targetScroll = container.scrollTop;
+
+  if (block === "center") {
+    targetScroll = elTop - container.clientHeight / 2 + element.offsetHeight / 2;
+  } else if (block === "start") {
+    targetScroll = elTop - padding;
+  } else if (block === "end") {
+    targetScroll = elBottom - container.clientHeight + padding;
+  } else if (elTop < viewTop + padding) {
+    targetScroll = elTop - padding;
+  } else if (elBottom > viewBottom - padding) {
+    targetScroll = elBottom - container.clientHeight + padding;
+  } else {
+    return;
+  }
+
+  targetScroll = Math.max(0, Math.min(targetScroll, container.scrollHeight - container.clientHeight));
+  container.scrollTo({ top: targetScroll, behavior });
+}
+
+/** Fa visible l'element en cada ancestre amb scroll (taula → pàgina). */
+function scrollIntoNestedScrollAreas(
+  element: HTMLElement,
+  options?: { behavior?: ScrollBehavior; block?: ScrollBlock; padding?: number },
+) {
+  const behavior = options?.behavior ?? "smooth";
+  const block = options?.block ?? "nearest";
+  const padding = options?.padding ?? 12;
+
+  let node: HTMLElement | null = element.parentElement;
+  while (node) {
+    const { overflowY } = getComputedStyle(node);
+    const scrollable =
+      (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") &&
+      node.scrollHeight > node.clientHeight + 1;
+    if (scrollable) {
+      scrollWithinContainer(node, element, { behavior, block, padding });
+    }
+    node = node.parentElement;
+  }
+
+  element.scrollIntoView({ behavior, block: block === "nearest" ? "nearest" : block });
+}
+
 type SortKey = "budget" | "startDate" | "status" | "municipality";
 type SortDir = "asc" | "desc";
 
@@ -93,6 +156,8 @@ export function NearbyPanel() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
+  const detailRowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
+  const tableScrollRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -139,18 +204,39 @@ export function NearbyPanel() {
     else { setSortKey(key); setSortDir("asc"); }
   };
 
+  const scrollToTenderRow = (id: string, expanded: boolean) => {
+    const target =
+      (expanded ? detailRowRefs.current.get(id) : undefined) ??
+      rowRefs.current.get(id);
+    if (!target) return;
+
+    const tableScroller = tableScrollRef.current;
+    if (tableScroller) {
+      scrollWithinContainer(tableScroller, target, {
+        behavior: "smooth",
+        block: expanded ? "nearest" : "center",
+        padding: 16,
+      });
+    }
+    scrollIntoNestedScrollAreas(target, { behavior: "smooth", block: "nearest", padding: 24 });
+  };
+
   const handleSelect = (id: string, opts?: { fromMap?: boolean; toggle?: boolean }) => {
     if (opts?.toggle && expandedId === id) {
       setExpandedId(null);
+      setSelectedId(null);
       return;
     }
     setSelectedId(id);
     setExpandedId(id);
-    requestAnimationFrame(() => {
-      const el = rowRefs.current.get(id);
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
   };
+
+  useEffect(() => {
+    if (!expandedId) return;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => scrollToTenderRow(expandedId, true));
+    });
+  }, [expandedId, filtered.length, sortKey, sortDir]);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const focusOnMap = (id: string) => {
@@ -212,7 +298,7 @@ export function NearbyPanel() {
 
 
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
-          <div className="max-h-[70dvh] overflow-auto">
+          <div ref={tableScrollRef} className="max-h-[70dvh] overflow-auto overscroll-contain">
             <table className="w-full text-left text-sm">
               <thead className="sticky top-0 z-10 bg-muted/80 text-xs uppercase tracking-wide text-muted-foreground backdrop-blur">
                 <tr>
@@ -269,7 +355,13 @@ export function NearbyPanel() {
                         </td>
                       </tr>
                       {isExpanded && (
-                        <tr className="bg-muted/20">
+                        <tr
+                          ref={(el) => {
+                            if (el) detailRowRefs.current.set(t.id, el);
+                            else detailRowRefs.current.delete(t.id);
+                          }}
+                          className="bg-muted/20"
+                        >
                           <td colSpan={9} className="px-3 py-4 sm:px-5">
                             <DetailCard
                               tender={t}
