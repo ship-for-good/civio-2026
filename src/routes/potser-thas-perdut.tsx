@@ -42,7 +42,8 @@ function PotserThasPerdutPage() {
             Potser t&apos;has perdut això
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            Publicacions destacades de l&apos;administració recentment.
+            Publicacions destacades de l&apos;Ajuntament de Barcelona amb enllaços a fonts oficials
+            verificades.
           </p>
           <div className="mt-8">
             <MissedPanel />

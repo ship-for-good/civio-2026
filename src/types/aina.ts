@@ -19,6 +19,27 @@ export type FeaturedItem = {
   summary: string;
   image_key: string;
   published_at: string;
+  source: string;
+  url: string;
+};
+
+export type PopularTopicArticle = {
+  title: string;
+  source: string;
+  url: string;
+};
+
+export type PopularTopic = {
+  id: string;
+  title: string;
+  desc: string;
+  tags: string[];
+  image_key: string;
+  views: number;
+  trend: number;
+  reason: string;
+  summary: string[];
+  articles: PopularTopicArticle[];
 };
 
 export type NearbyItem = {

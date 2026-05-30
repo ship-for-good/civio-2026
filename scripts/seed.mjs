@@ -7,6 +7,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const dbDir = path.join(root, "data");
 const dbPath = path.join(dbDir, "aina.db");
+const seedContentPath = path.join(dbDir, "seed-content.json");
+
+/** @type {{ featured: Array<Record<string, string>>, popular_topics: Array<Record<string, unknown>> }} */
+const seedContent = JSON.parse(fs.readFileSync(seedContentPath, "utf8"));
 
 const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS example_questions (
@@ -27,7 +31,9 @@ CREATE TABLE IF NOT EXISTS featured_items (
   title TEXT NOT NULL,
   summary TEXT NOT NULL,
   image_key TEXT NOT NULL,
-  published_at TEXT NOT NULL
+  published_at TEXT NOT NULL,
+  source TEXT NOT NULL,
+  url TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS nearby_items (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,6 +42,32 @@ CREATE TABLE IF NOT EXISTS nearby_items (
   organization TEXT NOT NULL,
   date TEXT NOT NULL,
   status TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS popular_topics (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  desc TEXT NOT NULL,
+  tags_json TEXT NOT NULL,
+  image_key TEXT NOT NULL,
+  views INTEGER NOT NULL,
+  trend INTEGER NOT NULL,
+  reason TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS popular_topic_summaries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  topic_slug TEXT NOT NULL,
+  sort_order INTEGER NOT NULL,
+  text_ca TEXT NOT NULL,
+  FOREIGN KEY (topic_slug) REFERENCES popular_topics(slug)
+);
+CREATE TABLE IF NOT EXISTS popular_topic_articles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  topic_slug TEXT NOT NULL,
+  sort_order INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  source TEXT NOT NULL,
+  url TEXT NOT NULL,
+  FOREIGN KEY (topic_slug) REFERENCES popular_topics(slug)
 );
 `;
 
@@ -52,7 +84,6 @@ const EXAMPLE_QUESTIONS = [
   "Quines subvencions culturals s'han concedit recentment?",
 ];
 
-// Aliniat amb src/lib/db/seed-data.ts i src/data/popular-topics.ts
 const TOPICS = [
   [
     "Contractació pública",
@@ -98,39 +129,6 @@ const TOPICS = [
   ],
 ];
 
-const FEATURED = [
-  [
-    "Proposta de pressupost municipal 2026",
-    "La proposta de pressupost supera els 4.000 M€, segons el portal de transparència.",
-    "topic-budgets",
-    "2026-05-28",
-  ],
-  [
-    "Barcelona aconsegueix el segell Infoparticipa 2025",
-    "Reconeixement a la qualitat de la informació i la participació ciutadana publicada.",
-    "topic-grants",
-    "2026-05-26",
-  ],
-  [
-    "Pròrroga del Pla estratègic de subvencions 2025-26",
-    "Aprovada per la Comissió de Govern el 24 d'octubre de 2024.",
-    "topic-grants",
-    "2026-05-22",
-  ],
-  [
-    "Retribucions i currículums dels alts càrrecs",
-    "Dades actualitzades des dels sistemes de recursos humans municipals.",
-    "topic-contracts",
-    "2026-05-20",
-  ],
-  [
-    "Pla de mobilitat — Estadi Olímpic Lluís Companys",
-    "Conveni Ajuntament–FCB per a partits durant les obres del Camp Nou (annex I).",
-    "topic-mobility",
-    "2026-05-18",
-  ],
-];
-
 const NEARBY = [
   ["Reforma de la Plaça Major", "Obra pública", "Ajuntament", "12/05/2026", "En curs"],
   ["Subvenció a entitats culturals", "Subvenció", "Diputació", "08/05/2026", "Adjudicada"],
@@ -162,12 +160,43 @@ async function main() {
       row,
     );
   });
-  FEATURED.forEach((row) => {
+
+  for (const f of seedContent.featured) {
     db.run(
-      "INSERT INTO featured_items (title, summary, image_key, published_at) VALUES (?, ?, ?, ?)",
-      row,
+      "INSERT INTO featured_items (title, summary, image_key, published_at, source, url) VALUES (?, ?, ?, ?, ?, ?)",
+      [f.title, f.summary, f.image_key, f.published_at, f.source, f.url],
     );
-  });
+  }
+
+  for (const topic of seedContent.popular_topics) {
+    db.run(
+      `INSERT INTO popular_topics (slug, title, desc, tags_json, image_key, views, trend, reason)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        topic.slug,
+        topic.title,
+        topic.desc,
+        JSON.stringify(topic.tags),
+        topic.image_key,
+        topic.views,
+        topic.trend,
+        topic.reason,
+      ],
+    );
+    topic.summary.forEach((text, i) => {
+      db.run(
+        "INSERT INTO popular_topic_summaries (topic_slug, sort_order, text_ca) VALUES (?, ?, ?)",
+        [topic.slug, i + 1, text],
+      );
+    });
+    topic.articles.forEach((article, i) => {
+      db.run(
+        "INSERT INTO popular_topic_articles (topic_slug, sort_order, title, source, url) VALUES (?, ?, ?, ?, ?)",
+        [topic.slug, i + 1, article.title, article.source, article.url],
+      );
+    });
+  }
+
   NEARBY.forEach((row) => {
     db.run(
       "INSERT INTO nearby_items (title, category, organization, date, status) VALUES (?, ?, ?, ?, ?)",
@@ -177,7 +206,11 @@ async function main() {
 
   const data = db.export();
   fs.writeFileSync(dbPath, Buffer.from(data));
-  console.log(`✓ Base de dades creada: ${dbPath}`);
+  const featuredCount = seedContent.featured.length;
+  const popularCount = seedContent.popular_topics.length;
+  console.log(
+    `✓ Base de dades creada: ${dbPath} (${featuredCount} destacats, ${popularCount} temes populars)`,
+  );
   db.close();
 }
 

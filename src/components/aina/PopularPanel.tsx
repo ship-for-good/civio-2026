@@ -11,7 +11,7 @@ import {
   ArrowUpRight,
   Hash,
 } from "lucide-react";
-import { POPULAR_TOPICS } from "@/data/popular-topics";
+import { usePopularTopics } from "@/hooks/use-aina-queries";
 import { cn } from "@/lib/utils";
 
 const RANK_STYLES = [
@@ -26,13 +26,31 @@ function formatViews(n: number): string {
 }
 
 export function PopularPanel() {
+  const { data: topics = [], isLoading } = usePopularTopics();
   const ranked = useMemo(
-    () => [...POPULAR_TOPICS].sort((a, b) => b.views - a.views).slice(0, 6),
-    [],
+    () => [...topics].sort((a, b) => b.views - a.views).slice(0, 6),
+    [topics],
   );
-  const [selectedId, setSelectedId] = useState<string>(ranked[0].id);
-  const selected = ranked.find((t) => t.id === selectedId) ?? ranked[0];
-  const maxViews = ranked[0].views;
+  const [selectedId, setSelectedId] = useState<string>("");
+  const activeId = selectedId || ranked[0]?.id || "";
+  const selected = ranked.find((t) => t.id === activeId) ?? ranked[0];
+  const maxViews = ranked[0]?.views ?? 1;
+
+  if (isLoading) {
+    return (
+      <p className="text-muted-foreground text-sm" role="status">
+        Carregant temes populars…
+      </p>
+    );
+  }
+
+  if (!ranked.length || !selected) {
+    return (
+      <p className="text-muted-foreground text-sm">
+        No hi ha temes populars. Executa <code className="text-xs">npm run db:seed</code>.
+      </p>
+    );
+  }
 
   return (
     <div>

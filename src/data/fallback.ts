@@ -1,3 +1,4 @@
+import { POPULAR_TOPICS } from "@/data/popular-topics";
 import { EXAMPLE_QUESTIONS, FEATURED_ITEMS, NEARBY_ITEMS, TOPICS } from "@/lib/db/seed-data";
 
 import type { ExampleQuestion, FeaturedItem, NearbyItem, Topic } from "@/types/aina";
@@ -23,7 +24,11 @@ export const fallbackFeatured: FeaturedItem[] = FEATURED_ITEMS.map((f, i) => ({
   summary: f.summary,
   image_key: f.image_key,
   published_at: f.published_at,
+  source: f.source,
+  url: f.url,
 }));
+
+export const fallbackPopularTopics = POPULAR_TOPICS;
 
 export const fallbackNearby: NearbyItem[] = NEARBY_ITEMS.map((n, i) => ({
   id: i + 1,

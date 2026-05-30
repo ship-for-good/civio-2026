@@ -5,6 +5,7 @@ import {
   queryExampleQuestions,
   queryFeatured,
   queryNearby,
+  queryPopularTopics,
   queryTopics,
 } from "../db/client.server";
 
@@ -15,6 +16,10 @@ export const getExampleQuestions = createServerFn({ method: "GET" }).handler(asy
 );
 
 export const getTopics = createServerFn({ method: "GET" }).handler(async () => queryTopics());
+
+export const getPopularTopics = createServerFn({ method: "GET" }).handler(async () =>
+  queryPopularTopics(),
+);
 
 export const getFeatured = createServerFn({ method: "GET" }).handler(async () => queryFeatured());
 

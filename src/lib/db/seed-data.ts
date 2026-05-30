@@ -1,5 +1,7 @@
 /** Seed data for SQLite — Catalan public-transparency demo content. */
 
+import { FEATURED_ITEMS as FEATURED_FROM_DATA } from "@/data/featured-items";
+
 export const EXAMPLE_QUESTIONS = [
   "Què cobra el president de la Generalitat?",
   "Quines subvencions té 42 Barcelona?",
@@ -60,38 +62,7 @@ export const TOPICS = [
   },
 ];
 
-export const FEATURED_ITEMS = [
-  {
-    title: "Proposta de pressupost municipal 2026",
-    summary: "La proposta de pressupost supera els 4.000 M€, segons el portal de transparència.",
-    image_key: "topic-budgets",
-    published_at: "2026-05-28",
-  },
-  {
-    title: "Barcelona aconsegueix el segell Infoparticipa 2025",
-    summary: "Reconeixement a la qualitat de la informació i la participació ciutadana publicada.",
-    image_key: "topic-grants",
-    published_at: "2026-05-26",
-  },
-  {
-    title: "Pròrroga del Pla estratègic de subvencions 2025-26",
-    summary: "Aprovada per la Comissió de Govern el 24 d'octubre de 2024.",
-    image_key: "topic-grants",
-    published_at: "2026-05-22",
-  },
-  {
-    title: "Retribucions i currículums dels alts càrrecs",
-    summary: "Dades actualitzades des dels sistemes de recursos humans municipals.",
-    image_key: "topic-contracts",
-    published_at: "2026-05-20",
-  },
-  {
-    title: "Pla de mobilitat — Estadi Olímpic Lluís Companys",
-    summary: "Conveni Ajuntament–FCB per a partits durant les obres del Camp Nou (annex I).",
-    image_key: "topic-mobility",
-    published_at: "2026-05-18",
-  },
-];
+export const FEATURED_ITEMS = FEATURED_FROM_DATA;
 
 export const NEARBY_ITEMS = [
   {
@@ -173,7 +144,9 @@ CREATE TABLE IF NOT EXISTS featured_items (
   title TEXT NOT NULL,
   summary TEXT NOT NULL,
   image_key TEXT NOT NULL,
-  published_at TEXT NOT NULL
+  published_at TEXT NOT NULL,
+  source TEXT NOT NULL,
+  url TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS nearby_items (
@@ -183,5 +156,34 @@ CREATE TABLE IF NOT EXISTS nearby_items (
   organization TEXT NOT NULL,
   date TEXT NOT NULL,
   status TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS popular_topics (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  desc TEXT NOT NULL,
+  tags_json TEXT NOT NULL,
+  image_key TEXT NOT NULL,
+  views INTEGER NOT NULL,
+  trend INTEGER NOT NULL,
+  reason TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS popular_topic_summaries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  topic_slug TEXT NOT NULL,
+  sort_order INTEGER NOT NULL,
+  text_ca TEXT NOT NULL,
+  FOREIGN KEY (topic_slug) REFERENCES popular_topics(slug)
+);
+
+CREATE TABLE IF NOT EXISTS popular_topic_articles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  topic_slug TEXT NOT NULL,
+  sort_order INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  source TEXT NOT NULL,
+  url TEXT NOT NULL,
+  FOREIGN KEY (topic_slug) REFERENCES popular_topics(slug)
 );
 `;

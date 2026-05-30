@@ -1,10 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getExampleQuestions, getFeatured, getNearby, getTopics } from "@/lib/api/aina.functions";
+import {
+  getExampleQuestions,
+  getFeatured,
+  getNearby,
+  getPopularTopics,
+  getTopics,
+} from "@/lib/api/aina.functions";
+import { toPopularTopicView } from "@/data/popular-topics";
 import {
   fallbackExampleQuestions,
   fallbackFeatured,
   fallbackNearby,
+  fallbackPopularTopics,
   fallbackTopics,
 } from "@/data/fallback";
 
@@ -28,6 +36,18 @@ export function useTopics() {
   return useQuery({
     queryKey: ["aina", "topics"],
     queryFn: () => withFallback(() => getTopics(), fallbackTopics),
+    staleTime: 60_000,
+  });
+}
+
+export function usePopularTopics() {
+  return useQuery({
+    queryKey: ["aina", "popular-topics"],
+    queryFn: () =>
+      withFallback(
+        async () => (await getPopularTopics()).map(toPopularTopicView),
+        fallbackPopularTopics,
+      ),
     staleTime: 60_000,
   });
 }
