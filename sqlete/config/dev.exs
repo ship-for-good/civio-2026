@@ -1,5 +1,19 @@
 import Config
 
+# MinIO / S3-compatible object storage
+config :ex_aws,
+  access_key_id: System.get_env("MINIO_ACCESS_KEY", "minio"),
+  secret_access_key: System.get_env("MINIO_SECRET_KEY", "minio123"),
+  region: System.get_env("MINIO_REGION", "us-east-1")
+
+config :ex_aws, :s3,
+  scheme: "http://",
+  host: System.get_env("MINIO_HOST", "localhost"),
+  port: String.to_integer(System.get_env("MINIO_PORT", "9000")),
+  virtual_host: false
+
+config :sqlete, :storage_bucket, System.get_env("STORAGE_BUCKET", "sqlete-pdfs")
+
 # Configure your database
 config :sqlete, SQLete.Repo,
   username: "postgres",

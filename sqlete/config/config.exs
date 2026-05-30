@@ -7,10 +7,36 @@
 # General application configuration
 import Config
 
+config :sqlete, SQLete.Repo,
+  types: SQLete.PostgrexTypes
+
 config :sqlete,
   namespace: SQLete,
   ecto_repos: [SQLete.Repo],
-  generators: [timestamp_type: :utc_datetime, binary_id: true]
+  generators: [timestamp_type: :utc_datetime, binary_id: true],
+  documents_pipeline: SQLete.Documents.Pipeline,
+  documents_ingestor: SQLete.Documents.ArcanaIngestor,
+  documents_arcana_collection: "documents",
+  documents_arcana_graph: true,
+  enable_arcana_services: true,
+  storage_module: SQLete.Storage.S3,
+  storage_bucket: "sqlete-pdfs"
+
+config :arcana,
+  repo: SQLete.Repo,
+  embedder: :local,
+  pdf_parser: :poppler,
+  graph: [
+    enabled: false,
+    relationship_extractor: nil,
+    community_summarizer: nil
+  ]
+
+config :sqlete, Oban,
+  engine: Oban.Engines.Basic,
+  notifier: Oban.Notifiers.Postgres,
+  queues: [pdf_ingestion: 5, default: 10],
+  repo: SQLete.Repo
 
 # Configure the endpoint
 config :sqlete, SQLeteWeb.Endpoint,

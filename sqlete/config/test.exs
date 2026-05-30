@@ -1,4 +1,5 @@
 import Config
+config :sqlete, Oban, testing: :manual
 
 # Configure your database
 #
@@ -25,6 +26,12 @@ config :sqlete, SQLete.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
+
+# Use a fake storage module in test
+config :sqlete,
+  storage_module: SQLete.Storage.Fake,
+  documents_ingestor: SQLete.Documents.FakeIngestor,
+  enable_arcana_services: false
 
 # Print only warnings and errors during test
 config :logger, level: :warning

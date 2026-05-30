@@ -20,6 +20,17 @@ if System.get_env("PHX_SERVER") do
   config :sqlete, SQLeteWeb.Endpoint, server: true
 end
 
+pdf_ingestion_queue_concurrency =
+  System.get_env("OBAN_PDF_INGESTION_CONCURRENCY", "5")
+  |> String.to_integer()
+
+default_queue_concurrency =
+  System.get_env("OBAN_DEFAULT_QUEUE_CONCURRENCY", "10")
+  |> String.to_integer()
+
+config :sqlete, Oban,
+  queues: [pdf_ingestion: pdf_ingestion_queue_concurrency, default: default_queue_concurrency]
+
 config :sqlete, SQLeteWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
