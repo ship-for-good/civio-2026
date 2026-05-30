@@ -27,14 +27,11 @@ export default function LoginPage() {
       }
       // On success, onAuthStateChange updates the session and App.jsx re-renders
     } else {
-      const { data, error } = await signUp(email, password)
+      const { error } = await signUp(email, password)
       if (error) {
         setErrorMsg(error.message)
         setStatus('error')
-      } else if (data.session) {
-        // Confirm email is disabled — user is logged in immediately
       } else {
-        // Confirm email is enabled — show confirmation message
         setStatus('confirm')
       }
     }
@@ -45,6 +42,8 @@ export default function LoginPage() {
     setStatus('idle')
     setErrorMsg('')
   }
+
+  const buttonLabel = status === 'loading' ? 'Cargando…' : mode === 'login' ? 'Entrar' : 'Crear cuenta'
 
   return (
     <div className="login-wrapper">
@@ -96,9 +95,7 @@ export default function LoginPage() {
                 disabled={status === 'loading' || !email || !password}
                 className="login-btn"
               >
-                {status === 'loading'
-                  ? 'Cargando…'
-                  : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+                {buttonLabel}
               </button>
             </form>
 
