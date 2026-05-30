@@ -16,10 +16,18 @@ config :sqlete,
   documents_pipeline: SQLete.Documents.Pipeline,
   documents_ingestor: SQLete.Documents.ArcanaIngestor,
   documents_arcana_collection: "documents",
+  # Structured field extraction (FieldExtractor) feeds the dashboard; the GraphRAG
+  # graph is off by default to keep the fragile per-chunk LLM path out of ingestion.
   documents_arcana_graph: true,
+  # Vector embeddings (Arcana.ingest) are not needed by the dashboard and add a
+  # per-chunk LLM cost + failure surface; off by default for ingestion.
+  documents_arcana_embeddings: true,
   enable_arcana_services: true,
   storage_module: SQLete.Storage.S3,
-  storage_bucket: "sqlete-pdfs"
+  storage_bucket: "sqlete-pdfs",
+  # Read-side source for the inbox UI: Ecto-backed, reads the document_files columns
+  # filled by ingestion (FieldExtractor).
+  inbox_source: SQLete.Inbox.EctoSource
 
 config :arcana,
   repo: SQLete.Repo,
@@ -33,11 +41,24 @@ config :arcana,
     community_summarizer: nil
   ]
 
+config :req, :default_options, finch: SQLete.Finch
+
 config :sqlete, Oban,
   engine: Oban.Engines.Basic,
   notifier: Oban.Notifiers.Postgres,
-  queues: [pdf_ingestion: 5, default: 10],
+  queues: [pdf_ingestion: 5, llm_processing: 3, default: 10, alerts: 5],
+  # Cron runs in UTC (no tzdata dep). 07:00 UTC ≈ 08:00-09:00 Europe/Madrid.
+  plugins: [
+    {Oban.Plugins.Cron, crontab: [{"0 7 * * *", SQLete.Alerts.ScanWorker}]}
+  ],
   repo: SQLete.Repo
+
+# Deadline alerts. Adapters default to the no-op Fake (no cost / no account);
+# runtime.exs switches them to Twilio when ALERTS_PROVIDER=twilio. Default channel
+# is SMS (most reliable; voice is kept for when leaving the Twilio trial).
+config :sqlete, :voice_adapter, SQLete.Notifications.Voice.Fake
+config :sqlete, :sms_adapter, SQLete.Notifications.Sms.Fake
+config :sqlete, :alerts, threshold_days: 5, channel: :sms
 
 # Configure the endpoint
 config :sqlete, SQLeteWeb.Endpoint,

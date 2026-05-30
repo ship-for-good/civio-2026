@@ -1,9 +1,9 @@
 defmodule SQLete.LLM do
   @moduledoc """
-  LM Studio-backed LLM client for Arcana prompts.
+  OpenAI LLM client for Arcana prompts.
 
-  SQLete uses this client for graph extraction and future retrieval prompts
-  against the local OpenAI-compatible LM Studio API.
+  SQLete uses this client for graph extraction and retrieval prompts via the
+  OpenAI API.
   """
 
   @spec complete(String.t()) :: {:ok, String.t()} | {:error, term()}
@@ -69,23 +69,28 @@ defmodule SQLete.LLM do
   end
 
   defp model_spec(config) do
-    "openai:" <> Keyword.get(config, :model, "qwen3.6-35b-a3b-ud-mlx")
+    "openai:" <> Keyword.get(config, :model, "gpt-5.4-mini")
   end
 
   defp api_base_url(config) do
-    base_url(config) <> "/v1"
+    config
+    |> Keyword.get(:base_url, "https://api.openai.com/v1")
+    |> normalize_openai_base_url()
   end
 
   defp models_url do
     llm_config([])
-    |> base_url()
-    |> Kernel.<>("/v1/models")
+    |> api_base_url()
+    |> Kernel.<>("/models")
   end
 
-  defp base_url(config) do
-    config
-    |> Keyword.get(:base_url, "http://127.0.0.1:1234")
+  defp normalize_openai_base_url(url) when is_binary(url) do
+    url
     |> String.trim_trailing("/")
+    |> then(fn
+      url when byte_size(url) >= 3 and binary_part(url, byte_size(url), -3) == "/v1" -> url
+      url -> url <> "/v1"
+    end)
   end
 
   defp maybe_put(opts, _key, nil), do: opts

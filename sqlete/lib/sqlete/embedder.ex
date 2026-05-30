@@ -1,6 +1,6 @@
 defmodule SQLete.Embedder do
   @moduledoc """
-  LM Studio-backed embedder for Arcana document and entity embeddings.
+  OpenAI-compatible embedder for Arcana document and entity embeddings.
   """
 
   @behaviour Arcana.Embedder
@@ -20,7 +20,7 @@ defmodule SQLete.Embedder do
   @impl true
   @spec dimensions(keyword()) :: pos_integer()
   def dimensions(opts \\ []) do
-    Keyword.get(embedder_config(opts), :dimensions, 1024)
+    Keyword.get(embedder_config(opts), :dimensions, 1536)
   end
 
   @spec health_check() :: :ok | {:error, term()}
@@ -45,29 +45,35 @@ defmodule SQLete.Embedder do
       base_url: api_base_url(config),
       req_http_options: [receive_timeout: timeout, pool_timeout: timeout]
     ]
+    |> maybe_put(:dimensions, Keyword.get(config, :dimensions))
     |> maybe_put(:api_key, Keyword.get(config, :api_key))
     |> maybe_put(:provider_options, Keyword.get(config, :provider_options))
   end
 
   defp model_spec(overrides) do
     config = embedder_config(overrides)
-    "openai:" <> Keyword.get(config, :model, "text-embedding-qwen3-embedding-0.6b")
+    "openai:" <> Keyword.get(config, :model, "text-embedding-3-small")
   end
 
   defp api_base_url(config) do
-    base_url(config) <> "/v1"
+    config
+    |> Keyword.get(:base_url, "https://api.openai.com/v1")
+    |> normalize_openai_base_url()
   end
 
   defp models_url do
     embedder_config([])
-    |> base_url()
-    |> Kernel.<>("/v1/models")
+    |> api_base_url()
+    |> Kernel.<>("/models")
   end
 
-  defp base_url(config) do
-    config
-    |> Keyword.get(:base_url, "http://127.0.0.1:1234")
+  defp normalize_openai_base_url(url) when is_binary(url) do
+    url
     |> String.trim_trailing("/")
+    |> then(fn
+      url when byte_size(url) >= 3 and binary_part(url, byte_size(url), -3) == "/v1" -> url
+      url -> url <> "/v1"
+    end)
   end
 
   defp maybe_put(opts, _key, nil), do: opts

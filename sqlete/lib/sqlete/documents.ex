@@ -7,7 +7,9 @@ defmodule SQLete.Documents do
   """
 
   alias SQLete.Documents.Document
+  alias SQLete.Documents.DocumentFile
   alias SQLete.Documents.IngestionRequest
+  alias SQLete.Repo
 
   @type ingest_attrs :: keyword() | map()
 
@@ -28,9 +30,31 @@ defmodule SQLete.Documents do
 
   def ingest_pdf(_pdf_binary, _attrs), do: {:error, :invalid_pdf_binary}
 
+  @doc """
+  Delete a document and its stored PDF.
+
+  Removes the storage object (best-effort, mirroring the pipeline rollback) and
+  the `document_files` row. Returns `{:error, :not_found}` when the id is unknown.
+  """
+  @spec delete_document(binary()) :: {:ok, DocumentFile.t()} | {:error, term()}
+  def delete_document(id) do
+    case Repo.get(DocumentFile, id) do
+      nil ->
+        {:error, :not_found}
+
+      %DocumentFile{} = doc_file ->
+        _ = storage().delete(doc_file.storage_key)
+        Repo.delete(doc_file)
+    end
+  end
+
   @spec pipeline() :: module()
   def pipeline do
     Application.get_env(:sqlete, :documents_pipeline, SQLete.Documents.NoopPipeline)
+  end
+
+  defp storage do
+    Application.get_env(:sqlete, :storage_module, SQLete.Storage.S3)
   end
 
   defp normalize_attrs(attrs) when is_list(attrs), do: Map.new(attrs)

@@ -1,6 +1,8 @@
 defmodule SQLete.Documents.ProcessPdfWorkerTest do
   use SQLete.DataCase, async: false
 
+  import Ecto.Query
+
   alias SQLete.Documents.DocumentFile
   alias SQLete.Documents.ProcessPdfWorker
   alias SQLete.Storage.Fake
@@ -18,7 +20,7 @@ defmodule SQLete.Documents.ProcessPdfWorkerTest do
     :ok
   end
 
-  test "perform/1 marks a document as completed and records extraction metadata" do
+  test "perform/1 extracts fields and enqueues LLM processing" do
     {:ok, storage_key} = Fake.store("%PDF-1.7 sample", filename: "notice.pdf")
 
     {:ok, doc_file} =
@@ -41,12 +43,16 @@ defmodule SQLete.Documents.ProcessPdfWorkerTest do
 
     updated = Repo.get!(DocumentFile, doc_file.id)
 
-    assert updated.status == :completed
-    assert updated.metadata["arcana"]["provider"] == "arcana"
-    assert updated.metadata["arcana"]["document_id"] == "arcana-#{doc_file.id}"
-    assert updated.metadata["arcana"]["collection"] == "hearings"
-    assert updated.metadata["arcana"]["source_id"] == "worker-test"
-    assert updated.metadata["arcana"]["chunk_count"] == 1
+    assert updated.status == :processing
+    assert updated.doc_type == "otro"
+    assert updated.organismo == "Fake Organismo"
+    assert is_binary(updated.arcana_document_id)
+
+    [llm_job] =
+      Repo.all(from(j in Oban.Job, where: j.worker == ^"SQLete.Documents.LlmProcessingWorker"))
+
+    assert llm_job.args["document_file_id"] == doc_file.id
+    assert llm_job.args["arcana_document_id"] == updated.arcana_document_id
   end
 
   test "perform/1 marks a document as failed when extraction fails" do

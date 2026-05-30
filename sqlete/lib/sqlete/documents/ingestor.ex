@@ -9,4 +9,12 @@ defmodule SQLete.Documents.Ingestor do
   alias SQLete.Documents.DocumentFile
 
   @callback ingest_pdf(binary(), DocumentFile.t()) :: {:ok, map()} | {:error, term()}
+
+  @callback extract_fields(binary(), DocumentFile.t()) ::
+              {:ok, %{text: String.t(), fields: map()}} | {:error, term()}
+
+  @callback create_arcana_document(String.t(), DocumentFile.t()) ::
+              {:ok, term()} | {:error, term()}
+
+  @callback process_graph(term(), DocumentFile.t()) :: {:ok, map()} | {:error, term()}
 end

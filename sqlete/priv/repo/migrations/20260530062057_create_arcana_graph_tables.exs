@@ -7,8 +7,12 @@ defmodule SQLete.Repo.Migrations.CreateArcanaGraphTables do
       add :name, :string, null: false
       add :type, :string, null: false
       add :description, :text
-      add :embedding, :vector, size: 1024
+      add :embedding, :vector, size: 1536
       add :metadata, :map, default: %{}
+
+      add :arcana_document_id,
+          references(:arcana_documents, type: :binary_id, on_delete: :nilify_all)
+
       add :chunk_id, references(:arcana_chunks, type: :binary_id, on_delete: :nilify_all)
 
       add :collection_id,

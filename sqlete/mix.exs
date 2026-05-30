@@ -40,6 +40,7 @@ defmodule SQLete.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:oban_web, "~> 2.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:decimal, "~> 2.0", override: true},
       {:arcana, "~> 2.0"},
@@ -74,7 +75,7 @@ defmodule SQLete.MixProject do
       {:ex_aws_s3, "~> 2.5"},
       {:hackney, "~> 1.20"},
       {:sweet_xml, "~> 0.7"},
-      {:oban, "~> 2.18"}
+      {:oban, "~> 2.0"}
     ]
   end
 

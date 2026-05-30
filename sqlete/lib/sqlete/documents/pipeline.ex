@@ -50,16 +50,24 @@ defmodule SQLete.Documents.Pipeline do
   end
 
   defp create_document_file(%IngestionRequest{} = request, storage_key) do
+    dataset_attrs =
+      request.metadata
+      |> DocumentFile.dataset_attrs()
+      |> Map.put_new(:size_bytes, request.byte_size)
+
     %DocumentFile{}
-    |> DocumentFile.changeset(%{
-      filename: request.filename,
-      content_type: request.content_type,
-      byte_size: request.byte_size,
-      checksum: request.checksum,
-      storage_key: storage_key,
-      status: :uploaded,
-      metadata: request.metadata
-    })
+    |> DocumentFile.changeset(
+      %{
+        filename: request.filename,
+        content_type: request.content_type,
+        byte_size: request.byte_size,
+        checksum: request.checksum,
+        storage_key: storage_key,
+        status: :uploaded,
+        metadata: request.metadata
+      }
+      |> Map.merge(dataset_attrs)
+    )
     |> Repo.insert()
   end
 

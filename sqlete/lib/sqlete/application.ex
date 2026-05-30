@@ -14,6 +14,9 @@ defmodule SQLete.Application do
       ] ++
         arcana_children() ++
         [
+          {Finch,
+           name: SQLete.Finch,
+           pools: %{default: [size: 25, count: 8, pool_max_idle_time: 120_000]}},
           {DNSCluster, query: Application.get_env(:sqlete, :dns_cluster_query) || :ignore},
           {Oban, Application.fetch_env!(:sqlete, Oban)},
           {Phoenix.PubSub, name: SQLete.PubSub},

@@ -271,3 +271,242 @@ body {
     box-shadow: 0 18px 36px rgba(18, 51, 64, 0.1);
   }
 }
+
+/* --- Semáforo badges (deadline traffic light) --- */
+.sq-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.sq-badge-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.sq-badge-verde {
+  color: #1f7a4d;
+  background: rgba(31, 122, 77, 0.12);
+  border-color: rgba(31, 122, 77, 0.25);
+}
+
+.sq-badge-ambar {
+  color: #9a6a12;
+  background: rgba(240, 195, 107, 0.22);
+  border-color: rgba(240, 195, 107, 0.45);
+}
+
+.sq-badge-rojo {
+  color: #a32b1d;
+  background: rgba(163, 43, 29, 0.12);
+  border-color: rgba(163, 43, 29, 0.3);
+}
+
+[data-theme="dark"] .sq-badge-verde {
+  color: #7fd9a6;
+  background: rgba(127, 217, 166, 0.14);
+}
+
+[data-theme="dark"] .sq-badge-ambar {
+  color: #f4d58d;
+  background: rgba(244, 213, 141, 0.16);
+}
+
+[data-theme="dark"] .sq-badge-rojo {
+  color: #f0a094;
+  background: rgba(240, 160, 148, 0.16);
+}
+
+/* --- Estado pill (color by category) --- */
+.sq-estado {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.18rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  border: 1px solid var(--sq-border);
+  background: var(--sq-secondary-soft);
+  color: var(--sq-secondary);
+}
+
+/* in progress / awaiting */
+.sq-estado-info {
+  color: var(--sq-secondary);
+  background: var(--sq-secondary-soft);
+  border-color: rgba(31, 122, 115, 0.25);
+}
+
+/* needs action (silencio / incompleta) */
+.sq-estado-danger {
+  color: #a32b1d;
+  background: rgba(163, 43, 29, 0.1);
+  border-color: rgba(163, 43, 29, 0.28);
+}
+
+/* in dispute (reclamada / contencioso) */
+.sq-estado-warn {
+  color: #9a6a12;
+  background: rgba(240, 195, 107, 0.2);
+  border-color: rgba(240, 195, 107, 0.45);
+}
+
+/* closed (resuelta / ganado) */
+.sq-estado-done {
+  color: #1f7a4d;
+  background: rgba(31, 122, 77, 0.12);
+  border-color: rgba(31, 122, 77, 0.25);
+}
+
+[data-theme="dark"] .sq-estado-danger {
+  color: #f0a094;
+  background: rgba(240, 160, 148, 0.16);
+}
+
+[data-theme="dark"] .sq-estado-warn {
+  color: #f4d58d;
+  background: rgba(244, 213, 141, 0.16);
+}
+
+[data-theme="dark"] .sq-estado-done {
+  color: #7fd9a6;
+  background: rgba(127, 217, 166, 0.14);
+}
+
+/* --- Table --- */
+.sq-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sq-table thead th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sq-muted);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--sq-border);
+}
+
+.sq-table tbody td {
+  padding: 0.85rem 0.6rem;
+  border-bottom: 1px solid var(--sq-border);
+  vertical-align: middle;
+}
+
+.sq-table tbody tr {
+  transition: background-color 140ms ease;
+  cursor: pointer;
+}
+
+.sq-table tbody tr:hover {
+  background: var(--sq-secondary-soft);
+}
+
+/* --- Drag & drop zone --- */
+.sq-dropzone {
+  border: 2px dashed var(--sq-border);
+  border-radius: 1rem;
+  background: rgba(255, 250, 241, 0.45);
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+[data-theme="dark"] .sq-dropzone {
+  background: rgba(17, 33, 43, 0.5);
+}
+
+.sq-dropzone:hover,
+.sq-dropzone.phx-drop-target-active {
+  border-color: var(--sq-primary);
+  background: var(--sq-secondary-soft);
+}
+
+/* --- Timeline --- */
+.sq-timeline {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.sq-timeline::before {
+  content: "";
+  position: absolute;
+  left: 0.32rem;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 2px;
+  background: var(--sq-border);
+}
+
+.sq-timeline-dot {
+  position: absolute;
+  /* Center the dot over the vertical line (line center ≈ 0.39rem from the <ol>,
+     the <li> starts at 1.5rem of padding, dot radius 0.35rem). */
+  left: -1.46rem;
+  top: 0.3rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 9999px;
+  background: var(--sq-primary);
+  border: 2px solid var(--sq-surface-strong);
+}
+
+/* --- Spinner --- */
+.sq-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--sq-border);
+  border-top-color: var(--sq-primary);
+  border-radius: 9999px;
+  animation: sq-spin 0.7s linear infinite;
+}
+
+@keyframes sq-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Deadline chain --- */
+.sq-deadline-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sq-chain-step {
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.sq-chain-step:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sq-chain-arrow {
+  color: var(--sq-muted);
+}
+
+/* --- Urgent child highlight --- */
+.sq-urgent-child {
+  background: rgba(163, 43, 29, 0.06);
+  border-left: 3px solid #a32b1d;
+}
+
+[data-theme="dark"] .sq-urgent-child {
+  background: rgba(163, 43, 29, 0.12);
+}

@@ -20,6 +20,11 @@
         window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "light"));
         
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
+
+        window.addEventListener("phx:toggle-theme", () => {
+          const current = document.documentElement.getAttribute("data-theme") || "light";
+          setTheme(current === "dark" ? "light" : "dark");
+        });
       })();
     </script>
   </head>

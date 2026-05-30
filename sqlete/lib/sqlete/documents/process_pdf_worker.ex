@@ -1,14 +1,19 @@
 defmodule SQLete.Documents.ProcessPdfWorker do
   @moduledoc """
-  Oban worker that processes a stored PDF through the Arcana ingestion pipeline.
+  Stage‑1 Oban worker: parses a PDF and extracts structured fields without any
+  LLM‑heavy embedding or graph work.
 
   Fetches the document file record, retrieves the PDF from storage,
-  runs the configured ingestor, and persists the results.
+  runs field extraction, stores the parsed text in an arcana document,
+  enqueues the LLM processing worker, and broadcasts the fields so the
+  dashboard is usable immediately. Status stays `:processing` until the
+  LLM worker finishes.
   """
 
-  use Oban.Worker, queue: :pdf_ingestion
+  use Oban.Worker, queue: :pdf_ingestion, max_attempts: 5
 
   alias SQLete.Documents.DocumentFile
+  alias SQLete.Inbox
   alias SQLete.Repo
 
   @impl true
@@ -16,14 +21,27 @@ defmodule SQLete.Documents.ProcessPdfWorker do
     with {:ok, doc_file} <- fetch_document(doc_file_id),
          {:ok, processing_doc_file} <- update_status(doc_file, :processing),
          {:ok, pdf_binary} <- fetch_pdf(processing_doc_file),
-         {:ok, ingest_summary} <- ingest_pdf(processing_doc_file, pdf_binary),
-         {:ok, _completed_doc_file} <- mark_completed(processing_doc_file, ingest_summary) do
+         {:ok, %{text: text, fields: fields}} <-
+           extract_fields(processing_doc_file, pdf_binary),
+         {:ok, arcana_doc} <- create_arcana_document(text, processing_doc_file),
+         {:ok, _job} <- enqueue_llm_job(processing_doc_file, arcana_doc),
+         {:ok, _updated_doc} <- update_fields(processing_doc_file, fields, arcana_doc) do
+      Inbox.broadcast({:document_updated, doc_file_id})
       :ok
     else
       {:error, reason} ->
         _ = mark_failed(doc_file_id, reason)
-        {:error, reason}
+
+        if reason in [:empty_pdf_text, :no_fields_extracted, :missing_api_key] do
+          {:cancel, reason}
+        else
+          {:error, reason}
+        end
     end
+  rescue
+    error ->
+      _ = mark_failed(doc_file_id, error)
+      {:error, Exception.message(error)}
   end
 
   defp fetch_document(id) do
@@ -45,14 +63,27 @@ defmodule SQLete.Documents.ProcessPdfWorker do
     storage().get(storage_key)
   end
 
-  defp ingest_pdf(%DocumentFile{} = doc_file, pdf_binary) do
-    ingestor().ingest_pdf(pdf_binary, doc_file)
+  defp extract_fields(%DocumentFile{} = doc_file, pdf_binary) do
+    ingestor().extract_fields(pdf_binary, doc_file)
   end
 
-  defp mark_completed(%DocumentFile{} = doc_file, ingest_summary) when is_map(ingest_summary) do
-    metadata = Map.put(doc_file.metadata || %{}, "arcana", ingest_summary)
+  defp create_arcana_document(text, %DocumentFile{} = doc_file) do
+    ingestor().create_arcana_document(text, doc_file)
+  end
 
-    update_status(doc_file, :completed, %{metadata: metadata})
+  defp enqueue_llm_job(%DocumentFile{id: doc_file_id}, %{id: arcana_doc_id}) do
+    %{document_file_id: doc_file_id, arcana_document_id: arcana_doc_id}
+    |> SQLete.Documents.LlmProcessingWorker.new()
+    |> Oban.insert()
+  end
+
+  defp update_fields(%DocumentFile{} = doc_file, fields, arcana_doc) do
+    metadata = Map.put(doc_file.metadata || %{}, "arcana_stage", "fields_extracted")
+    attrs = Map.merge(fields, %{metadata: metadata, arcana_document_id: arcana_doc.id})
+
+    doc_file
+    |> DocumentFile.changeset(attrs)
+    |> Repo.update()
   end
 
   defp mark_failed(doc_file_id, reason) when is_binary(doc_file_id) do

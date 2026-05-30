@@ -7,17 +7,9 @@ import Config
 # before starting your production server.
 config :sqlete, SQLeteWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
-# Force using SSL in production. This also sets the "strict-security-transport" header,
-# known as HSTS. If you have a health check endpoint, you may want to exclude it below.
-# Note `:force_ssl` is required to be set at compile-time.
-config :sqlete, SQLeteWeb.Endpoint,
-  force_ssl: [
-    rewrite_on: [:x_forwarded_proto],
-    exclude: [
-      # paths: ["/health"],
-      hosts: ["localhost", "127.0.0.1"]
-    ]
-  ]
+# NOTE: `force_ssl` is intentionally disabled for the hackathon deploy, where the
+# app is served over plain HTTP by IP (no TLS / reverse proxy). Re-enable it once a
+# domain + HTTPS is in place. `:force_ssl` must be set at compile-time.
 
 # Configure Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Req

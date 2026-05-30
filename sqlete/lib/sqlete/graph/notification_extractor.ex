@@ -15,33 +15,43 @@ defmodule SQLete.Graph.NotificationExtractor do
     "requester",
     "representative",
     "document_notice",
+    "document_type",
     "file_reference",
+    "reclamacion_ref",
     "date",
     "deadline",
     "resolution",
+    "resolution_outcome",
     "status",
+    "jurisdiction_scope",
     "law_article",
     "information_subject",
     "organization",
-    "action"
+    "action",
+    "appeal_body"
   ]
 
   @relationship_types [
     "FILED_BY",
     "ADDRESSED_TO",
     "ISSUED_BY",
+    "HAS_DOC_TYPE",
     "REFERENCES_FILE",
+    "REFERENCES_RECLAMACION",
     "RESPONDS_TO",
     "NOTIFIES_ON",
     "SETS_DEADLINE",
     "EXTENDS_DEADLINE",
     "CITES_LEGAL_BASIS",
     "CHANGES_STATUS_TO",
+    "HAS_OUTCOME",
+    "HAS_JURISDICTION",
     "REDIRECTED_TO",
     "REQUIRES_ACTION",
     "ABOUT_SUBJECT",
     "INVOLVES_ORGANIZATION",
-    "APPEALABLE_TO"
+    "APPEALABLE_TO",
+    "APPEALED_BEFORE"
   ]
 
   @impl true
@@ -98,21 +108,30 @@ defmodule SQLete.Graph.NotificationExtractor do
     - requester: la persona física o jurídica que presenta la solicitud.
     - representative: la persona que actúa en nombre del solicitante.
     - document_notice: la resolución, requerimiento, comunicación, acuse o notificación concreta.
+    - document_type: la clasificación tipológica del documento (reclamacion_ctbg, resolucion_estimatoria, resolucion_desestimatoria, resolucion_parcial, inicio_tramitacion, prorroga, guia, otro).
     - file_reference: identificadores de expediente, número de solicitud, referencia interna o códigos similares.
+    - reclamacion_ref: la referencia específica de una reclamación previa ante el CTBG u órgano de garantía, cuando se cita como antecedente.
     - date: una fecha concreta relevante para el procedimiento.
     - deadline: un plazo legal o administrativo explícito.
     - resolution: el contenido resolutivo o resultado material (inadmisión, concesión parcial, ampliación, redistribución, etc.).
+    - resolution_outcome: el sentido normalizado de la resolución (estimatoria, desestimatoria, inadmisión, parcial).
     - status: el estado procesal del caso (pendiente, inadmitido, resuelto, ampliado, redistribuido, etc.).
+    - jurisdiction_scope: el ámbito territorial de la administración actuante (AGE, autonómico, local).
     - law_article: una ley, artículo, reglamento o fundamento jurídico citado.
     - information_subject: la materia o información solicitada.
     - organization: otros organismos o entidades relevantes, como CTBG, órganos superiores o terceros afectados.
     - action: una acción explícita o claramente indicada para seguir el caso (reclamar, subsanar, aportar documentación, esperar respuesta, etc.).
+    - appeal_body: el órgano o tribunal ante el que cabe interponer recurso contra la resolución.
 
     ## Metadatos útiles:
     - Para date, usa metadata.kind cuando se pueda distinguir (filing_date, notification_date, resolution_date, extension_date, appeal_date).
     - Para deadline, usa metadata.kind y, si aparece, metadata.days, metadata.business_days, metadata.start_date o metadata.end_date.
-    - Para resolution y status, usa metadata.normalized_value cuando puedas normalizar el resultado.
+    - Para resolution, resolution_outcome y status, usa metadata.normalized_value cuando puedas normalizar el resultado.
     - Para file_reference, usa metadata.reference_kind si el texto distingue entre expediente, solicitud, registro u otro código.
+    - Para document_type, usa metadata.normalized_value con uno de: reclamacion_ctbg, resolucion_estimatoria, resolucion_desestimatoria, resolucion_parcial, inicio_tramitacion, prorroga, guia, otro.
+    - Para resolution_outcome, usa metadata.normalized_value con uno de: estimatoria, desestimatoria, inadmisión, parcial.
+    - Para jurisdiction_scope, usa metadata.normalized_value con uno de: AGE, autonomico, local.
+    - Para reclamacion_ref, usa metadata.reference_kind para distinguir si es referencia de reclamación, recurso o antecedente.
 
     ## Tipos de relaciones permitidos:
     #{relationship_types}
@@ -121,18 +140,23 @@ defmodule SQLete.Graph.NotificationExtractor do
     - FILED_BY: el caso fue presentado por una persona u organización.
     - ADDRESSED_TO: la solicitud o documento va dirigido a una autoridad.
     - ISSUED_BY: una notificación o resolución fue emitida por una autoridad u organismo.
+    - HAS_DOC_TYPE: vincula un documento con su clasificación tipológica.
     - REFERENCES_FILE: una entidad menciona una referencia o expediente.
+    - REFERENCES_RECLAMACION: una resolución o documento cita una reclamación previa como antecedente.
     - RESPONDS_TO: una resolución o notificación responde a una solicitud o caso.
     - NOTIFIES_ON: vincula un documento o resolución con una fecha de notificación o emisión.
     - SETS_DEADLINE: fija un plazo para responder, recurrir, subsanar o actuar.
     - EXTENDS_DEADLINE: una resolución amplía un plazo existente.
     - CITES_LEGAL_BASIS: vincula una resolución o actuación con una norma o artículo.
     - CHANGES_STATUS_TO: indica que el caso pasa a un estado concreto.
+    - HAS_OUTCOME: vincula una resolución con su sentido normalizado (estimatoria, desestimatoria, etc.).
+    - HAS_JURISDICTION: vincula una autoridad con su ámbito territorial (AGE, autonómico, local).
     - REDIRECTED_TO: la solicitud o expediente se remite a otro organismo.
     - REQUIRES_ACTION: el caso o resolución exige una acción posterior.
     - ABOUT_SUBJECT: la solicitud o resolución trata sobre una materia informativa concreta.
     - INVOLVES_ORGANIZATION: relación general con otro organismo relevante.
     - APPEALABLE_TO: indica ante qué organismo puede recurrirse una decisión.
+    - APPEALED_BEFORE: indica que una resolución o caso ya ha sido recurrida ante un órgano concreto.
 
     ## Instrucciones:
     1. Identifica primero el request_case principal si existe.

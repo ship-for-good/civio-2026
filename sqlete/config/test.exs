@@ -31,7 +31,9 @@ config :swoosh, :api_client, false
 config :sqlete,
   storage_module: SQLete.Storage.Fake,
   documents_ingestor: SQLete.Documents.FakeIngestor,
-  enable_arcana_services: false
+  enable_arcana_services: false,
+  # LiveView tests run against the in-memory FakeSource sample data.
+  inbox_source: SQLete.Inbox.FakeSource
 
 # Print only warnings and errors during test
 config :logger, level: :warning

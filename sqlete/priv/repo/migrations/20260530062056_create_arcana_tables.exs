@@ -34,7 +34,7 @@ defmodule SQLete.Repo.Migrations.CreateArcanaTables do
     create table(:arcana_chunks, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :text, :text, null: false
-      add :embedding, :vector, size: 1024, null: false
+      add :embedding, :vector, size: 1536, null: false
       add :chunk_index, :integer, default: 0
       add :token_count, :integer
       add :metadata, :map, default: %{}
