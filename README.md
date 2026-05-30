@@ -1,144 +1,70 @@
-# Ship for Good · 1st Edition
+# Delfos — Civio Hackathon · Ship for Good 2026
 
-think · build · help
+Vault de documentación y código del **equipo Delfos** para el hackathon de Civio (Ship for Good, mayo 2026).
 
-**May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/)**
+**Docs-first, scaffold-second.** Este repositorio contiene:
 
-**Official website:** [shipforgood.org/es](https://www.shipforgood.org/es)
+- **`packages/`** — scraper de Publicidad Activa del Portal de Transparencia (`data/`) + servidor MCP curado (`mcp-transparencia/`)
+- **`vault-context/`** — vault Obsidian con el contexto completo: por qué, qué y cómo
+- **`docs/`** — documentación SDD, presentaciones y flujo de trabajo
+- **`docker-compose.yml`** — PostgreSQL 16 + contenedor Python para datos
 
-A hackathon with purpose: helping social organizations and benefiting society
-through technology. No smoke. No prizes. Just impact.
-
----
-
-## The Challenge
-
-In this first edition we work with **[Civio](https://civio.es/)**, an independent
-foundation that fights institutional opacity and uses journalism, technology and
-open data to give citizens access to information.
-
-The challenges we work on are theirs. The impact belongs to all of us.
-
----
-
-## Challenge Discovery
-
-More info: [challenge-discovery.md](./challenge-discovery.md)
-
-## Lovable Tokens
-
-More info: [lovable-tokens.md](./lovable-tokens.md)
-
-## Cursor Tokens
-
-More info: [cursor-tokens.md](./cursor-tokens.md)
-
-## Schedule
-
-### Friday, May 29th
-
-| Time | Activity |
-|------|----------|
-| 17:45 | Check-in |
-| 18:00 | Opening and discovery |
-| 21:00 | Closing |
-
-### Saturday, May 30th
-
-| Time | Activity |
-|------|----------|
-| 09:30 | Check-in starts |
-| 10:00 | Opening |
-| 10:30 | Optional talk - AI augmented development |
-| 15:00 | Optional talk - Debate "The ethics of Artificial Intelligence" with Civio |
-| 21:00 | Closing |
-
----
-
-## Slack Channels
-
-- announcements: https://ship-for-good.slack.com/archives/C0B1GNT77QB
-- q&a (questions for the hackathon organizers): https://ship-for-good.slack.com/archives/C0B1M3UCQS2
-- ask-civio (ask the people at Civil about the problem): https://ship-for-good.slack.com/archives/C0B6YE9GYSG
-- tech-support (questions and help on technical topics): https://ship-for-good.slack.com/archives/C0B6RERAELV
-
----
-
-## Wi-Fi
-
-Use the 42 Barcelona network:
-
-- UID: `42barcelona`
-- PASS: `bienvenido42BCN`
-
----
-
-## Team Branches
-
-Each team works on their own dedicated branch:
-
-| Team | Branch |
-|------|--------|
-| Delfos | `team-delfos` |
-| IT_Power | `team-it-power` |
-| Team Aina | `team-aina` |
-| Team Azul | `team-azul` |
-| Team Verde | `team-verde` |
-| Team Rojo | `team-rojo` |
-| Team Amarillo | `team-amarillo` |
-| Team Naranja | `team-naranja` |
-| Team Morado | `team-morado` |
-| Team Rosa | `team-rosa` |
-| Team Turquesa | `team-turquesa` |
-
-To get started:
+## Quick start
 
 ```bash
-git clone https://github.com/ship-for-good/civio-2026 
-cd civio-2026
-git checkout team-your-team-name
+# 1. Configurar variables locales
+cp .env.example .env
+# Editar .env si necesitás valores distintos
+
+# 2. Arrancar servicios
+docker compose up -d
+
+# 3. Verificar conexión (smoke test)
+docker compose exec data python -m pytest tests/smoke/ -v
 ```
 
----
+## Servicios
 
-## Repository Docs
+| Servicio | Imagen | Puerto | Propósito |
+|----------|--------|--------|-----------|
+| `postgres` | `postgres:16` | 5432 | Base de datos local con persistencia en volumen nombrado |
+| `data` | `python:3.12-slim` (build) | 8000 | Stack de datos (psycopg, polars, duckdb) + scrapers |
 
-| Document | Description |
-|----------|-------------|
-| [how-to-submit-project.md](./how-to-submit-project.md) | Delivery rules, README requirements and demo format |
-| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | How to work in this repo, branch rules and commit conventions |
-| [AUTHORSHIP.md](./AUTHORSHIP.md) | How projects will remain open source and usable by Civio |
+## Paquetes
 
----
+| Paquete | Ruta | Descripción |
+|---------|------|-------------|
+| `data` | `packages/data/` | Scraper BFS del Portal de Transparencia (HTTP + selectolax) |
+| `mcp-transparencia` | `packages/mcp-transparencia/` | Servidor MCP read-only con schema Postgres y ETL |
 
-## Code of Conduct
+## Contexto del proyecto
 
-All attendees, speakers, sponsors and volunteers must accept our
-[Code of Conduct](https://softwarecrafters.barcelona/coc.html).
-The organization will enforce it throughout the event.
-We count on everyone's cooperation to ensure a safe environment.
+El vault Obsidian (`vault-context/delfos-context/`) tiene la narrativa completa:
 
----
+| Documento | Responde |
+|-----------|----------|
+| `00-por-que.md` | **Por qué** — problema de Civio, política de IA, decisión del equipo |
+| `01-que.md` | **Qué** — scraper + base de datos + MCP, alcance y estado real |
+| `02-como.md` | **Cómo** — arquitectura, modelo de datos, decisiones técnicas |
 
-## Partners & Sponsors
+## Servidor MCP
 
-**Organized with:**
+El paquete `mcp-transparencia` expone 6 tools read-only para agentes (OpenCode / Claude Code):
 
-- [Civio](https://civio.es/) — challenge owner and partner organization
-- [42 Barcelona](https://www.42barcelona.com/es/) — venue
-- [Software Crafters Barcelona](https://softwarecrafters.barcelona/) — community
+- `execute_sql()` — SQL directo en transacción restringida
+- `get_page()` — página completa con secciones, acordeones y enlaces
+- `search_pages()` — búsqueda full-text en castellano
+- `list_organisms()` — resumen por materia
+- `get_external_links()` — enlaces salientes por dominio
+- `get_links_by_category()` — enlaces por categoría curada
 
-**Sponsors:** [Manfred](https://www.getmanfred.com/) ·
-[QualityClouds](https://qualityclouds.ai/) ·
-[Plain Concepts](https://www.plainconcepts.com/) ·
-[Next Digital](https://www.nextdigital.es/)
+Configurado en `opencode.json` y `.mcp.json`.
 
-**Supporting:** [Lovable](https://lovable.dev/) ·
-[Cursor](https://cursor.com/) ·
-[Falca](https://falca.com/)
+## Rollback del scaffold Docker
 
----
+```bash
+docker compose down -v
+rm -rf docker-compose.yml .env.example packages/data/
+```
 
-## FAQ
-
-[Ship for Good FAQ](https://www.shipforgood.org/es#faq)
+El vault de contexto (`vault-context/`) queda intacto.

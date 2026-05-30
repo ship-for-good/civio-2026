@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "transparencia": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "packages/mcp-transparencia",
+        "python",
+        "packages/mcp-transparencia/mcp_server.py"
+      ],
+      "env": {
+        "POSTGRES_HOST": "localhost",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "civio",
+        "POSTGRES_USER": "civio",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:-change-me-locally}"
+      }
+    }
+  }
+}
