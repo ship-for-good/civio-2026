@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor Civio · Configuración</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Ship for Good · Civio</p>
+          <h1>Monitor de páginas públicas</h1>
+          <p class="subtitle">
+            Asigna una URL a un email. Si la página cambia, recibirá una
+            notificación.
+          </p>
+        </div>
+        <div class="status-card" id="status-card">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Comprobando conexión…</span>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="card">
+          <h2>Nueva asignación</h2>
+          <form id="mapping-form" class="form">
+            <label>
+              URL a monitorizar
+              <input
+                type="url"
+                name="url"
+                placeholder="https://contrataciondelestado.es/..."
+                required
+              />
+            </label>
+            <label>
+              Email de notificación
+              <input
+                type="email"
+                name="email"
+                placeholder="periodista@civio.es"
+                required
+              />
+            </label>
+            <label>
+              Título (opcional)
+              <input type="text" name="title" placeholder="Portal contratación" />
+            </label>
+            <label>
+              Revisar cada (minutos)
+              <input
+                type="number"
+                name="checkIntervalMinutes"
+                min="1"
+                max="10080"
+                step="1"
+                value="30"
+              />
+            </label>
+            <p class="hint">Mínimo 1 min · máximo 10080 min (7 días). Prueba rápida: 5 min.</p>
+            <button type="submit" id="submit-btn">Añadir monitor</button>
+          </form>
+          <p class="hint" id="config-hint" hidden></p>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>Asignaciones activas</h2>
+            <button type="button" class="ghost" id="refresh-btn">Actualizar</button>
+          </div>
+          <div id="alert" class="alert" hidden></div>
+          <div id="mappings-empty" class="empty" hidden>
+            Todavía no hay URLs monitorizadas.
+          </div>
+          <div class="table-wrap">
+            <table id="mappings-table" hidden>
+              <thead>
+                <tr>
+                  <th>URL</th>
+                  <th>Email</th>
+                  <th>Intervalo</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mappings-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <a href="http://127.0.0.1:5000" target="_blank" rel="noreferrer"
+          >Changedetection.io</a
+        >
+      </footer>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
