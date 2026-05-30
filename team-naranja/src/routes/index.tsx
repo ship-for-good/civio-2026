@@ -59,11 +59,14 @@ function PrismaLogo({ size = "md" }: { size?: "sm" | "md" }) {
   );
 }
 
+const ROTATING_WORDS = ["saber", "entender", "participar"];
+
 function Index() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [lastResponse, setLastResponse] = useState<AskResponse | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
   const { ask, loading } = useAskAssistant();
 
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -74,6 +77,13 @@ function Index() {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [panelOpen]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
 
   const submitQuery = async (query: string) => {
     const trimmed = query.trim();
@@ -137,7 +147,26 @@ function Index() {
             Buscador de Información Pública
           </span>
           <h1 className="mt-6 text-4xl font-light leading-none tracking-tightest md:text-6xl">
-            Exige tu derecho a: <strong className="font-semibold">saber, entender y participar</strong>.
+            Exige tu derecho a{" "}
+            <span
+              className="relative inline-grid justify-items-start align-baseline overflow-hidden"
+              style={{ perspective: "600px" }}
+            >
+              {ROTATING_WORDS.map((word, i) => (
+                <strong
+                  key={word}
+                  aria-hidden={i !== wordIndex}
+                  className={`col-start-1 row-start-1 font-semibold ${
+                    i === wordIndex
+                      ? "animate-[heroRoll_0.7s_cubic-bezier(0.22,1,0.36,1)]"
+                      : "invisible"
+                  }`}
+                  style={{ transformOrigin: "50% 50% -0.5em" }}
+                >
+                  {word}
+                </strong>
+              ))}
+            </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-sm font-light text-white/70 md:text-base">
             Explora de manera sencilla lo que ocurre en tu país.

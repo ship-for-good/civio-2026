@@ -25,22 +25,26 @@ export function FoundReportCard({ response }: FoundReportCardProps) {
       </header>
 
       <section className="space-y-4 rounded-xl border border-white/5 bg-white/[0.02] p-4">
-        <ReportSection title="Datos disponibles" content={report.rawData} />
+        {primaryLink && (
+          <div>
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/50">
+              Datos disponibles
+            </h4>
+            <a
+              href={primaryLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-flex items-center gap-1.5 text-sm leading-relaxed text-emerald-300 transition hover:text-emerald-200 hover:underline"
+            >
+              {primaryLink.label}
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        )}
         <ReportSection title="Qué puedes hacer con esto" content={report.analysis} />
         <ReportSection title="Limitaciones" content={report.limitations} />
       </section>
 
-      {primaryLink && (
-        <a
-          href={primaryLink.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-emerald-950 transition hover:scale-[1.02]"
-        >
-          {primaryLink.label}
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
-      )}
     </article>
   );
 }
