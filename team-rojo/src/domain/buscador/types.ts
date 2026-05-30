@@ -1,23 +1,49 @@
-export type PortalId =
-  | "PLACE" | "BDNS" | "TRANSPARENCIA" | "BOE" | "MEDIOAMBIENTAL"
-  | "DERECHO_ACCESO" | "UNKNOWN";
+export type TopicId =
+  | "retribuciones"
+  | "contratacion"
+  | "subvenciones"
+  | "bienes_patrimonio"
+  | "casa_real"
+  | "derecho_acceso"
+  | "normativa_boe"
+  | "estatales_generales"
+  | "unknown";
+
+export type RoutingType = "interno" | "externo";
+
+export type KnowledgeNode = {
+  id: Exclude<TopicId, "unknown">;
+  keywords: string[];
+  source_url: string;
+  type: RoutingType;
+  is_special_section: boolean;
+};
+
+export type KeywordsConfig = {
+  version: string;
+  config: {
+    fallback_strategy: string;
+    allow_external_routing: boolean;
+  };
+  knowledge_graph: KnowledgeNode[];
+};
 
 export type Classification = {
-  portal: PortalId;
-  portalName: string;
+  topicId: TopicId;
+  label: string;
   portalUrl: string;
-  explanation: string;   // 2–3 frases en español llano
-  steps: string[];       // 3–5 pasos
-  deepLink?: string;     // URL de búsqueda pre-rellenada cuando es posible
+  routingType: RoutingType;
+  isSpecialSection: boolean;
+  explanation: string;
+  steps: string[];
+  deepLink?: string;
   searchTip?: string;
 };
 
-// Portal metadata in the routing table (everything except the per-query fields)
-export type PortalInfo = {
-  portalName: string;
-  portalUrl: string;
+export type TopicCopy = {
+  label: string;
   explanation: string;
   steps: string[];
   searchTip?: string;
-  buildDeepLink?: (query: string) => string | undefined; // only portals where deep-linking is known
+  buildDeepLink?: (query: string) => string;
 };

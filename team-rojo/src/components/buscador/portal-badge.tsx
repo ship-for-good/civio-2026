@@ -8,7 +8,7 @@ export function PortalBadge({ data }: PortalBadgeProps) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <span className="inline-flex items-center px-3 py-1 rounded-full bg-accent-light text-accent text-sm font-medium">
-        {data.portalName}
+        {data.label}
       </span>
       <a
         href={data.portalUrl}

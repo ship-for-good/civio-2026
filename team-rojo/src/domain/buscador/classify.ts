@@ -1,124 +1,46 @@
-import type { Classification, PortalId } from "./types";
-import { PORTALS } from "./portals";
+import type { Classification, KnowledgeNode } from "./types";
+import {
+  buildClassificationFromTopicId,
+  isKnownTopicId,
+} from "./classification";
+import { KNOWLEDGE_GRAPH } from "./knowledge-graph";
 
-function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
+export { normalize, matchesKeyword } from "./match-keywords";
+import { normalize, matchesKeyword } from "./match-keywords";
 
-function matchesAny(normalizedText: string, keywords: ReadonlyArray<string>): boolean {
-  return keywords.some((kw) => {
-    const pattern = new RegExp(`\\b${kw}`, "i");
-    return pattern.test(normalizedText);
-  });
-}
-
-function levenshtein(a: string, b: string): number {
-  const m = a.length;
-  const n = b.length;
-  const dp: number[][] = [];
-  for (let i = 0; i <= m; i++) {
-    dp[i] = [i];
-  }
-  for (let j = 0; j <= n; j++) {
-    dp[0][j] = j;
-  }
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      dp[i][j] =
-        a[i - 1] === b[j - 1]
-          ? dp[i - 1][j - 1]
-          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-    }
-  }
-  return dp[m][n];
-}
-
-function fuzzyMatchesAny(
-  normalizedText: string,
-  keywords: ReadonlyArray<string>,
-  threshold: number
-): boolean {
-  const tokens = normalizedText.split(/\s+/).filter(Boolean);
-  return keywords.some((kw) =>
-    tokens.some((token) => levenshtein(token, kw) <= threshold)
+function nodeMatches(normalizedText: string, node: KnowledgeNode): boolean {
+  const sortedKeywords = [...node.keywords].sort(
+    (a, b) => normalize(b).length - normalize(a).length,
+  );
+  return sortedKeywords.some((kw) =>
+    matchesKeyword(normalizedText, normalize(kw)),
   );
 }
 
-const KEYWORD_RULES: ReadonlyArray<{ portal: PortalId; keywords: ReadonlyArray<string> }> = [
-  {
-    portal: "DERECHO_ACCESO",
-    keywords: ["solicitud", "solicitar", "acceso informacion", "reclamaci", "reclamar", "pedir", "documentos"],
-  },
-  {
-    portal: "PLACE",
-    keywords: ["contrat", "licitaci", "obra", "adjudicaci", "pliego", "cpv", "suministro"],
-  },
-  {
-    portal: "BDNS",
-    keywords: ["subvenci", "ayuda", "beca", "subsidio"],
-  },
-  {
-    portal: "TRANSPARENCIA",
-    keywords: ["retribuci", "sueldo", "salario", "cobra", "nomina", "remuneraci"],
-  },
-  {
-    portal: "BOE",
-    keywords: ["declaraci", "bienes", "patrimonio"],
-  },
-  {
-    portal: "MEDIOAMBIENTAL",
-    keywords: ["medioambient", "ambiental", "aire", "contaminaci", "agua", "residuo", "emision"],
-  },
-];
-
-export type ClassifyOptions = {
-  fuzzyThreshold?: number;
-};
-
-export function classify(query: string, options?: ClassifyOptions): Classification {
+/**
+ * Clasificador determinista (keywords). Tests y respaldo sin API.
+ */
+export function classify(query: string): Classification {
   const normalizedQuery = normalize(query);
 
-  if (normalizedQuery.trim() === "") {
-    const info = PORTALS["UNKNOWN"];
-    return {
-      portal: "UNKNOWN",
-      portalName: info.portalName,
-      portalUrl: info.portalUrl,
-      explanation: info.explanation,
-      steps: info.steps,
-    };
+  if (!normalizedQuery.trim()) {
+    return buildClassificationFromTopicId(query, "unknown");
   }
 
-  let matchedPortalId: PortalId | null = null;
+  const node = KNOWLEDGE_GRAPH.find((n) => nodeMatches(normalizedQuery, n));
 
-  matchedPortalId =
-    KEYWORD_RULES.find(({ keywords }) =>
-      matchesAny(normalizedQuery, keywords)
-    )?.portal ?? null;
-
-  if (!matchedPortalId && options?.fuzzyThreshold && options.fuzzyThreshold > 0) {
-    matchedPortalId =
-      KEYWORD_RULES.find(({ keywords }) =>
-        fuzzyMatchesAny(normalizedQuery, keywords, options.fuzzyThreshold!)
-      )?.portal ?? null;
+  if (!node) {
+    return buildClassificationFromTopicId(query, "unknown");
   }
 
-  const finalPortal: PortalId = matchedPortalId ?? "UNKNOWN";
-  const info = PORTALS[finalPortal];
+  if (!isKnownTopicId(node.id)) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        `[buscador] El nodo "${node.id}" está en keywords.json pero no en topics.ts; se usa unknown.`,
+      );
+    }
+    return buildClassificationFromTopicId(query, "unknown");
+  }
 
-  const deepLink =
-    info.buildDeepLink !== undefined ? info.buildDeepLink(query) : undefined;
-
-  return {
-    portal: finalPortal,
-    portalName: info.portalName,
-    portalUrl: info.portalUrl,
-    explanation: info.explanation,
-    steps: info.steps,
-    ...(info.searchTip !== undefined && { searchTip: info.searchTip }),
-    ...(deepLink !== undefined && { deepLink }),
-  };
+  return buildClassificationFromTopicId(query, node.id);
 }
