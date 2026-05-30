@@ -1,47 +1,40 @@
-import contracts from "@/assets/topic-contracts.jpg";
-import budgets from "@/assets/topic-budgets.jpg";
-import grants from "@/assets/topic-grants.jpg";
-import mobility from "@/assets/topic-mobility.jpg";
-
-const ITEMS = [
-  {
-    title: "Publicat el portal d'alts càrrecs 2026",
-    summary: "Inclou retribucions, agendes i declaracions de béns actualitzades.",
-    date: "26 maig 2026",
-    img: contracts,
-  },
-  {
-    title: "Nou conveni col·lectiu municipal",
-    summary: "Detalls del conveni signat amb els treballadors públics aquest mes.",
-    date: "22 maig 2026",
-    img: grants,
-  },
-  {
-    title: "Auditoria del transport metropolità",
-    summary: "Resultats de l'auditoria independent sobre eficiència i costos.",
-    date: "18 maig 2026",
-    img: mobility,
-  },
-  {
-    title: "Memòria anual de subvencions",
-    summary: "Resum amb totes les ajudes concedides durant l'any anterior.",
-    date: "14 maig 2026",
-    img: budgets,
-  },
-];
+import { useFeatured } from "@/hooks/use-aina-queries";
+import { formatDateCa, imageForKey } from "@/lib/assets";
 
 export function MissedPanel() {
+  const { data: items = [], isLoading } = useFeatured();
+
+  if (isLoading) {
+    return (
+      <p className="text-muted-foreground text-sm" role="status">
+        Carregant destacats…
+      </p>
+    );
+  }
+
   return (
     <div className="grid gap-5 sm:grid-cols-2">
-      {ITEMS.map((i) => (
-        <article key={i.title} className="group flex gap-4 overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-glow">
-          <div className="aspect-square h-28 w-28 flex-none overflow-hidden rounded-xl bg-muted">
-            <img src={i.img} alt="" loading="lazy" width={224} height={224} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]" />
+      {items.map((i) => (
+        <article
+          key={i.id}
+          className="group border-border bg-card shadow-soft hover:shadow-glow flex gap-4 overflow-hidden rounded-2xl border p-3 transition-all hover:-translate-y-0.5"
+        >
+          <div className="bg-muted aspect-square h-28 w-28 flex-none overflow-hidden rounded-xl">
+            <img
+              src={imageForKey(i.image_key)}
+              alt=""
+              loading="lazy"
+              width={224}
+              height={224}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+            />
           </div>
           <div className="min-w-0 flex-1 py-1">
-            <time className="text-xs font-medium text-accent">{i.date}</time>
-            <h3 className="mt-1 text-sm font-semibold text-foreground">{i.title}</h3>
-            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{i.summary}</p>
+            <time className="text-accent text-xs font-medium" dateTime={i.published_at}>
+              {formatDateCa(i.published_at)}
+            </time>
+            <h3 className="text-foreground mt-1 text-sm font-semibold">{i.title}</h3>
+            <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">{i.summary}</p>
           </div>
         </article>
       ))}

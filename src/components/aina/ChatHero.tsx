@@ -1,26 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp, Sparkles } from "lucide-react";
 
-const EXAMPLES = [
-  "Què cobra el president de la Generalitat?",
-  "Quines subvencions té 42 Barcelona?",
-  "Quant costa el manteniment del Tramvia Blau?",
-  "Quines empreses han rebut ajudes públiques aquest any?",
-  "Quin pressupost té el meu ajuntament?",
-  "Quines obres públiques hi ha previstes al meu barri?",
-  "Quins contractes ha adjudicat la Generalitat aquest mes?",
-  "Quant s'ha gastat en comunicació institucional?",
-  "Quins càrrecs públics tenen cotxe oficial?",
-  "Quines subvencions culturals s'han concedit recentment?",
-];
+import { useExampleQuestions } from "@/hooks/use-aina-queries";
+import { EXAMPLE_QUESTIONS } from "@/lib/db/seed-data";
 
-function useTypewriter(active: boolean) {
+function useTypewriter(phrases: string[], active: boolean) {
   const [text, setText] = useState("");
   const [phraseIdx, setPhraseIdx] = useState(0);
 
   useEffect(() => {
-    if (!active) return;
-    const phrase = EXAMPLES[phraseIdx];
+    if (!active || phrases.length === 0) return;
+    const phrase = phrases[phraseIdx % phrases.length];
     let i = 0;
     let timeout: ReturnType<typeof setTimeout>;
 
@@ -39,43 +29,51 @@ function useTypewriter(active: boolean) {
         i--;
         timeout = setTimeout(erase, 20);
       } else {
-        setPhraseIdx((p) => (p + 1) % EXAMPLES.length);
+        setPhraseIdx((p) => (p + 1) % phrases.length);
       }
     };
     timeout = setTimeout(type, 300);
     return () => clearTimeout(timeout);
-  }, [phraseIdx, active]);
+  }, [phraseIdx, active, phrases]);
 
   return text;
 }
 
 export function ChatHero() {
   const [value, setValue] = useState("");
+  const [reply, setReply] = useState<string | null>(null);
   const isEmpty = value.length === 0;
-  const placeholder = useTypewriter(isEmpty);
+  const { data: questions } = useExampleQuestions();
+  const phrases = questions?.map((q) => q.text_ca) ?? EXAMPLE_QUESTIONS;
+  const placeholder = useTypewriter(phrases, isEmpty);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!value.trim()) return;
-    // Prototype only — no backend wired up.
+    setReply(
+      "Prototip — aviat connectarem amb dades públiques reals. Gràcies per la teva pregunta!",
+    );
     setValue("");
     textareaRef.current?.focus();
   };
 
   return (
     <section id="top" className="bg-hero relative overflow-hidden">
-      <div className="mx-auto max-w-3xl px-4 pt-16 pb-12 sm:px-6 sm:pt-24 sm:pb-20 text-center">
-        <div className="animate-fade-in-up inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-xs text-muted-foreground shadow-soft">
-          <Sparkles className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+      <div className="mx-auto max-w-3xl px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-24 sm:pb-20">
+        <div className="animate-fade-in-up border-border bg-card/70 text-muted-foreground shadow-soft inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
+          <Sparkles className="text-accent h-3.5 w-3.5" aria-hidden="true" />
           La transparència pública, al teu abast
         </div>
 
-        <h1 className="animate-fade-in-up mt-6 text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">
+        <h1 className="animate-fade-in-up text-foreground mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
           AIna de Transparència
         </h1>
-        <p className="animate-fade-in-up mx-auto mt-4 max-w-xl text-pretty text-base text-muted-foreground sm:text-lg">
+        <p className="animate-fade-in-up text-muted-foreground mx-auto mt-4 max-w-xl text-base text-pretty sm:text-lg">
           Fes preguntes sobre dades públiques de manera senzilla i entenedora.
+        </p>
+        <p className="animate-fade-in-up text-muted-foreground mt-2 text-sm">
+          Pregunta. Descobreix. Entén.
         </p>
 
         <form
@@ -83,7 +81,7 @@ export function ChatHero() {
           className="animate-fade-in-up mx-auto mt-10 max-w-2xl"
           aria-label="Fes una pregunta sobre dades públiques"
         >
-          <div className="group relative rounded-2xl border border-border bg-card p-2 shadow-soft transition-shadow focus-within:shadow-glow focus-within:border-primary/40">
+          <div className="group border-border bg-card shadow-soft focus-within:border-primary/40 focus-within:shadow-glow relative rounded-2xl border p-2 transition-shadow">
             <label htmlFor="aina-input" className="sr-only">
               Pregunta
             </label>
@@ -91,7 +89,10 @@ export function ChatHero() {
               id="aina-input"
               ref={textareaRef}
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                if (reply) setReply(null);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -99,36 +100,45 @@ export function ChatHero() {
                 }
               }}
               rows={2}
-              className="block w-full resize-none rounded-xl bg-transparent px-4 py-3 text-base text-foreground placeholder:text-transparent focus:outline-none"
+              className="text-foreground block w-full resize-none rounded-xl bg-transparent px-4 py-3 text-base placeholder:text-transparent focus:outline-none"
               placeholder="Escriu la teva pregunta…"
               aria-describedby="aina-helper"
             />
             {isEmpty && (
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute left-6 top-5 text-left text-base text-muted-foreground"
+                className="text-muted-foreground pointer-events-none absolute top-5 left-6 text-left text-base"
               >
                 <span className="caret">{placeholder}</span>
               </div>
             )}
-            <div className="flex items-center justify-between px-2 pb-1 pt-1">
-              <p id="aina-helper" className="text-xs text-muted-foreground">
+            <div className="flex items-center justify-between px-2 pt-1 pb-1">
+              <p id="aina-helper" className="text-muted-foreground text-xs">
                 Prem Enter per enviar
               </p>
               <button
                 type="submit"
                 disabled={!value.trim()}
                 aria-label="Enviar pregunta"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="bg-primary text-primary-foreground shadow-soft inline-flex h-10 w-10 items-center justify-center rounded-xl transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ArrowUp className="h-5 w-5" />
               </button>
             </div>
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Prototip visual · no connectat a un model d'IA real
+          <p className="text-muted-foreground mt-3 text-xs">
+            Prototip visual · no connectat a un model d&apos;IA real
           </p>
         </form>
+
+        {reply && (
+          <div
+            role="status"
+            className="animate-fade-in-up border-primary/30 bg-primary-soft text-foreground mx-auto mt-6 max-w-2xl rounded-xl border px-4 py-3 text-left text-sm"
+          >
+            {reply}
+          </div>
+        )}
       </div>
     </section>
   );

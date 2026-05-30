@@ -34,7 +34,10 @@ const CARDS = [
 
 export function FeatureCards({ active, onToggle }: Props) {
   return (
-    <section aria-label="Explora informació pública" className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
+    <section
+      aria-label="Explora informació pública"
+      className="mx-auto max-w-6xl px-4 pb-10 sm:px-6"
+    >
       <div className="grid gap-5 md:grid-cols-3">
         {CARDS.map(({ id, title, desc, img, Icon }) => {
           const isActive = active === id;
@@ -46,11 +49,11 @@ export function FeatureCards({ active, onToggle }: Props) {
               aria-expanded={isActive}
               aria-controls={`${id}-panel`}
               onClick={() => onToggle(id)}
-              className={`group relative overflow-hidden rounded-2xl border bg-card text-left shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                isActive ? "border-primary/50 ring-2 ring-primary/30" : "border-border"
+              className={`group bg-card shadow-soft hover:shadow-glow focus-visible:ring-ring relative overflow-hidden rounded-2xl border text-left transition-all hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 ${
+                isActive ? "border-primary/50 ring-primary/30 ring-2" : "border-border"
               }`}
             >
-              <div className="aspect-[16/10] overflow-hidden bg-muted">
+              <div className="bg-muted aspect-[16/10] overflow-hidden">
                 <img
                   src={img}
                   alt=""
@@ -62,13 +65,13 @@ export function FeatureCards({ active, onToggle }: Props) {
               </div>
               <div className="p-5">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+                  <span className="bg-primary-soft text-primary inline-flex h-8 w-8 items-center justify-center rounded-lg">
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <h3 className="text-base font-semibold text-foreground">{title}</h3>
+                  <h3 className="text-foreground text-base font-semibold">{title}</h3>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-                <span className="mt-3 inline-block text-xs font-medium text-primary">
+                <p className="text-muted-foreground mt-2 text-sm">{desc}</p>
+                <span className="text-primary mt-3 inline-block text-xs font-medium">
                   {isActive ? "Amaga" : "Explora"} →
                 </span>
               </div>

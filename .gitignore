@@ -16,6 +16,9 @@ dist-ssr
 .nitro
 *.local
 
+# SQLite (sql.js)
+data/aina.db
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

@@ -1,0 +1,32 @@
+---
+description: AIna de Transparència — stack i convencions (React / Lovable)
+globs: src/**/*
+alwaysApply: true
+---
+
+# AIna de Transparència
+
+## Stack obligatori
+
+- **React 19** + **TypeScript** + **Vite** + **TanStack Start/Router**
+- **Tailwind CSS v4** + **shadcn/ui** (components en `src/components/ui/`)
+- UI de producte en **català**
+- Base de dades: **SQLite** via `sql.js` (`data/aina.db`), seed amb `npm run db:seed`
+- Dades servidor: `createServerFn` a `src/lib/api/aina.functions.ts`
+
+## No fer
+
+- No afegir Vue ni reescriure a un altre framework
+- No connectar el xat a un LLM real sense acord d'equip (prototip visual)
+- No generar text periodístic ni documents legals (política IA Civio)
+- No posar secrets a `VITE_*` (són públics al client)
+
+## Estructura
+
+- Components AIna: `src/components/aina/`
+- Ruta principal: `src/routes/index.tsx`
+- Context hackathon Civio: `sfg/challenge-discovery.md`
+
+## Commits
+
+Rama: `team-aina`. Conventional Commits recomanats (`feat:`, `fix:`, `docs:`).

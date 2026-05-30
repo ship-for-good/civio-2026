@@ -12,9 +12,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "AIna de Transparència — La transparència pública, al teu abast" },
-      { name: "description", content: "Fes preguntes sobre dades públiques de manera senzilla i entenedora. Pregunta. Descobreix. Entén." },
+      {
+        name: "description",
+        content:
+          "Fes preguntes sobre dades públiques de manera senzilla i entenedora. Pregunta. Descobreix. Entén.",
+      },
       { property: "og:title", content: "AIna de Transparència" },
-      { property: "og:description", content: "La transparència pública, al teu abast. Pregunta. Descobreix. Entén." },
+      {
+        property: "og:description",
+        content: "La transparència pública, al teu abast. Pregunta. Descobreix. Entén.",
+      },
     ],
   }),
   component: Index,
@@ -26,7 +33,7 @@ function Index() {
   const toggle = (id: string) => setActive((cur) => (cur === id ? null : id));
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
+    <div className="bg-background flex min-h-dvh flex-col">
       <SiteHeader />
       <main className="flex-1">
         <ChatHero />
@@ -38,9 +45,9 @@ function Index() {
             aria-live="polite"
             className="mx-auto max-w-6xl px-4 pb-16 sm:px-6"
           >
-            <div className="animate-fade-in-up rounded-2xl border border-border bg-card/50 p-4 sm:p-6">
+            <div className="animate-fade-in-up border-border bg-card/50 rounded-2xl border p-4 sm:p-6">
               <header className="mb-5 flex items-center justify-between">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="text-foreground text-xl font-semibold tracking-tight">
                   {active === "nearby" && "Què passa a prop meu?"}
                   {active === "popular" && "Temes populars"}
                   {active === "missed" && "Potser t'has perdut això"}
@@ -48,7 +55,7 @@ function Index() {
                 <button
                   type="button"
                   onClick={() => setActive(null)}
-                  className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+                  className="border-border bg-background text-muted-foreground hover:bg-muted rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors"
                 >
                   Tanca
                 </button>
