@@ -45,16 +45,20 @@ module Resources
       end
 
       def featured_organisms(data, counts)
+        catalog = Organisms::Services::LoadCatalog.call
+
         counts
           .select { |code, _| code.match?(ORGANISM_CODE_PATTERN) }
           .sort_by { |_, count| -count }
           .first(12)
           .map do |code, count|
+            entry = catalog.entry(code)
+
             FeaturedOrganism.new(
               code: code,
-              label: code.upcase,
-              description: materia_summary(data, code),
-              icon: "building",
+              label: catalog.label(code),
+              description: entry&.description.presence || materia_summary(data, code),
+              icon: entry&.icon.presence || "building",
               count: count
             )
           end

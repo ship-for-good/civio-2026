@@ -14,5 +14,7 @@ class Resources::Services::LoadIndexTest < ActiveSupport::TestCase
     assert featured.code.present?
     assert featured.count.positive?
     assert featured.description.present?
+    assert_not_equal featured.code.upcase, featured.label
+    assert_equal Organisms::Services::LoadCatalog.label(featured.code), featured.label
   end
 end
