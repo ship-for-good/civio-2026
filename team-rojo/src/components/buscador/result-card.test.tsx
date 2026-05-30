@@ -6,6 +6,7 @@ import type { Classification } from "@/domain/buscador/types";
 
 const UNKNOWN_STUB: Classification = {
   topicId: "unknown",
+  portal: "UNKNOWN",
   label: "No lo tenemos claro todavía",
   portalUrl: "https://transparencia.gob.es",
   routingType: "interno",
@@ -20,6 +21,7 @@ const UNKNOWN_STUB: Classification = {
 
 const CONTRATACION_STUB: Classification = {
   topicId: "contratacion",
+  portal: "PLACE",
   label: "Plataforma de Contratación del Sector Público",
   portalUrl: "https://contrataciondelestado.es",
   routingType: "externo",

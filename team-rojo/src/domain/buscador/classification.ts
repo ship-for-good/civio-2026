@@ -1,6 +1,13 @@
 import type { Classification, KnowledgeNode, TopicId } from "./types";
 import { KNOWLEDGE_GRAPH } from "./knowledge-graph";
 import { TOPICS } from "./topics";
+import { detectEntity, findEntityById, type EntityMatch } from "./entities";
+
+/** Opciones de resolución. `idAmb` permite que el agente fije la entidad. */
+export type ClassifyOptions = {
+  idAmb?: number;
+  fuzzyThreshold?: number;
+};
 
 const GRAPH_TOPIC_IDS = new Set(KNOWLEDGE_GRAPH.map((n) => n.id));
 
@@ -38,30 +45,49 @@ export function normalizeAgentTopicId(raw: string): TopicId {
 
 export function buildClassificationFromTopicId(
   query: string,
-  topicId: TopicId
+  topicId: TopicId,
+  options?: ClassifyOptions
 ): Classification {
   if (topicId === "unknown") {
-    return buildClassification("unknown", query);
+    return buildClassification("unknown", query, options);
   }
 
   const node = findNodeByTopicId(topicId);
   if (!node || !isKnownTopicId(topicId)) {
-    return buildClassification("unknown", query);
+    return buildClassification("unknown", query, options);
   }
 
-  return buildClassification(topicId, query, node);
+  return buildClassification(topicId, query, options, node);
+}
+
+/**
+ * Resuelve la entidad para una solicitud de derecho de acceso: si el agente ya
+ * fijó el `idAmb`, se recupera por id; si no, se detecta a partir de la consulta.
+ */
+function resolveEntity(
+  topicId: TopicId,
+  query: string,
+  options?: ClassifyOptions
+): EntityMatch | null {
+  if (topicId !== "derecho_acceso") return null;
+  if (options?.idAmb != null) return findEntityById(options.idAmb);
+  return detectEntity(query, { fuzzyThreshold: options?.fuzzyThreshold ?? 0 });
 }
 
 function buildClassification(
   topicId: TopicId,
   query: string,
+  options?: ClassifyOptions,
   node?: KnowledgeNode
 ): Classification {
   const copy = TOPICS[topicId];
   const resolvedUrl =
     topicId === "unknown" ? "https://transparencia.gob.es" : node!.source_url;
 
-  const dl = copy.buildDeepLink?.(query);
+  // La entidad es la única fuente del deepLink (portada) y de los datos
+  // estructurados para derecho_acceso. El resto de temas usan buildDeepLink.
+  const entity = resolveEntity(topicId, query, options);
+  const dl = entity ? entity.portadaUrl : copy.buildDeepLink?.(query);
 
   return {
     topicId,
@@ -74,5 +100,6 @@ function buildClassification(
     steps: copy.steps,
     ...(copy.searchTip !== undefined && { searchTip: copy.searchTip }),
     ...(dl !== undefined && { deepLink: dl }),
+    ...(entity !== null && { entityMatch: entity }),
   };
 }

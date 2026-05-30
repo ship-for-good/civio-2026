@@ -13,6 +13,15 @@ export function ResultCard({ data, onReset }: ResultCardProps) {
     <div className="border border-border bg-background rounded-xl p-6 shadow-sm space-y-6">
       <PortalBadge data={data} />
 
+      {data.entityMatch && (
+        <p className="text-sm text-foreground-muted">
+          Tu solicitud va dirigida a{" "}
+          <span className="font-semibold text-foreground">{data.entityMatch.name}</span>.
+          Te llevamos a su sede electrónica, donde elegirás tu método de
+          identificación (Cl@ve, certificado o DNI electrónico).
+        </p>
+      )}
+
       <div>
         <h2 className="text-base font-semibold text-foreground mb-2">Por qué aquí</h2>
         <p className="text-foreground-muted leading-relaxed">{data.explanation}</p>

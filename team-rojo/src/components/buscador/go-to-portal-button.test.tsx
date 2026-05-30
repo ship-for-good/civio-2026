@@ -4,9 +4,12 @@ import { GoToPortalButton } from "./go-to-portal-button";
 import type { Classification } from "@/domain/buscador/types";
 
 const DERECHO_ACCESO_WITH_ENTITY: Classification = {
+  topicId: "derecho_acceso",
   portal: "DERECHO_ACCESO",
-  portalName: "Sede Electrónica — Derecho de Acceso",
+  label: "Sede Electrónica — Derecho de Acceso",
   portalUrl: "https://transparencia.sede.gob.es",
+  routingType: "interno",
+  isSpecialSection: false,
   explanation: "Solicitud de acceso a información pública.",
   steps: ["Haz clic en Ir al portal.", "Autentícate.", "Rellena el formulario."],
   deepLink: "https://transparencia.sede.gob.es/procedimiento/portada?idProc=133628&idAmb=101514",
@@ -14,17 +17,23 @@ const DERECHO_ACCESO_WITH_ENTITY: Classification = {
 };
 
 const DERECHO_ACCESO_WITHOUT_ENTITY: Classification = {
+  topicId: "derecho_acceso",
   portal: "DERECHO_ACCESO",
-  portalName: "Sede Electrónica — Derecho de Acceso",
+  label: "Sede Electrónica — Derecho de Acceso",
   portalUrl: "https://transparencia.sede.gob.es",
+  routingType: "interno",
+  isSpecialSection: false,
   explanation: "Solicitud de acceso a información pública.",
   steps: ["Haz clic en Ir al portal.", "Autentícate.", "Rellena el formulario."],
 };
 
 const PLACE_WITH_DEEPLINK: Classification = {
+  topicId: "contratacion",
   portal: "PLACE",
-  portalName: "Plataforma de Contratación del Sector Público",
+  label: "Plataforma de Contratación del Sector Público",
   portalUrl: "https://contrataciondelestado.es",
+  routingType: "externo",
+  isSpecialSection: false,
   explanation: "Los contratos se publican en PLACE.",
   steps: ["Abre PLACE.", "Busca.", "Filtra."],
   deepLink: "https://contrataciondelestado.es/wps/portal/plataforma?text=limpieza",
