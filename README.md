@@ -1,144 +1,164 @@
-# Ship for Good · 1st Edition
+# Portal Publicidad Activa · Equipo Rosa
 
-think · build · help
-
-**May 29–30, 2026 · [42 Barcelona](https://www.42barcelona.com/es/)**
-
-**Official website:** [shipforgood.org/es](https://www.shipforgood.org/es)
-
-A hackathon with purpose: helping social organizations and benefiting society
-through technology. No smoke. No prizes. Just impact.
+**Ship for Good 2026 · 42 Barcelona · 30 de mayo de 2026**
 
 ---
 
-## The Challenge
+## El problema
 
-In this first edition we work with **[Civio](https://civio.es/)**, an independent
-foundation that fights institutional opacity and uses journalism, technology and
-open data to give citizens access to information.
+El portal nacional de publicidad activa funciona como un directorio de enlaces opaco y fragmentado: sin inventario previo, con estructuras inconsistentes entre organismos y vocabulario técnico inaccesible para la ciudadanía. Localizar información concreta requiere conocimiento tácito que solo tienen periodistas expertos como los de Civio.
 
-The challenges we work on are theirs. The impact belongs to all of us.
+## Solución
 
----
-
-## Challenge Discovery
-
-More info: [challenge-discovery.md](./challenge-discovery.md)
-
-## Lovable Tokens
-
-More info: [lovable-tokens.md](./lovable-tokens.md)
-
-## Cursor Tokens
-
-More info: [cursor-tokens.md](./cursor-tokens.md)
-
-## Schedule
-
-### Friday, May 29th
-
-| Time | Activity |
-|------|----------|
-| 17:45 | Check-in |
-| 18:00 | Opening and discovery |
-| 21:00 | Closing |
-
-### Saturday, May 30th
-
-| Time | Activity |
-|------|----------|
-| 09:30 | Check-in starts |
-| 10:00 | Opening |
-| 10:30 | Optional talk - AI augmented development |
-| 15:00 | Optional talk - Debate "The ethics of Artificial Intelligence" with Civio |
-| 21:00 | Closing |
+Hemos reorganizado la información del portal `transparencia.gob.es/publicidad-activa` con una home explicativa con estadísticas del inventario, un buscador global y una navegación basada en organismos y filtros por materia. Incorporamos además un chatbot que permite resolver dudas en lenguaje natural. No centralizamos los datos — centralizamos **cómo se descubren**.
 
 ---
 
-## Slack Channels
+## Tecnologías principales
 
-- announcements: https://ship-for-good.slack.com/archives/C0B1GNT77QB
-- q&a (questions for the hackathon organizers): https://ship-for-good.slack.com/archives/C0B1M3UCQS2
-- ask-civio (ask the people at Civil about the problem): https://ship-for-good.slack.com/archives/C0B6YE9GYSG
-- tech-support (questions and help on technical topics): https://ship-for-good.slack.com/archives/C0B6RERAELV
-
----
-
-## Wi-Fi
-
-Use the 42 Barcelona network:
-
-- UID: `42barcelona`
-- PASS: `bienvenido42BCN`
+| Capa | Stack |
+|------|-------|
+| Aplicación web | Ruby on Rails 8 · SQLite · TypeScript · Tailwind CSS 4 · Hotwire (Turbo + Stimulus) |
+| Chatbot (backend) | Python · Flask · Mistral AI (`mistral-small`) · BeautifulSoup4 |
+| Chatbot (frontend) | Streamlit |
 
 ---
 
-## Team Branches
+## Prerrequisitos
 
-Each team works on their own dedicated branch:
+- **Ruby** 4.0.5 (`rbenv` o `asdf` recomendado)
+- **Node.js** ≥ 20 y `npm`
+- **Python** 3.10+
+- **SQLite3**
 
-| Team | Branch |
-|------|--------|
-| Delfos | `team-delfos` |
-| IT_Power | `team-it-power` |
-| Team Aina | `team-aina` |
-| Team Azul | `team-azul` |
-| Team Verde | `team-verde` |
-| Team Rojo | `team-rojo` |
-| Team Amarillo | `team-amarillo` |
-| Team Naranja | `team-naranja` |
-| Team Morado | `team-morado` |
-| Team Rosa | `team-rosa` |
-| Team Turquesa | `team-turquesa` |
+---
 
-To get started:
+## Instalación y arranque
+
+### Dev Container (recomendado)
+
+El proyecto incluye un Dev Container preconfigurado compatible con VS Code y GitHub Codespaces. Al abrirlo instala automáticamente todas las dependencias (Ruby, Node.js, Python, SQLite3) y ejecuta `bin/setup` y `pip install`.
+
+1. Abre la carpeta `publicidad-activa/` en VS Code.
+2. Acepta la notificación _"Reopen in Container"_ (o usa `Dev Containers: Reopen in Container` desde la paleta de comandos).
+3. Espera a que el contenedor se construya y el `postCreateCommand` finalice.
+
+Una vez dentro del contenedor:
 
 ```bash
-git clone https://github.com/ship-for-good/civio-2026 
-cd civio-2026
-git checkout team-your-team-name
+# Arrancar la app Rails
+bin/dev   # disponible en http://localhost:3000
+
+# Arrancar el chatbot (en otra terminal)
+cd chatbot
+python app.py          # backend Flask → puerto 5002
+streamlit run chatbot.py  # frontend Streamlit
+```
+
+Los puertos 3000 y 5002 se reenvían automáticamente al host.
+
+> **Variables de entorno:** el Dev Container espera `MISTRAL_API_KEY` definida en el entorno del host (o en un archivo `.env` local). Ver sección [Variables de entorno](#variables-de-entorno-requeridas).
+
+### Manual (sin contenedor)
+
+```bash
+git clone https://github.com/ship-for-good/civio-2026
+cd civio-2026/publicidad-activa
+
+bin/setup
+bin/dev  # Rails en http://localhost:3000
+
+# Chatbot (otra terminal)
+cd chatbot
+pip install -r requirements.txt
+python app.py
+streamlit run chatbot.py
+```
+
+### Docker (producción)
+
+El `Dockerfile` usa una build multietapa optimizada para producción. El entrypoint ejecuta `db:prepare` automáticamente al arrancar.
+
+```bash
+cd publicidad-activa
+
+docker build -t publicidad_activa .
+
+docker run -d -p 80:80 \
+  -e RAILS_MASTER_KEY=<valor de config/master.key> \
+  --name publicidad_activa \
+  publicidad_activa
+```
+
+La app queda disponible en `http://localhost`.
+
+---
+
+## Variables de entorno requeridas
+
+| Variable | Descripción |
+|----------|-------------|
+| `RAILS_MASTER_KEY` | Clave maestra de Rails (requerida solo en Docker/producción) |
+| `MISTRAL_API_KEY` | Clave de API de Mistral AI para el chatbot |
+
+---
+
+## Arquitectura
+
+```
+civio-2026/
+├── publicidad-activa/       ← App Rails (interfaz principal)
+│   ├── app/                 ← Controladores, vistas, modelos
+│   ├── chatbot/             ← Chatbot Python (Flask + Streamlit)
+│   │   ├── app.py           ← Backend Flask (API /ask y /faq)
+│   │   ├── chatbot.py       ← Frontend Streamlit
+│   │   └── scraped_data.json ← Datos extraídos del portal
+│   └── data/                ← Índices JSON del crawl
+└── docs/
+    └── publicidad-activa-mvp.md
+```
+
+**Inventario indexado:**
+
+| Métrica | Valor |
+|---------|-------|
+| Total recursos | 1.298 URLs |
+| Materias | 6 (organización y empleo: 1.120 · altos cargos: 77 · económico-presupuestaria: 42 · trámites: 25 · normativa: 19 · planificación: 12) |
+| Organismos únicos | 69 |
+| Recursos vigentes | 353 |
+| Recursos históricos | 945 |
+| Tipos de contenido | RPT: 720 · Estructura: 150 · Funciones: 104 · Normativa: 51 · RAT: 29 |
+
+**Flujo de datos:**
+
+```mermaid
+flowchart TD
+    A[transparencia.gob.es] -->|crawl| B[publicidad-activa-index.json\n1.298 recursos · 6 materias · 69 organismos]
+    A -->|scraping| C[scraped_data.json\ncontenido HTML de páginas]
+
+    B --> D[App Rails\nbúsqueda · navegación · filtros]
+    C --> E[Chatbot Flask\napp.py · puerto 5002]
+
+    E -->|contexto| F[Mistral AI\nmistral-small]
+    F -->|respuesta| E
+
+    D -->|interfaz web| G[Usuario\nlocalhost:3000]
+    E -->|API /ask /faq| H[Frontend Streamlit\nchatbot.py]
+    H -->|preguntas| G
 ```
 
 ---
 
-## Repository Docs
+## Próximos pasos
 
-| Document | Description |
-|----------|-------------|
-| [how-to-submit-project.md](./how-to-submit-project.md) | Delivery rules, README requirements and demo format |
-| [how-to-work-team-branch.md](./how-to-work-team-branch.md) | How to work in this repo, branch rules and commit conventions |
-| [AUTHORSHIP.md](./AUTHORSHIP.md) | How projects will remain open source and usable by Civio |
-
----
-
-## Code of Conduct
-
-All attendees, speakers, sponsors and volunteers must accept our
-[Code of Conduct](https://softwarecrafters.barcelona/coc.html).
-The organization will enforce it throughout the event.
-We count on everyone's cooperation to ensure a safe environment.
+- Profundizar en la arquitectura de la información y analizar las fuentes de datos primarias (BOE, portales ministeriales, plataforma de contratación).
+- Entender mejor el ecosistema de transparencia para construir una solución escalable basada en necesidades reales de los usuarios.
+- Añadir niveles de seguridad: autenticación, rate limiting en la API del chatbot y gestión segura de claves (variables de entorno en lugar de valores en código).
+- Ampliar el catálogo curado de organismos (`organismos.json`) y tips de Civio (`fuentes-civio.json`).
+- Soporte de alertas de cambios en URLs monitorizadas.
 
 ---
 
-## Partners & Sponsors
+## Equipo
 
-**Organized with:**
-
-- [Civio](https://civio.es/) — challenge owner and partner organization
-- [42 Barcelona](https://www.42barcelona.com/es/) — venue
-- [Software Crafters Barcelona](https://softwarecrafters.barcelona/) — community
-
-**Sponsors:** [Manfred](https://www.getmanfred.com/) ·
-[QualityClouds](https://qualityclouds.ai/) ·
-[Plain Concepts](https://www.plainconcepts.com/) ·
-[Next Digital](https://www.nextdigital.es/)
-
-**Supporting:** [Lovable](https://lovable.dev/) ·
-[Cursor](https://cursor.com/) ·
-[Falca](https://falca.com/)
-
----
-
-## FAQ
-
-[Ship for Good FAQ](https://www.shipforgood.org/es#faq)
+**Equipo Rosa** · Ship for Good 2026 · [Civio](https://civio.es/)
