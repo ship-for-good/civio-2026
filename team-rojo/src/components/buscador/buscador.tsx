@@ -95,12 +95,14 @@ export function Buscador() {
       >
         {(view === "idle" || view === "loading" || view === "error") && (
           <motion.div variants={fadeUp} className="text-center">
-            <p className="text-xs tracking-widest uppercase text-white/60 mb-4">
-              La información pública te pertenece
-            </p>
-            <h1 className="text-4xl sm:text-6xl font-serif font-semibold tracking-tight text-white mb-3 leading-tight">
+            <div className="gradient-border inline-block mb-4">
+              <span className="block px-4 py-2 rounded-full text-sm text-white/80">
+                La información pública te pertenece
+              </span>
+            </div>
+            <p className="text-xl text-white mb-3">
               Aquí la encuentras.
-            </h1>
+            </p>
           </motion.div>
         )}
 

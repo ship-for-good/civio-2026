@@ -36,6 +36,34 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Animated gradient border */
+@property --ga {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-border {
+  to { --ga: 360deg; }
+}
+.gradient-border {
+  --ga: 0deg;
+  position: relative;
+  border-radius: 9999px;
+  display: inline-block;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 1.5px;
+  background: conic-gradient(from var(--ga), #f97316, #0072c6, #a855f7, #f97316);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-border 3s linear infinite;
+}
+
 /* Selection color */
 ::selection {
   background: var(--accent-light);
