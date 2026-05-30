@@ -1,28 +1,11 @@
-import { CodeOfConduct } from "@/components/code-of-conduct";
-import { MotionProvider } from "@/components/motion-provider";
-import { PartnershipsSection } from "@/components/partnerships-section";
-import { FAQ } from "@/components/faq";
-import { Footer } from "@/components/footer";
-import { Hero } from "@/components/hero";
-import { HowItWorks } from "@/components/how-it-works";
-import { InfoBar } from "@/components/info-bar";
-import { Navbar } from "@/components/navbar";
-import { Schedule } from "@/components/schedule";
+import { redirect } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
-export default function Home() {
-  return (
-    <MotionProvider>
-      <Navbar />
-      <main id="main">
-        <Hero />
-        <InfoBar />
-        <Schedule />
-        <HowItWorks />
-        <PartnershipsSection />
-        <FAQ />
-        <CodeOfConduct />
-      </main>
-      <Footer />
-    </MotionProvider>
-  );
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function Home({ params }: Props) {
+  const { locale } = await params;
+  redirect({ href: "/buscador", locale: locale as (typeof routing.locales)[number] });
 }
