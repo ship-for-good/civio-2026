@@ -1,4 +1,6 @@
-export default function StatsBar({ requests }) {
+import type { EnrichedRequest } from '../utils/urgency.js'
+
+export default function StatsBar({ requests }: { requests: EnrichedRequest[] }) {
   const critical = requests.filter(r => r.urgencyLevel === 'critical').length
   const warning = requests.filter(r => r.urgencyLevel === 'warning').length
   const enTramitacion = requests.filter(r => r['Estado'] === 'En tramitación').length
@@ -17,7 +19,7 @@ export default function StatsBar({ requests }) {
   )
 }
 
-function StatCard({ value, label, variant = 'total' }) {
+function StatCard({ value, label, variant = 'total' }: { value: number; label: string; variant?: string }) {
   return (
     <div className={`stat-card ${variant}`}>
       <div className="value">{value}</div>
